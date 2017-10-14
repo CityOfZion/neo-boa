@@ -2,6 +2,7 @@ from byteplay3 import Code,Opcode
 from boa.code.method import Method
 from boa.code import pyop
 import importlib
+import binascii
 
 class Item():
     items = None
@@ -41,6 +42,55 @@ class Action(Item):
         self.event_name = arguments[0]
 
         self.event_args = arguments
+
+class SmartContractAppCall(Item):
+
+    script_hash = None
+    script_args = None
+
+    method_name = None
+
+    def __init__(self, item_list):
+        super(SmartContractAppCall,self).__init__(item_list)
+
+        arguments = []
+
+        for i, (key,value) in enumerate(self.items.items):
+            if key == pyop.LOAD_CONST:
+                arguments.append(value)
+            elif key == pyop.STORE_NAME:
+                self.method_name = value
+
+        self.script_hash = arguments[0]
+
+        self.script_args = arguments
+
+        if type(self.script_hash) is str:
+            if len(self.script_hash) != 40:
+                raise Exception("Invalid script hash! length of string must be 40")
+        elif type(self.script_hash) in [bytes,bytearray]:
+            if len(self.script_hash) != 20:
+                raise Exception("Invalid Script hash, length in bytes must be 20")
+        else:
+            raise Exception("Invalid script hash type.  must be string, bytes, or bytearray")
+
+    @property
+    def script_hash_addr(self):
+        b_array = None
+        if type(self.script_hash) is str:
+            bstring = self.script_hash.encode('utf-8')
+            b_array = bytearray(binascii.unhexlify(bstring))
+        elif type(self.script_hash) is bytearray:
+            pass
+        elif type(self.script_hash) is bytes:
+            b_array = bytearray(self.script_hash)
+        else:
+            raise Exception("Invalid script hash")
+
+        b_array.reverse()
+
+        return bytes(b_array)
+
 
 class Import(Item):
 
