@@ -48,3 +48,9 @@ class Line():
         for i, (op, arg) in enumerate(self.items):
             if arg == 'RegisterAction':
                 return True
+
+    @property
+    def is_smart_contract_appcall_registration(self):
+        for i, (op, arg) in enumerate(self.items):
+            if arg == 'RegisterAppCall':
+                return True
