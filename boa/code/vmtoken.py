@@ -534,22 +534,26 @@ class VMTokenizer():
                 full_name = m.full_name
 
 
-        #operational call like len(items) or abs(value)
+        # operational call like len(items) or abs(value)
         if self.is_op_call(fname):
             vmtoken = self.convert_op_call(fname, pytoken)
 
-        #runtime.notify event
+        # runtime.notify event
         elif self.is_notify_event(pytoken):
            vmtoken = self.convert_notify_event(pytoken)
+
+        # app call ( for calling other contracts on blockchain )
+        elif self.is_smart_contract_call(pytoken):
+            vmtoken = self.convert_smart_contract_call(pytoken)
 
         elif self.is_sys_call(full_name):
             vmtoken = self.convert_sys_call(full_name, pytoken)
 
-        #used for python specific built in methods like `enumerate` or `tuple`
+        # used for python specific built in methods like `enumerate` or `tuple`
         elif self.is_built_in(fname):
             vmtoken = self.convert_built_in(fname, pytoken)
 
-        #otherwise we assume the method is defined by the module
+        # otherwise we assume the method is defined by the module
         else:
             vmtoken = self.convert1(VMOp.CALL,py_token=pytoken,data=bytearray(b'\x05\x00'))
 
@@ -677,3 +681,25 @@ class VMTokenizer():
 
         return vmtoken
 
+    def is_smart_contract_call(self, pytoken):
+        name= pytoken.func_name
+
+        for appcall in self.method.module.app_call_registrations:
+            if appcall.method_name == name:
+                return True
+        return False
+
+
+    def convert_smart_contract_call(self, pytoken):
+        sc_appcall = None
+        for appcall in self.method.module.app_call_registrations:
+            if appcall.method_name == pytoken.func_name:
+                sc_appcall = appcall
+        if sc_appcall is None:
+            raise Exception("Smart Contract Appcall %s not found " % pytoken.func_name)
+
+        #push the contrcat hash
+        print("app call script hash address %s " % sc_appcall.script_hash_addr)
+        vmtoken = self.convert1(VMOp.APPCALL,py_token=pytoken,data=sc_appcall.script_hash_addr)
+
+        return vmtoken
