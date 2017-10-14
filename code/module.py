@@ -5,7 +5,7 @@ from boa.code import pyop
 
 from boa.code.line import Line
 from boa.code.method import Method
-from boa.code.items import Definition, Klass, Import,Action
+from boa.code.items import Definition, Klass, Import,Action,SmartContractAppCall
 
 from boa.blockchain.vm import VMOp
 
@@ -28,7 +28,9 @@ class Module():
 
     methods = None # a list to keep all methods in the module
 
-    actions = None
+    actions = None # a list to keep track of event registrations
+
+    app_call_registrations = None # a list to keep track of app call registrations
 
     is_sys_module = None
 
@@ -125,6 +127,7 @@ class Module():
         self.module_variables = []
         self.methods = []
         self.actions = []
+        self.app_call_registrations = []
         self.classes = []
         self.loaded_modules = []
 
@@ -148,6 +151,8 @@ class Module():
                 self.process_method(lineset)
             elif lineset.is_action_registration:
                 self.process_action(lineset)
+            elif lineset.is_smart_contract_appcall_registration:
+                self.process_smart_contract_app_registration(lineset)
             else:
                 print('not sure what to do with line %s ' % lineset)
                 pdb.set_trace()
@@ -182,6 +187,13 @@ class Module():
             if act.method_name == action.method_name:
                 return
         self.actions.append(action)
+
+    def process_smart_contract_app_registration(self, lineset):
+        appcall_registration = SmartContractAppCall(lineset)
+        for registration in self.app_call_registrations:
+            if registration.method_name == appcall_registration.method_name:
+                return
+        self.app_call_registrations.append(appcall_registration)
 
     def split_lines(self):
 
