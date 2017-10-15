@@ -224,6 +224,11 @@ class PyToken():
             elif op == [pyop.BINARY_XOR, pyop.INPLACE_XOR]:
                 token = tokenizer.convert1(VMOp.XOR, self)
 
+            elif op in [pyop.BINARY_LSHIFT, pyop.INPLACE_LSHIFT]:
+                token = tokenizer.convert1(VMOp.SHL, self)
+
+            elif op in [pyop.BINARY_RSHIFT, pyop.INPLACE_RSHIFT]:
+                token = tokenizer.convert1(VMOp.SHR, self)
 
 
             #compare
