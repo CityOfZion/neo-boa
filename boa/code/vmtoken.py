@@ -167,7 +167,7 @@ class VMTokenizer():
 
         if self.method.dynamic_iterator_count > 0:
             num_current_items += self.method.dynamic_iterator_count
-            newtoken = self.update_push_integer(self.total_param_and_body_count_token, num_current_items)
+            self.update_push_integer(self.total_param_and_body_count_token, num_current_items)
 
 
     def insert_vm_token_at(self, vm_token, index):
