@@ -1,8 +1,8 @@
 
 from boa.code.builtins import list,range
 from boa.blockchain.vm.Neo.Runtime import Log,Notify
-def Main():
 
+def Main():
 
     mmm = range(2,14)
 
