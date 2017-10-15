@@ -35,7 +35,6 @@ class Method():
     __make_func_name=None
 
 
-
     @property
     def name(self):
         return self.bp.name
@@ -78,6 +77,7 @@ class Method():
                 count +=1
 
         return count
+
 
     @property
     def total_module_variables(self):
@@ -156,6 +156,7 @@ class Method():
 
         current_loop_token = None
 
+
         for i, (op, arg) in enumerate(self.code):
 
             #print("[%s] %s  ->  %s " % (i, op, arg))
@@ -225,13 +226,10 @@ class Method():
 #                length = len(self.local_stores)
 #                self.local_stores[block.local_return_name] = length
 
+
+
             if block.has_load_attr:
                 block.preprocess_load_attr(self)
-
-            if block.has_make_function:
-
-                block.preprocess_make_function(self)
-                self.local_methods[block.local_func_varname] = block.local_func_name
 
             if block.is_list_comprehension:
                 block.preprocess_list_comprehension(self)
@@ -241,6 +239,12 @@ class Method():
                     else:
                         length = len(self.local_stores)
                         self.local_stores[localvar] = length
+
+
+            if block.has_make_function:
+
+                block.preprocess_make_function(self)
+                self.local_methods[block.local_func_varname] = block.local_func_name
 
             if block.has_slice:
                 block.preprocess_slice()
@@ -256,6 +260,7 @@ class Method():
 
             if block.has_unprocessed_method_calls:
                 block.preprocess_method_calls(self)
+
 
 
             if iter_setup_block is not None:
