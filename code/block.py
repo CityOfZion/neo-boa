@@ -5,6 +5,8 @@ from boa.code import pyop
 
 import pdb
 
+import pdb
+
 class Block():
 
     forloop_counter = 0
@@ -163,7 +165,6 @@ class Block():
                     return True
         if self.list_comp_iterable_variable:
             return True
-
         return False
 
 
@@ -535,12 +536,18 @@ class Block():
 
 
     def preprocess_list_comprehension(self, method):
-        # at this point, the preprocess make function has
-        # already done its thing on the block, so we're not interested in it
 
+        # i apologize for the following
+
+
+        # grab the list comprehestion code object and make a method out of it
+        # we will use it later
+        code_obj = self.oplist[0].args
+
+        # now get rid of the first 3 ops for now
         self.oplist = self.oplist[3:]
-#        items = self.oplist[3:]
 
+        #setup a loop for the list comp
         setup_loop = PyToken(op=Opcode(pyop.SETUP_LOOP),lineno=self.line,index=-1)
 
         # first we need to create a loop counter variable
@@ -610,7 +617,6 @@ class Block():
         new__compare_op = PyToken(op=Opcode(pyop.COMPARE_OP), lineno=self.line, index=-1, args='<')
         new__popjump_op = PyToken(op=Opcode(pyop.POP_JUMP_IF_FALSE), lineno=self.line, index=-1,
                                   args=jmp_if_false_label)
-
 
 
         #ok now we do the loop block stuff here
@@ -703,14 +709,13 @@ class Block():
 
             increment_const,
 
-            increment_add,
             increment_add, # this is a hack... when the list_comp_call_func is processed, it
                            # takes out a few things from the block
                            # so we add it in twice (blerg...) so it gets put back in
             increment_store,
 
             #put call method of the list comp here...
-            list_comp_call_func,
+
 
             #now pop back to for_iter
             jmp_abs_back,
@@ -718,9 +723,44 @@ class Block():
             end_block,
         ]
 
+#        from boa.code.method import Method
+#        internal_method = Method(code_object=code_obj,
+#                                 parent=method.parent,
+#                                 make_func_name=self.local_func_name,
+#                                 is_list_comp_internal=True,
+#                                 list_comp_iterable_name=self.list_comp_iterable_variable)
+
+
+#        internal_ops = internal_method.blocks[0].oplist
+#        print("internal ops %s " % internal_ops)
+#        print(internal_method.tokenizer.to_s())
+#        self.oplist = self.oplist[:-2] + internal_ops + self.oplist[-2:]
 #        if len(dynamic_iterable_items):
 #            self.oplist.insert(4, dynamic_iterable_items[0])
 #            self.oplist.insert(5, dynamic_iterable_items[1])
 
         Block.forloop_counter += 1
 
+
+    def process_list_comp_internal(self, list_comp_item_name):
+        # get rid of first op
+
+        print("OP 0 %s "% self.oplist[0].py_op)
+        if self.oplist[0].py_op == pyop.STORE_FAST:
+
+            argname = self.oplist[0].args
+
+
+            self.oplist[0] = PyToken(op=Opcode(pyop.LOAD_FAST), lineno=self.line, index=0, args=list_comp_item_name)
+
+            method_call = self.oplist[1]
+
+            for op in method_call.func_params:
+                print("op in method call:: %s %s " % (op, op.args))
+                if op.args == argname:
+                    print("switch argname...")
+                    op.args = list_comp_item_name
+
+            self.oplist = self.oplist[0:-3]
+
+#        pdb.set_trace()
