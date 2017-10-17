@@ -1,7 +1,6 @@
 
 class SmartContract():
 
-
     def Sha1(data):
         pass
 

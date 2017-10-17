@@ -80,7 +80,7 @@ setup(
     # for example:
     # $ pip install -e .[dev,test]
     extras_require={
-        'dev': ['twine','wheel',],
+        'dev': ['twine','wheel','sphinx','autopep8',],
         'test': ['coverage'],
     },
 

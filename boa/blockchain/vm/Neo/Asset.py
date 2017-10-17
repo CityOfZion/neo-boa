@@ -34,8 +34,6 @@ class Asset():
         return GetIssuer(self)
 
 
-
-
 def GetAssetId(asset):
     pass
 
@@ -68,11 +66,9 @@ def GetIssuer(asset):
     pass
 
 
-
 def Create(asset_type, name, amount, precision, owner, admin, issuer):
     pass
 
 
 def Renew(asset, years):
     pass
-

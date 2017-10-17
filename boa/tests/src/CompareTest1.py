@@ -36,6 +36,3 @@ def Main(a, b, c, d):
                 m = 22
 
     return m
-
-
-

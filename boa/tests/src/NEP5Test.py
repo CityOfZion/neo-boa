@@ -1,50 +1,50 @@
-from boa.blockchain.vm.Neo.Runtime import Log,Notify
-from boa.blockchain.vm.System.ExecutionEngine import GetScriptContainer,GetExecutingScriptHash
+from boa.blockchain.vm.Neo.Runtime import Log, Notify
+from boa.blockchain.vm.System.ExecutionEngine import GetScriptContainer, GetExecutingScriptHash
 from boa.blockchain.vm.Neo.Transaction import *
-from boa.blockchain.vm.Neo.Blockchain import GetHeight,GetHeader
+from boa.blockchain.vm.Neo.Blockchain import GetHeight, GetHeader
 from boa.blockchain.vm.Neo.Action import RegisterAction
-from boa.blockchain.vm.Neo.Runtime import GetTrigger,CheckWitness
-from boa.blockchain.vm.Neo.TriggerType import Application,Verification
-from boa.blockchain.vm.Neo.Output import GetScriptHash,GetValue,GetAssetId
-from boa.blockchain.vm.Neo.Storage import GetContext,Get,Put,Delete
+from boa.blockchain.vm.Neo.Runtime import GetTrigger, CheckWitness
+from boa.blockchain.vm.Neo.TriggerType import Application, Verification
+from boa.blockchain.vm.Neo.Output import GetScriptHash, GetValue, GetAssetId
+from boa.blockchain.vm.Neo.Storage import GetContext, Get, Put, Delete
 
 from boa.code.builtins import verify_signature
 
-#-------------------------------------------
-# ICO SETTINGS
-#-------------------------------------------
+# -------------------------------------------
+# TOKEN SETTINGS
+# -------------------------------------------
 
-TOKEN_NAME ='LOCALTOKEN'
+TOKEN_NAME = 'LOCALTOKEN'
 SYMBOL = 'LWTF'
 
 OWNER = b'F\xc2\xbb\x9c\x17Ci\x89\xca\xa7\x85>|\xbd\x87B>H#\xf2'
 
-DECIMALS=8
+DECIMALS = 8
 
 FACTOR = 100000000
 
 
-#-------------------------------------------
+# -------------------------------------------
 # ICO SETTINGS
-#-------------------------------------------
+# -------------------------------------------
 
 NEO_ASSET_ID = b'\x9b|\xff\xda\xa6t\xbe\xae\x0f\x93\x0e\xbe`\x85\xaf\x90\x93\xe5\xfeV\xb3J\\"\x0c\xcd\xcfn\xfc3o\xc5'
 
 # 5million times decimals ( factor )
 TOTAL_AMOUNT = 500000000000000
 
-PRE_ICO_CAP = 1000000000 # amount for the owner to start with
+PRE_ICO_CAP = 1000000000  # amount for the owner to start with
 
-ICO_START_TIME = 1502726400 # August 14 2017
-ICO_END_TIME = 1513936000 # December 22 2017
+ICO_START_TIME = 1502726400  # August 14 2017
+ICO_END_TIME = 1513936000  # December 22 2017
 
-#-------------------------------------------
+# -------------------------------------------
 # Events
-#-------------------------------------------
+# -------------------------------------------
 
-OnTransfer = RegisterAction('transfer', 'from','to','amount')
+OnTransfer = RegisterAction('transfer', 'from', 'to', 'amount')
 
-OnRefund = RegisterAction('refund', 'to','amount')
+OnRefund = RegisterAction('refund', 'to', 'amount')
 
 
 def Main(operation, args):
@@ -128,9 +128,11 @@ def Name():
     print("getting name!")
     return TOKEN_NAME
 
+
 def Symbol():
     print("getting symbol!")
     return SYMBOL
+
 
 def Decimals():
     print("getting decimals...")
@@ -142,14 +144,12 @@ def Deploy():
 
     isowner = CheckWitness(OWNER)
 
-
     if isowner:
 
         print("ok to deploy")
         context = GetContext()
 
         total = Get(context, 'totalSupply')
-
 
         if len(total) == 0:
 
@@ -165,9 +165,9 @@ def Deploy():
         else:
             print("ALREADY DEPLOYED, wont do it again")
 
-
     print("only owner can deploy")
     return False
+
 
 def MintTokens():
     print("minting tokens!")
@@ -214,7 +214,6 @@ def MintTokens():
 
         num_tokens = value * rate / 100000000
 
-
         context = GetContext()
 
         balance = Get(context, sender)
@@ -233,8 +232,8 @@ def MintTokens():
 
         return True
 
-
     return False
+
 
 def TotalSupply():
 
@@ -248,6 +247,7 @@ def TotalSupply():
     Notify(res)
 
     return res
+
 
 def DoTransfer(t_from, t_to, amount):
 
@@ -282,7 +282,6 @@ def DoTransfer(t_from, t_to, amount):
 
         to_total = to_value + amount
 
-
         Put(context, t_to, to_total)
 
         OnTransfer(t_from, t_to, amount)
@@ -292,6 +291,7 @@ def DoTransfer(t_from, t_to, amount):
         print("from address is not the tx sender")
 
     return False
+
 
 def BalanceOf(account):
 
@@ -319,7 +319,7 @@ def CurrentSwapRate():
     print("getting current height...")
     currentHeight = GetHeight()
     print("got current height")
-    currentBlock  = GetHeader(currentHeight)
+    currentBlock = GetHeader(currentHeight)
     print("got current block...")
     time = currentBlock.Timestamp - ICO_START_TIME
 
@@ -340,4 +340,3 @@ def CurrentSwapRate():
         return basic
 
     return 0
-

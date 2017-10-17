@@ -1,7 +1,6 @@
 
 def Main(fibnumber):
 
-
     fibresult = fib(fibnumber)
 
     return fibresult

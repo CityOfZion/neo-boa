@@ -17,11 +17,8 @@ def Main():
 
             b = b + 1
 
-
             while c > 20:
 
                 c = c - 5
 
-
-    return a + b + c # expect 27
-
+    return a + b + c  # expect 27

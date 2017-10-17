@@ -35,10 +35,11 @@ def stuff2():
 
     return j - a
 
+
 def prevcall():
 
-
     return stuff()
+
 
 def stuff8():
 

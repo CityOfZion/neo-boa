@@ -4,7 +4,8 @@ def Main():
 
     j = 9
 
-    q = lambda x: x + 1
+    def q(x):
+        return x + 1
 
     m = q(j)
 

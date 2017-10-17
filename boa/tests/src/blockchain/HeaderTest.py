@@ -1,7 +1,7 @@
 from boa.blockchain.vm.Neo.Blockchain import GetHeader
-from boa.blockchain.vm.Neo.Header import GetMerkleRoot,GetTimestamp,GetHash,GetVersion
+from boa.blockchain.vm.Neo.Header import GetMerkleRoot, GetTimestamp, GetHash, GetVersion
 
-from boa.blockchain.vm.Neo.Runtime import Notify,Log
+from boa.blockchain.vm.Neo.Runtime import Notify, Log
 
 
 def Main(block_height):
@@ -36,6 +36,5 @@ def Main(block_height):
     if ts == 1494640540:
 
         return 9
-
 
     return a

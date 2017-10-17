@@ -1,4 +1,4 @@
-from byteplay3 import SetLinenoType,Label,Opcode
+from byteplay3 import SetLinenoType, Label, Opcode
 
 from boa.code.pytoken import PyToken
 from boa.code.vmtoken import VMTokenizer
@@ -32,13 +32,11 @@ class Method():
 
     local_methods = None
 
-    __make_func_name=None
-
+    __make_func_name = None
 
     @property
     def name(self):
         return self.bp.name
-
 
     @property
     def full_name(self):
@@ -50,10 +48,10 @@ class Method():
 
     @property
     def args(self):
-#        alist = list(self.bp.args)
-#        if 'self' in alist:
-#            alist.remove('self')
-#        return alist
+        #        alist = list(self.bp.args)
+        #        if 'self' in alist:
+        #            alist.remove('self')
+        #        return alist
         return self.bp.args
 
     @property
@@ -64,7 +62,6 @@ class Method():
     def vm_tokens(self):
         return self.tokenizer.vm_tokens
 
-
     @property
     def firstlineno(self):
         return self.bp.firstlineno
@@ -72,12 +69,11 @@ class Method():
     @property
     def total_lines(self):
         count = 0
-        for index,(op, arg) in enumerate(self.code):
+        for index, (op, arg) in enumerate(self.code):
             if type(op) is SetLinenoType:
-                count +=1
+                count += 1
 
         return count
-
 
     @property
     def total_module_variables(self):
@@ -95,7 +91,6 @@ class Method():
         elif type(self.parent.parent.parent) is Module:
             return self.parent.parent.parent
         return None
-
 
     def __init__(self, code_object, parent, make_func_name=None):
 
@@ -117,10 +112,8 @@ class Method():
 
 #        self.tokenizer.to_s()
 
-
     def print(self):
         print(self.code)
-
 
     def to_dis(self):
 
@@ -136,7 +129,6 @@ class Method():
 #            print("insert items %s " % items)
 
             self.bp.code = items + self.bp.code
-
 
     def read_initial_tokens(self):
 
@@ -156,10 +148,9 @@ class Method():
 
         current_loop_token = None
 
-
         for i, (op, arg) in enumerate(self.code):
 
-            #print("[%s] %s  ->  %s " % (i, op, arg))
+            # print("[%s] %s  ->  %s " % (i, op, arg))
 
             if type(op) is SetLinenoType:
 
@@ -170,7 +161,7 @@ class Method():
 
                 if block_group is not None:
 
-                    self.blocks.append( Block(block_group))
+                    self.blocks.append(Block(block_group))
 
                 block_group = []
 
@@ -180,12 +171,11 @@ class Method():
 
             else:
 
-
-                if op in [pyop.STORE_FAST,pyop.STORE_NAME,pyop.STORE_GLOBAL] and not arg in self.local_stores.keys():
+                if op in [pyop.STORE_FAST, pyop.STORE_NAME, pyop.STORE_GLOBAL] and arg not in self.local_stores.keys():
                     length = len(self.local_stores)
                     self.local_stores[arg] = length
 
-                token = PyToken(op, current_line_no,i, arg)
+                token = PyToken(op, current_line_no, i, arg)
 
                 if op == pyop.SETUP_LOOP:
                     current_loop_token = token
@@ -201,32 +191,30 @@ class Method():
                 block_group.append(token)
 
         if len(block_group):
-            self.blocks.append( Block(block_group))
-
+            self.blocks.append(Block(block_group))
 
     def process_block_groups(self):
 
         iter_setup_block = None
 
-        for index,block in enumerate(self.blocks):
+        for index, block in enumerate(self.blocks):
 
-            #if it is a return block
-            #we need to insert a jmp at the start of the block
-            #for the vm
+            # if it is a return block
+            # we need to insert a jmp at the start of the block
+            # for the vm
             if block.is_return:
 
-                #this jump needs to jump 3 bytes.  why? stay tuned to find out
+                # this jump needs to jump 3 bytes.  why? stay tuned to find out
                 block_addr = b'\x03\x00'
 
-                ret_token = PyToken(Opcode(pyop.BR_S),block.line,args=block_addr)
+                ret_token = PyToken(Opcode(pyop.BR_S),
+                                    block.line, args=block_addr)
                 ret_token.jump_label = block.oplist[0].jump_label
                 block.oplist[0].jump_label = None
                 block.oplist.insert(0, ret_token)
                 block.mark_as_end()
 #                length = len(self.local_stores)
 #                self.local_stores[block.local_return_name] = length
-
-
 
             if block.has_load_attr:
                 block.preprocess_load_attr(self)
@@ -239,7 +227,6 @@ class Method():
                     else:
                         length = len(self.local_stores)
                         self.local_stores[localvar] = length
-
 
             if block.has_make_function:
 
@@ -261,8 +248,6 @@ class Method():
             if block.has_unprocessed_method_calls:
                 block.preprocess_method_calls(self)
 
-
-
             if iter_setup_block is not None:
                 block.process_iter_body(iter_setup_block)
                 iter_setup_block = None
@@ -277,8 +262,7 @@ class Method():
                         length = len(self.local_stores)
                         self.local_stores[localvar] = length
                 iter_setup_block = block
-                self.dynamic_iterator_count +=1
-
+                self.dynamic_iterator_count += 1
 
         alltokens = []
 
@@ -290,9 +274,8 @@ class Method():
                 alltokens = alltokens + block.oplist
         self.tokens = alltokens
 
-        for index,token in enumerate(self.tokens):
+        for index, token in enumerate(self.tokens):
             token.addr = index
-
 
     def tokenize(self):
         self.tokenizer.update_method_begin_items()
@@ -303,8 +286,8 @@ class Method():
 
     def convert_jumps(self):
 
-        #convert normal jumps
-        for key,vm_token in self.tokenizer.vm_tokens.items():
+        # convert normal jumps
+        for key, vm_token in self.tokenizer.vm_tokens.items():
 
             if vm_token.pytoken and type(vm_token.pytoken.args) is Label:
 
@@ -317,17 +300,12 @@ class Method():
                         jump_to_label = vm_token_target.pytoken.jump_label
 
                         if jump_to_label == label:
-#                            print("OP %s " % str(vm_token.pytoken.op_name))
-#                            print("START/END: %s %s " % (vm_token_target.addr, vm_token.addr))
 
                             difference = vm_token_target.addr - vm_token.addr
-#                            print("setting jump to %s " % difference)
-                            vm_token.data = difference.to_bytes(2, 'little', signed=True)
 
+                            vm_token.data = difference.to_bytes(2, 'little', signed=True)
 
     def write(self):
 
-
         out = self.tokenizer.to_b()
         return out
-

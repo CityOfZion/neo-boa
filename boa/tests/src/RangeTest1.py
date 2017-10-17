@@ -2,17 +2,15 @@
 from boa.code.builtins import list
 from boa.blockchain.vm.Neo.Runtime import Notify
 
+
 def Main():
 
     start = 4
-    stop = 9 #int
+    stop = 9  # int
 
 #    out = [10,2, 3, 4, 6, 7]
 
-
-
     length = stop - start
-
 
     out = list(length=length)
 
@@ -27,12 +25,9 @@ def Main():
 
         Notify(start)
 
-        #d = stuff(1, 2) # this doesn't work at the moment
-
+        # d = stuff(1, 2) # this doesn't work at the moment
 
     return out[4]
-
-
 
 
 def stuff(a, b):

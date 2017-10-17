@@ -1,11 +1,11 @@
 
-#the following are python opcodes taken from the `opcode` module
-#these have been constantized for easier access
-#these are the opcodes used by python
+# the following are python opcodes taken from the `opcode` module
+# these have been constantized for easier access
+# these are the opcodes used by python
 
 
-#not to be confused with opcodes from neo.VM.OpCode,
-#which are the opcodes for the neo vm
+# not to be confused with opcodes from neo.VM.OpCode,
+# which are the opcodes for the neo vm
 
 POP_TOP = 1
 ROT_TWO = 2
@@ -84,7 +84,7 @@ STORE_NAME = 90       # Index in name list
 DELETE_NAME = 91      # ""
 UNPACK_SEQUENCE = 92   # Number of tuple items
 
-FOR_ITER = 93  #jrel op
+FOR_ITER = 93  # jrel op
 
 UNPACK_EX = 94
 STORE_ATTR = 95       # Index in name list
@@ -93,7 +93,7 @@ STORE_GLOBAL = 97     # ""
 DELETE_GLOBAL = 98    # ""
 LOAD_CONST = 100       # Index in const list
 
-#hasconst.append(100
+# hasconst.append(100
 
 LOAD_NAME = 101       # Index in name list
 BUILD_TUPLE = 102      # Number of tuple items
@@ -107,7 +107,7 @@ IMPORT_NAME = 108     # Index in name list
 IMPORT_FROM = 109     # Index in name list
 
 JUMP_FORWARD = 110    # Number of bytes to skip
-JUMP_IF_FALSE_OR_POP = 111 # Target byte offset from beginning of code
+JUMP_IF_FALSE_OR_POP = 111  # Target byte offset from beginning of code
 JUMP_IF_TRUE_OR_POP = 112  # "jabs op"
 JUMP_ABSOLUTE = 113        # "jabs op"
 POP_JUMP_IF_FALSE = 114    # "jabs op"
@@ -162,7 +162,7 @@ BUILD_TUPLE_UNPACK = 152
 BUILD_SET_UNPACK = 153
 
 
-#boa custom ops
+# boa custom ops
 
 FROMALTSTACK = 241
 DROP = 242

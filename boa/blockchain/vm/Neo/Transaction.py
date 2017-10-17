@@ -26,8 +26,6 @@ class Transaction():
         return GetReferences(self)
 
 
-
-
 def GetHash(transaction):
     pass
 
@@ -50,4 +48,3 @@ def GetOutputs(transaction):
 
 def GetReferences(transaction):
     pass
-

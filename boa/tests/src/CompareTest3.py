@@ -1,4 +1,5 @@
-from boa.blockchain.vm.Neo.Runtime import Notify,Log
+from boa.blockchain.vm.Neo.Runtime import Notify, Log
+
 
 def Main():
 
@@ -14,12 +15,8 @@ def Main():
     else:
 
         print("Gt")
-        m =4
-
-
+        m = 4
 
     print("ok!!")
 
     return m
-
-

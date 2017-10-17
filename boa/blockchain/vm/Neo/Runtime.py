@@ -7,8 +7,10 @@ def GetTrigger():
 def CheckWitness(hash_or_pubkey):
     pass
 
+
 def Log(message):
     pass
+
 
 def Notify(arg):
     pass

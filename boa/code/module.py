@@ -1,16 +1,17 @@
 
-from byteplay3 import Code, SetLinenoType,Label
+from byteplay3 import Code, SetLinenoType, Label
 from boa.code import pyop
 
 
 from boa.code.line import Line
 from boa.code.method import Method
-from boa.code.items import Definition, Klass, Import,Action,SmartContractAppCall
+from boa.code.items import Definition, Klass, Import, Action, SmartContractAppCall
 
 from boa.blockchain.vm import VMOp
 
 from collections import OrderedDict
 import pdb
+
 
 class Module():
 
@@ -26,21 +27,20 @@ class Module():
 
     classes = None  # a list of classes
 
-    methods = None # a list to keep all methods in the module
+    methods = None  # a list to keep all methods in the module
 
-    actions = None # a list to keep track of event registrations
+    actions = None  # a list to keep track of event registrations
 
-    app_call_registrations = None # a list to keep track of app call registrations
+    app_call_registrations = None  # a list to keep track of app call registrations
 
     is_sys_module = None
 
-    all_vm_tokens = None # dict for converting method tokens into linked method tokens for writing
-
+    # dict for converting method tokens into linked method tokens for writing
+    all_vm_tokens = None
 
     loaded_modules = None
 
-    _module_name =None
-
+    _module_name = None
 
     _names_to_load = None
 
@@ -48,12 +48,10 @@ class Module():
     def module_path(self):
         return self._module_name
 
-
-
     @property
     def main(self):
         for m in self.methods:
-            if m.name=='Main':
+            if m.name == 'Main':
                 return m
         if len(self.methods):
             return self.methods[0]
@@ -74,7 +72,7 @@ class Module():
         return om
 
     def add_method(self, method):
-#        print("ADDING METHODDDDDD %s " % method.full_name)
+        #        print("ADDING METHODDDDDD %s " % method.full_name)
         for m in self.methods:
             if m.name == method.name:
 
@@ -105,7 +103,7 @@ class Module():
 
         self.is_sys_module = is_sys_module
 
-        if items_to_import == None:
+        if items_to_import is None:
             self._names_to_load = ['STAR']
         else:
             self._names_to_load = items_to_import
@@ -156,8 +154,6 @@ class Module():
             else:
                 print('not sure what to do with line %s ' % lineset)
                 pdb.set_trace()
-                #print("code %s " % lineset.code_object)
-
 
     def process_import(self, import_item):
 
@@ -165,7 +161,7 @@ class Module():
 
         self.loaded_modules.append(import_item.imported_module)
 
-        #go through all the methods in the imported module
+        # go through all the methods in the imported module
         for method in import_item.imported_module.methods:
             self.add_method(method)
 
@@ -212,16 +208,11 @@ class Module():
         if len(lineitem):
             self.lines.append(Line(lineitem))
 
-
-
-
     def write(self):
-
 
         self.link_methods()
 
         return self.write_methods()
-
 
     def write_methods(self):
 
@@ -234,7 +225,6 @@ class Module():
                 b_array = b_array + vm_token.data
 
         return b_array
-
 
     def link_methods(self):
 
@@ -258,19 +248,19 @@ class Module():
 
                 vmtoken.addr = vmtoken.addr + method.method_address
 
-
         for key, vmtoken in self.all_vm_tokens.items():
 
             if vmtoken.src_method is not None:
 
-                target_method = self.method_by_name( vmtoken.target_method )
+                target_method = self.method_by_name(vmtoken.target_method)
 
                 if target_method:
 
                     jump_len = target_method.method_address - vmtoken.addr
                     vmtoken.data = jump_len.to_bytes(2, 'little', signed=True)
                 else:
-                    raise Exception("Target method %s not found" % vmtoken.target_method)
+                    raise Exception("Target method %s not found" %
+                                    vmtoken.target_method)
 
     def to_s(self):
 
@@ -292,7 +282,8 @@ class Module():
                 if pt.args and type(pt.args) is Label:
                     addr = value.addr
                     if value.data is not None:
-                        plus_addr = int.from_bytes(value.data, 'little', signed=True)
+                        plus_addr = int.from_bytes(
+                            value.data, 'little', signed=True)
                         target_addr = addr + plus_addr
                         to_label = 'to %s    [ %s ]' % (target_addr, pt.args)
                     else:
@@ -317,10 +308,12 @@ class Module():
                 if pt.py_op == pyop.CALL_FUNCTION:
                     to_label = '%s %s ' % (pt.func_name, pt.func_params)
 
-                lno = "{:<10}".format(pt.line_no if do_print_line_no or pstart else '')
+                lno = "{:<10}".format(
+                    pt.line_no if do_print_line_no or pstart else '')
                 addr = "{:<4}".format(key)
                 op = "{:<20}".format(str(pt.py_op))
-                arg = "{:<50}".format(to_label if to_label is not None else pt.arg_s)
+                arg = "{:<50}".format(
+                    to_label if to_label is not None else pt.arg_s)
                 data = "[data] {:<20}".format(ds)
                 print("%s%s%s%s%s%s" % (lno, from_label, addr, op, arg, data))
 

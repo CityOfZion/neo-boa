@@ -10,14 +10,12 @@ class Account():
         return GetVotes(self)
 
 
-
 def GetScriptHash(account):
     pass
 
 
 def GetVotes(account):
     pass
-
 
 
 def SetVotes(account, votes):

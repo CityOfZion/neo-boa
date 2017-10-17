@@ -1,5 +1,6 @@
-from boa.blockchain.vm.Neo.Storage import Get,Put,Delete,GetContext
+from boa.blockchain.vm.Neo.Storage import Get, Put, Delete, GetContext
 from boa.blockchain.vm.Neo.Runtime import Notify
+
 
 def Main():
 
@@ -16,7 +17,5 @@ def Main():
     a = 1
 
     out = Get(context, item_key)
-
-
 
     return out

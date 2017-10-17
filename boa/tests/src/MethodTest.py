@@ -1,14 +1,15 @@
-from boa.blockchain.vm.Neo.Runtime import Log,Notify
+from boa.blockchain.vm.Neo.Runtime import Log, Notify
 from boa.code.builtins import list
+
 
 def Main():
 
     a = 1
 
-    b = [1,2,34]
+    b = [1, 2, 34]
 
     b1 = b[0]
-    b2= b[1]
+    b2 = b[1]
     c = add3(b1, b2)
 
     d = addd(a, c)
@@ -29,19 +30,21 @@ def addd(a, b):
 
     return result + stuff() + res2 + res3
 
+
 def stuff():
 
     a = 4
 
     b = 2
 
-    items = [0,1,0,9,20, 4,23]
+    items = [0, 1, 0, 9, 20, 4, 23]
 
     j = items[3]
 
     q = n_range(1, 10)
 
     return a + b + j + items[1] + q[4]
+
 
 def add3(a, b):
 

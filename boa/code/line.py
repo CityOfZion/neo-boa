@@ -2,6 +2,7 @@ from byteplay3 import *
 
 from boa.code import pyop
 
+
 class Line():
 
     items = None
@@ -20,7 +21,6 @@ class Line():
     def is_definition(self):
         return len(self.items) == 3 and self.items[1][0] == pyop.LOAD_CONST and self.items[2][0] == pyop.STORE_NAME
 #        return False
-
 
     @property
     def is_method(self):

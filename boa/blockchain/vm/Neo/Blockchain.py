@@ -6,7 +6,6 @@ from boa.blockchain.vm.Neo.Asset import *
 from boa.blockchain.vm.Neo.Contract import *
 
 
-
 def GetHeight() -> int:
     pass
 

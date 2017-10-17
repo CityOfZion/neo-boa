@@ -8,8 +8,7 @@ from boa.blockchain.vm import BigInteger
 from collections import OrderedDict
 
 
-NEO_SC_FRAMEWORK='boa.blockchain.vm.'
-
+NEO_SC_FRAMEWORK = 'boa.blockchain.vm.'
 
 
 class VMToken():
@@ -39,7 +38,7 @@ class VMToken():
         else:
             raise Exception('Invalid op: %s ' % self.vm_op)
 
-    def __init__(self, vm_op=None, pytoken=None,addr=None, data=None):
+    def __init__(self, vm_op=None, pytoken=None, addr=None, data=None):
         self.vm_op = vm_op
         self.pytoken = pytoken
         self.addr = addr
@@ -65,14 +64,12 @@ class VMTokenizer():
 
     total_param_and_body_count_token = None
 
-
     def __init__(self, method):
         self.method = method
         self._address = 0
         self.vm_tokens = OrderedDict()
 
         self.method_begin_items()
-
 
     def to_s(self):
 
@@ -94,7 +91,8 @@ class VMTokenizer():
                 if pt.args and type(pt.args) is Label:
                     addr = value.addr
                     if value.data is not None:
-                        plus_addr = int.from_bytes(value.data, 'little', signed=True)
+                        plus_addr = int.from_bytes(
+                            value.data, 'little', signed=True)
                         target_addr = addr + plus_addr
                         to_label = 'to %s    [ %s ]' % (target_addr, pt.args)
                     else:
@@ -119,10 +117,12 @@ class VMTokenizer():
                 if pt.py_op == pyop.CALL_FUNCTION:
                     to_label = '%s %s ' % (pt.func_name, pt.func_params)
 
-                lno = "{:<10}".format(pt.line_no if do_print_line_no or pstart else '')
+                lno = "{:<10}".format(
+                    pt.line_no if do_print_line_no or pstart else '')
                 addr = "{:<4}".format(key)
                 op = "{:<20}".format(str(pt.py_op))
-                arg = "{:<50}".format(to_label if to_label is not None else pt.arg_s)
+                arg = "{:<50}".format(
+                    to_label if to_label is not None else pt.arg_s)
                 data = "[data] {:<20}".format(ds)
                 print("%s%s%s%s%s%s" % (lno, from_label, addr, op, arg, data))
 
@@ -130,7 +130,7 @@ class VMTokenizer():
 
     def to_b(self):
         b_array = bytearray()
-        for key,vm_token in self.vm_tokens.items():
+        for key, vm_token in self.vm_tokens.items():
 
             b_array.append(vm_token.out_op)
 
@@ -139,21 +139,17 @@ class VMTokenizer():
 
         return b_array
 
-
     def method_begin_items(self):
 
-
-        #we just need to inssert the total number of arguments + body variables
-        #which is the length of the method `local_stores` dictionary
-        #then create a new array for the vm to store
+        # we just need to inssert the total number of arguments + body variables
+        # which is the length of the method `local_stores` dictionary
+        # then create a new array for the vm to store
         total_items = self.method.total_lines  \
-                      + len(self.method.args) \
-                      + self.method.dynamic_iterator_count #\
- #                     + len(self.method.module.module_variables)
+            + len(self.method.args) \
+            + self.method.dynamic_iterator_count
 
-#        print("total items %s " % total_items)
-
-        self.total_param_and_body_count_token = self.insert_push_integer(total_items)
+        self.total_param_and_body_count_token = self.insert_push_integer(
+            total_items)
         self.total_param_and_body_count_token.updatable_data = total_items
         self.insert1(VMOp.NEWARRAY)
         self.insert1(VMOp.TOALTSTACK)
@@ -166,16 +162,14 @@ class VMTokenizer():
 
         if self.method.dynamic_iterator_count > 0:
             num_current_items += self.method.dynamic_iterator_count
-            self.update_push_integer(self.total_param_and_body_count_token, num_current_items)
-
+            self.update_push_integer(
+                self.total_param_and_body_count_token, num_current_items)
 
     def insert_vm_token_at(self, vm_token, index):
 
         self.vm_tokens[index] = vm_token
 
-
     def update1(self, vmtoken, vm_op, data=None):
-
 
         vmtoken.vm_op = vm_op
         vmtoken.data = data
@@ -189,10 +183,10 @@ class VMTokenizer():
         dlen = len(data)
 
         if dlen == 0:
-            return self.update1(vmtoken,VMOp.PUSH0)
+            return self.update1(vmtoken, VMOp.PUSH0)
 
         elif dlen <= 75:
-            return self.update1(vmtoken,dlen, data)
+            return self.update1(vmtoken, dlen, data)
 
         if dlen < 0x100:
             prefixlen = 1
@@ -208,26 +202,21 @@ class VMTokenizer():
 
         byts = bytearray(dlen.to_bytes(prefixlen, 'little')) + data
 
-        return self.update1(vmtoken,code, byts)
+        return self.update1(vmtoken, code, byts)
 
-
-    def update_push_integer(self,vmtoken, i):
+    def update_push_integer(self, vmtoken, i):
         if i == 0:
-            return self.update1(vmtoken,VMOp.PUSH0)
+            return self.update1(vmtoken, VMOp.PUSH0)
         elif i == -1:
-            return self.insert1(vmtoken,VMOp.PUSHM1)
+            return self.insert1(vmtoken, VMOp.PUSHM1)
         elif i > 0 and i <= 16:
             out = 0x50 + i
-            return self.update1(vmtoken,out)
+            return self.update1(vmtoken, out)
 
         bigint = BigInteger(i)
         outdata = bigint.ToByteArray()
 
-        return self.update_push_data(vmtoken,outdata)
-
-
-
-
+        return self.update_push_data(vmtoken, outdata)
 
     def insert1(self, vm_op, data=None):
 
@@ -241,13 +230,9 @@ class VMTokenizer():
 
             self._address += len(vmtoken.data)
 
-
         self.insert_vm_token_at(vmtoken, vmtoken.addr)
 
-
         return vmtoken
-
-
 
     def insert_push_data(self, data):
 
@@ -257,7 +242,7 @@ class VMTokenizer():
             return self.insert1(VMOp.PUSH0)
 
         elif dlen <= 75:
-            return self.insert1(dlen,data)
+            return self.insert1(dlen, data)
 
         if dlen < 0x100:
             prefixlen = 1
@@ -273,7 +258,7 @@ class VMTokenizer():
 
         byts = bytearray(dlen.to_bytes(prefixlen, 'little')) + data
 
-        return self.insert1(code,byts)
+        return self.insert1(code, byts)
 
     def insert_push_integer(self, i):
         if i == 0:
@@ -289,12 +274,12 @@ class VMTokenizer():
 
         return self.insert_push_data(outdata)
 
-
-    def convert1(self,vm_op, py_token=None, data=None):
+    def convert1(self, vm_op, py_token=None, data=None):
 
         start_addr = self._address
 
-        vmtoken = VMToken(vm_op=vm_op, addr=start_addr, pytoken=py_token,data=data)
+        vmtoken = VMToken(vm_op=vm_op, addr=start_addr,
+                          pytoken=py_token, data=data)
 
         self._address += 1
 
@@ -305,17 +290,16 @@ class VMTokenizer():
 
         return vmtoken
 
+    def convert_new_array(self, vm_op, py_token=None, data=None):
 
-    def convert_new_array(self, vm_op, py_token=None,data=None):
-
-        #push the length of the array
+        # push the length of the array
         if type(py_token.args) is int:
 
             self.insert_push_integer(py_token.args)
         else:
             self.convert_load_local(py_token, py_token.args)
 
-        self.convert1(VMOp.PACK,py_token)
+        self.convert1(VMOp.PACK, py_token)
 
     def convert_push_data(self, data, py_token=None):
 
@@ -337,8 +321,7 @@ class VMTokenizer():
 
         byts = bytearray(dlen.to_bytes(prefixlen, 'little')) + data
 
-        return self.convert1(code,py_token=py_token,data=byts)
-
+        return self.convert1(code, py_token=py_token, data=byts)
 
     def convert_push_integer(self, i, py_token=None):
         if i == 0:
@@ -355,9 +338,7 @@ class VMTokenizer():
 
         return self.convert_push_data(outdata, py_token=py_token)
 
-
     def convert_store_local(self, py_token):
-
 
         # set array
         self.convert1(VMOp.FROMALTSTACK, py_token=py_token)
@@ -413,11 +394,12 @@ class VMTokenizer():
         elif type(item) == type(None):
             self.insert_push_data(bytearray(0))
         else:
-            raise Exception("Could not load type %s for item %s " % (type(item), item))
+            raise Exception("Could not load type %s for item %s " %
+                            (type(item), item))
 
     def convert_set_element(self, arg, position):
 
-#        print("converting set element %s %s" % (position, type(position)))
+        #        print("converting set element %s %s" % (position, type(position)))
 
         if type(position) is int:
 
@@ -427,16 +409,16 @@ class VMTokenizer():
 
         if type(arg.array_item) is str:
 
-            #first we'll look for the local variable with name of the str
+            # first we'll look for the local variable with name of the str
             if arg.array_item in self.method.local_stores:
                 self.convert_load_local(None, name=arg.array_item)
-            #otherwise we'll do the unknown type thing
+            # otherwise we'll do the unknown type thing
             else:
                 self.insert_unknown_type(arg.array_item)
         else:
             self.insert_unknown_type(arg.array_item)
 
-        self.convert1(VMOp.SETITEM,arg)
+        self.convert1(VMOp.SETITEM, arg)
 
     def convert_load_parameter(self, arg, position):
 
@@ -454,14 +436,13 @@ class VMTokenizer():
         self.insert1(VMOp.ROLL)
         self.insert1(VMOp.SETITEM)
 
-
     def convert_built_in_list(self, pytoken):
         new_array_len = 0
         lenfound = False
-        for index,token in enumerate(pytoken.func_params):
+        for index, token in enumerate(pytoken.func_params):
 
-            if token.args=='length' and not lenfound:
-                #first we see if a constant ( ie integer was passed in
+            if token.args == 'length' and not lenfound:
+                # first we see if a constant ( ie integer was passed in
 
                 new_array_len = pytoken.func_params[index + 1].args
 
@@ -471,20 +452,19 @@ class VMTokenizer():
                     self.convert_load_local(None, name=new_array_len)
                 lenfound = True
 
-
         if not lenfound:
             self.insert_push_integer(0)
         self.convert1(VMOp.NEWARRAY, pytoken)
 
     def convert_method_call(self, pytoken):
 
-        #special case for list initialization
+        # special case for list initialization
         if pytoken.func_name == 'list':
             return self.convert_built_in_list(pytoken)
         elif pytoken.func_name == 'bytearray':
-            return self.convert_push_data(bytes(pytoken.func_params[0].args),pytoken)
+            return self.convert_push_data(bytes(pytoken.func_params[0].args), pytoken)
         elif pytoken.func_name == 'bytes':
-            return self.convert_push_data(pytoken.func_params[0].args,pytoken)
+            return self.convert_push_data(pytoken.func_params[0].args, pytoken)
 
         for t in pytoken.func_params:
             t.to_vm(self)
@@ -502,7 +482,7 @@ class VMTokenizer():
             self.insert_push_integer(2)
             self.insert1(VMOp.XSWAP)
         else:
-            half_p = int(param_len/2)
+            half_p = int(param_len / 2)
 
             for i in range(0, half_p):
 
@@ -522,9 +502,7 @@ class VMTokenizer():
                 self.insert1(VMOp.XSWAP)
                 self.insert1(VMOp.DROP)
 
-
         self.insert1(VMOp.NOP)
-
 
         fname = pytoken.func_name
         full_name = None
@@ -532,14 +510,13 @@ class VMTokenizer():
             if fname == m.name:
                 full_name = m.full_name
 
-
         # operational call like len(items) or abs(value)
         if self.is_op_call(fname):
             vmtoken = self.convert_op_call(fname, pytoken)
 
         # runtime.notify event
         elif self.is_notify_event(pytoken):
-           vmtoken = self.convert_notify_event(pytoken)
+            vmtoken = self.convert_notify_event(pytoken)
 
         # app call ( for calling other contracts on blockchain )
         elif self.is_smart_contract_call(pytoken):
@@ -554,18 +531,18 @@ class VMTokenizer():
 
         # otherwise we assume the method is defined by the module
         else:
-            vmtoken = self.convert1(VMOp.CALL,py_token=pytoken,data=bytearray(b'\x05\x00'))
+            vmtoken = self.convert1(
+                VMOp.CALL, py_token=pytoken, data=bytearray(b'\x05\x00'))
 
             vmtoken.src_method = self.method
             vmtoken.target_method = pytoken.func_name
 
         return vmtoken
 
-
     def is_op_call(self, op):
-        if op in ['len','abs','min','max','concat','take',
-                  'sha1','sha256','hash160','hash256',
-                  'verify_signature','verify_signatures']:
+        if op in ['len', 'abs', 'min', 'max', 'concat', 'take',
+                  'sha1', 'sha256', 'hash160', 'hash256',
+                  'verify_signature', 'verify_signatures']:
             return True
         return False
 
@@ -576,13 +553,13 @@ class VMTokenizer():
         elif op == 'abs':
             return self.convert1(VMOp.ABS, pytoken)
         elif op == 'min':
-            return self.convert1(VMOp.MIN,pytoken)
+            return self.convert1(VMOp.MIN, pytoken)
         elif op == 'max':
-            return self.convert1(VMOp.MAX,pytoken)
+            return self.convert1(VMOp.MAX, pytoken)
         elif op == 'concat':
-            return self.convert1(VMOp.CAT,pytoken)
+            return self.convert1(VMOp.CAT, pytoken)
         elif op == 'take':
-            return self.convert1(VMOp.LEFT,pytoken)
+            return self.convert1(VMOp.LEFT, pytoken)
         elif op == 'sha1':
             return self.convert1(VMOp.SHA1, pytoken)
         elif op == 'sha256':
@@ -597,35 +574,34 @@ class VMTokenizer():
             return self.convert1(VMOp.CHECKMULTISIG, pytoken)
         return None
 
-
     def is_sys_call(self, op):
         if op is not None and NEO_SC_FRAMEWORK in op:
-            if not 'TriggerType' in op: # we will compile TriggerType normally
+            if 'TriggerType' not in op:  # we will compile TriggerType normally
                 return True
         return False
 
-    def convert_sys_call(self,op, pytoken=None):
+    def convert_sys_call(self, op, pytoken=None):
 
-        syscall_name = op.replace(NEO_SC_FRAMEWORK,'').encode('utf-8')
+        syscall_name = op.replace(NEO_SC_FRAMEWORK, '').encode('utf-8')
         length = len(syscall_name)
         ba = bytearray([length]) + bytearray(syscall_name)
-        pytoken.is_sys_call=False
+        pytoken.is_sys_call = False
         vmtoken = self.convert1(VMOp.SYSCALL, pytoken, data=ba)
         self.insert1(VMOp.NOP)
         return vmtoken
 
     def is_built_in(self, op):
 
-        if op in ['zip','type','tuple','super','str','slice',
-                  'set','reversed','property','memoryview',
-                  'map','list','frozenset','float','filter',
-                  'enumerate','dict','divmod','complex','bytes','bytearray','bool',
-                  'int','vars','sum','sorted','round','setattr','getattr',
-                  'rep','quit','print','pow','ord','oct','next','locals','license',
-                  'iter','isinstance','issubclass','input','id','hex',
-                  'help','hash','hasattr','globals','format','exit',
-                  'exec','eval','dir','deleteattr','credits','copyright',
-                  'compile','chr','callable','bin','ascii','any','all',]:
+        if op in ['zip', 'type', 'tuple', 'super', 'str', 'slice',
+                  'set', 'reversed', 'property', 'memoryview',
+                  'map', 'list', 'frozenset', 'float', 'filter',
+                  'enumerate', 'dict', 'divmod', 'complex', 'bytes', 'bytearray', 'bool',
+                  'int', 'vars', 'sum', 'sorted', 'round', 'setattr', 'getattr',
+                  'rep', 'quit', 'print', 'pow', 'ord', 'oct', 'next', 'locals', 'license',
+                  'iter', 'isinstance', 'issubclass', 'input', 'id', 'hex',
+                  'help', 'hash', 'hasattr', 'globals', 'format', 'exit',
+                  'exec', 'eval', 'dir', 'deleteattr', 'credits', 'copyright',
+                  'compile', 'chr', 'callable', 'bin', 'ascii', 'any', 'all', ]:
 
             return True
 
@@ -641,18 +617,17 @@ class VMTokenizer():
             self.insert1(VMOp.NOP)
             return vmtoken
 
-        raise NotImplementedError("[Compilation error] Built in %s is not implemented" % op)
-
+        raise NotImplementedError(
+            "[Compilation error] Built in %s is not implemented" % op)
 
     def is_notify_event(self, pytoken):
 
-        name= pytoken.func_name
+        name = pytoken.func_name
 
         for action in self.method.module.actions:
             if action.method_name == name:
                 return True
         return False
-
 
     def convert_notify_event(self, pytoken):
         event_action = None
@@ -662,17 +637,17 @@ class VMTokenizer():
         if event_action is None:
             raise Exception("Event action not found")
 
-        #push the event name
+        # push the event name
         event_name = event_action.event_name.encode('utf-8')
         self.convert_push_data(event_name, py_token=pytoken)
 
-        #push the num params
+        # push the num params
         self.convert_push_integer(len(event_action.event_args))
 
-        #pack the array
+        # pack the array
         self.convert1(VMOp.PACK)
 
-        #insert syscall
+        # insert syscall
         syscall_name = 'Neo.Runtime.Notify'.encode('utf-8')
         length = len(syscall_name)
         ba = bytearray([length]) + bytearray(syscall_name)
@@ -681,13 +656,12 @@ class VMTokenizer():
         return vmtoken
 
     def is_smart_contract_call(self, pytoken):
-        name= pytoken.func_name
+        name = pytoken.func_name
 
         for appcall in self.method.module.app_call_registrations:
             if appcall.method_name == name:
                 return True
         return False
-
 
     def convert_smart_contract_call(self, pytoken):
         sc_appcall = None
@@ -695,10 +669,12 @@ class VMTokenizer():
             if appcall.method_name == pytoken.func_name:
                 sc_appcall = appcall
         if sc_appcall is None:
-            raise Exception("Smart Contract Appcall %s not found " % pytoken.func_name)
+            raise Exception("Smart Contract Appcall %s not found " %
+                            pytoken.func_name)
 
-        #push the contrcat hash
+        # push the contrcat hash
         print("app call script hash address %s " % sc_appcall.script_hash_addr)
-        vmtoken = self.convert1(VMOp.APPCALL,py_token=pytoken,data=sc_appcall.script_hash_addr)
+        vmtoken = self.convert1(
+            VMOp.APPCALL, py_token=pytoken, data=sc_appcall.script_hash_addr)
 
         return vmtoken

@@ -9,6 +9,4 @@ def Main(a, b, c, d):
 
     d2 = d - 1
 
-
     return a2 + b2 + c2 + d2
-

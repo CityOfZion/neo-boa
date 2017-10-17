@@ -32,18 +32,17 @@ def Create(script,
 
 
 def Migrate(script,
-           parameter_list,
-           return_type,
-           need_storage,
-           version,
-           author,
-           email,
-           description
-           ):
+            parameter_list,
+            return_type,
+            need_storage,
+            version,
+            author,
+            email,
+            description
+            ):
 
     pass
+
 
 def Destroy(contract):
     pass
-
-

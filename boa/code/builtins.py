@@ -3,7 +3,7 @@
 class list(list):
 
     def __init__(self, length=0):
-#        super(list, self).__init__()
+        #        super(list, self).__init__()
         pass
 
     """
@@ -67,16 +67,13 @@ class list(list):
 #        """ L.sort(key=None, reverse=False) -> None -- stable sort *IN PLACE* """
 #        pass
 
-
     def __contains__(self, *args, **kwargs):  # real signature unknown
         """ Return key in self. """
         pass
 
-
     def __eq__(self, *args, **kwargs):  # real signature unknown
         """ Return self==value. """
         pass
-
 
     def __getitem__(self, y):  # real signature unknown; restored from __doc__
         """ x.__getitem__(y) <==> x[y] """
@@ -85,7 +82,6 @@ class list(list):
     def __setitem__(self, *args, **kwargs):  # real signature unknown
         """ Set self[key] to value. """
         pass
-
 
 
 def concat(str1, str2):
@@ -98,7 +94,7 @@ def concat(str1, str2):
 
 
 # This is not necessary.  you can use mystring[start:end]
-#def substr(source,start_index, count):
+# def substr(source,start_index, count):
 #    """
 #    substr(source, start_index, count) -> list object
 #
@@ -146,17 +142,22 @@ def range(start, stop):
 def sha1(data):
     pass
 
+
 def sha256(data):
     pass
+
 
 def hash160(data):
     pass
 
+
 def hash256(data):
     pass
 
+
 def verify_signature(signature, pubkey):
     pass
+
 
 def verify_signatures(signatures, pubkeys):
     pass

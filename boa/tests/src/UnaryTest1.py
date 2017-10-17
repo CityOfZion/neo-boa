@@ -12,4 +12,3 @@ def Main():
         return 8
 
     return 3
-

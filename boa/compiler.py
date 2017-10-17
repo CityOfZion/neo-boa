@@ -1,6 +1,7 @@
 import os
 from boa.code.module import Module
 
+
 class Compiler():
 
     __instance = None
@@ -38,7 +39,6 @@ class Compiler():
         out_bytes = module.write()
 
         return bytes(out_bytes)
-
 
     @staticmethod
     def load_and_save(path, output_path=None):

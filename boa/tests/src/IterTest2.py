@@ -9,5 +9,3 @@ def Main():
         count += 1
 
     return count
-
-

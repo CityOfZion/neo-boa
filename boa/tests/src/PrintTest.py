@@ -1,19 +1,21 @@
 
-from boa.code.builtins import list,range
-from boa.blockchain.vm.Neo.Runtime import Log,Notify
+from boa.code.builtins import list, range
+from boa.blockchain.vm.Neo.Runtime import Log, Notify
 
 
 def Main():
 
-    print("holla?") # using pythonic print(), this is tranlated to Neo.Runtime.Log
+    print("holla?")  # using pythonic print(), this is tranlated to Neo.Runtime.Log
     start = 4
     stop = 9
 
-    r = range(start,stop)
+    r = range(start, stop)
 
-    Log("hellllllllloo") # using built in Neo.Runtime.Log( this is the same as print(message) )
+    # using built in Neo.Runtime.Log( this is the same as print(message) )
+    Log("hellllllllloo")
 
-    Notify(start)   # using the Neo.Runtime.Notify ( this is for logging variables... )
+    # using the Neo.Runtime.Notify ( this is for logging variables... )
+    Notify(start)
 
     l = list(length=stop)
 
@@ -23,7 +25,3 @@ def Main():
     print("hullo")
 
     return b
-
-
-
-

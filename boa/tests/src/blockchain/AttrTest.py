@@ -1,13 +1,12 @@
-from boa.blockchain.vm.Neo.Blockchain import GetHeader,GetBlock
+from boa.blockchain.vm.Neo.Blockchain import GetHeader, GetBlock
 from boa.blockchain.vm.Neo.Block import GetTransaction
 from boa.blockchain.vm.Neo.Runtime import Notify
 
-def Main():
 
+def Main():
 
     height = 1242
     header = GetHeader(height)
-
 
     m2 = header.Timestamp + header.Timestamp
 
@@ -22,7 +21,6 @@ def Main():
 #    Notify(hash)
 
 #    Notify(prev)
-
 
     bheight = 32566
 

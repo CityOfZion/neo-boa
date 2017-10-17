@@ -10,12 +10,9 @@ class TransactionAttribute():
         return GetData(self)
 
 
-
-
 def GetUsage(transaction_attr):
     pass
 
 
 def GetData(transaction_attr):
     pass
-

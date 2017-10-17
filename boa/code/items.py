@@ -1,8 +1,9 @@
-from byteplay3 import Code,Opcode
+from byteplay3 import Code, Opcode
 from boa.code.method import Method
 from boa.code import pyop
 import importlib
 import binascii
+
 
 class Item():
     items = None
@@ -21,6 +22,7 @@ class Definition(Item):
 #        self.items[-1] = (Opcode(pyop.STORE_FAST),self.items[-1][1])
 #       print("self items %s " % self.items)
 
+
 class Action(Item):
 
     event_name = None
@@ -29,11 +31,11 @@ class Action(Item):
     method_name = None
 
     def __init__(self, item_list):
-        super(Action,self).__init__(item_list)
+        super(Action, self).__init__(item_list)
 
         arguments = []
 
-        for i, (key,value) in enumerate(self.items.items):
+        for i, (key, value) in enumerate(self.items.items):
             if key == pyop.LOAD_CONST:
                 arguments.append(value)
             elif key == pyop.STORE_NAME:
@@ -43,6 +45,7 @@ class Action(Item):
 
         self.event_args = arguments
 
+
 class SmartContractAppCall(Item):
 
     script_hash = None
@@ -51,11 +54,11 @@ class SmartContractAppCall(Item):
     method_name = None
 
     def __init__(self, item_list):
-        super(SmartContractAppCall,self).__init__(item_list)
+        super(SmartContractAppCall, self).__init__(item_list)
 
         arguments = []
 
-        for i, (key,value) in enumerate(self.items.items):
+        for i, (key, value) in enumerate(self.items.items):
             if key == pyop.LOAD_CONST:
                 arguments.append(value)
             elif key == pyop.STORE_NAME:
@@ -67,12 +70,15 @@ class SmartContractAppCall(Item):
 
         if type(self.script_hash) is str:
             if len(self.script_hash) != 40:
-                raise Exception("Invalid script hash! length of string must be 40")
-        elif type(self.script_hash) in [bytes,bytearray]:
+                raise Exception(
+                    "Invalid script hash! length of string must be 40")
+        elif type(self.script_hash) in [bytes, bytearray]:
             if len(self.script_hash) != 20:
-                raise Exception("Invalid Script hash, length in bytes must be 20")
+                raise Exception(
+                    "Invalid Script hash, length in bytes must be 20")
         else:
-            raise Exception("Invalid script hash type.  must be string, bytes, or bytearray")
+            raise Exception(
+                "Invalid script hash type.  must be string, bytes, or bytearray")
 
     @property
     def script_hash_addr(self):
@@ -98,7 +104,6 @@ class Import(Item):
 
     module_path = None
     module_name = None
-
 
     imported_module = None
 
@@ -136,11 +141,10 @@ class Import(Item):
         if self.NEO_SC_FRAMEWORK in self.module_path:
             self.is_system_module = True
 
-
         self.imported_module = Module(filename,
                                       module_name=self.module_path,
                                       is_sys_module=self.is_system_module,
-                                      items_to_import= self.module_items_to_import)
+                                      items_to_import=self.module_items_to_import)
 
     def is_valid(self):
 
@@ -148,6 +152,7 @@ class Import(Item):
 
     def __str__(self):
         return "%s.%s" % (self.module_path, self.module_name)
+
 
 class Klass(Item):
 

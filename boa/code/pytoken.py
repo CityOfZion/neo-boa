@@ -1,11 +1,10 @@
 from boa.code import pyop
 
-from byteplay3 import Label,isopcode,haslocal,Code
+from byteplay3 import Label, isopcode, haslocal, Code
 
 from opcode import opname
 
 from boa.blockchain.vm import VMOp
-
 
 
 class PyToken():
@@ -26,7 +25,7 @@ class PyToken():
 
     array_item = None
 
-    #method calling things
+    # method calling things
 
     func_processed = False
 
@@ -34,7 +33,6 @@ class PyToken():
 
     func_name = None
     func_type = None
-
 
     @property
     def op_name(self):
@@ -58,7 +56,7 @@ class PyToken():
             return str(self.args)
         return ''
 
-    def __init__(self, op, lineno, index=None,args=None, array_item=None):
+    def __init__(self, op, lineno, index=None, args=None, array_item=None):
 
         self.py_op = op
 
@@ -69,7 +67,6 @@ class PyToken():
         self.addr = index
 
         self.array_item = array_item
-
 
     def __str__(self):
         arg = ''
@@ -82,7 +79,6 @@ class PyToken():
             return '%s      %s   %s  --> %s ' % (self.line_no, self.addr, self.op_name, arg)
         return '%s      %s   %s' % (self.line_no, self.addr, self.op_name)
 
-
     def to_vm(self, tokenizer, prev_token=None):
 
         self.tokenizer = tokenizer
@@ -90,10 +86,7 @@ class PyToken():
 
         if self.is_op:
 
-
-
             op = self.py_op
-
 
             if op == pyop.NOP:
                 token = tokenizer.convert1(VMOp.NOP, self)
@@ -101,24 +94,24 @@ class PyToken():
             elif op == pyop.RETURN_VALUE:
                 token = tokenizer.convert1(VMOp.RET, self)
 
-
-            #control flow
+            # control flow
             elif op == pyop.BR_S:
                 token = tokenizer.convert1(VMOp.JMP, self, data=self.args)
 
             elif op == pyop.JUMP_FORWARD:
-                token = tokenizer.convert1(VMOp.JMP,self, data=bytearray(2))
+                token = tokenizer.convert1(VMOp.JMP, self, data=bytearray(2))
 
             elif op == pyop.JUMP_ABSOLUTE:
-                token = tokenizer.convert1(VMOp.JMP,self, data=bytearray(2))
+                token = tokenizer.convert1(VMOp.JMP, self, data=bytearray(2))
 
             elif op == pyop.POP_JUMP_IF_FALSE:
-                token = tokenizer.convert1(VMOp.JMPIFNOT, self, data=bytearray(2))
+                token = tokenizer.convert1(
+                    VMOp.JMPIFNOT, self, data=bytearray(2))
 
             elif op == pyop.POP_JUMP_IF_TRUE:
                 token = tokenizer.convert1(VMOp.JMPIF, self, data=bytearray(2))
 
-            #loops
+            # loops
             elif op == pyop.SETUP_LOOP:
                 token = tokenizer.convert1(VMOp.NOP, self)
 
@@ -134,8 +127,6 @@ class PyToken():
             elif op == pyop.POP_BLOCK:
                 token = tokenizer.convert1(VMOp.NOP, self)
 
-
-
             elif op == pyop.FROMALTSTACK:
                 token = tokenizer.convert1(VMOp.FROMALTSTACK, self)
             elif op == pyop.DROP:
@@ -145,8 +136,7 @@ class PyToken():
             elif op == pyop.ROLL:
                 token = tokenizer.convert1(VMOp.ROLL, self)
 
-
-            #loading constants ( ie 1, 2 etc)
+            # loading constants ( ie 1, 2 etc)
             elif op == pyop.LOAD_CONST:
 
                 if type(self.args) is int:
@@ -167,17 +157,17 @@ class PyToken():
                     pass
                 else:
 
-                    raise Exception("Could not load type %s for item %s " % (type(self.args), self.args))
+                    raise Exception("Could not load type %s for item %s " % (
+                        type(self.args), self.args))
 
-            #storing / loading local variables
+            # storing / loading local variables
             elif op in [pyop.STORE_FAST, pyop.STORE_NAME]:
                 token = tokenizer.convert_store_local(self)
 
             elif op in [pyop.LOAD_FAST, pyop.LOAD_NAME, pyop.LOAD_GLOBAL]:
                 token = tokenizer.convert_load_local(self)
 
-
-            #unary ops
+            # unary ops
 
 #            elif op == pyop.UNARY_INVERT:
 #                token = tokenizer.convert1(VMOp.INVERT, self)
@@ -189,18 +179,18 @@ class PyToken():
                 token = tokenizer.convert1(VMOp.NOT, self)
 
 #            elif op == pyop.UNARY_POSITIVE:
-                #hmmm
+                # hmmm
 #                token = tokenizer.convert1(VMOp.ABS, self)
 #                pass
 
-            #math
+            # math
             elif op in [pyop.BINARY_ADD, pyop.INPLACE_ADD]:
 
-#we can't tell by looking up the last token what type of item it was
-#will need to figure out a different way of concatting strings
-#                if prev_token and type(prev_token.args) is str:
-#                    token = tokenizer.convert1(VMOp.CAT, self)
-#                else:
+                # we can't tell by looking up the last token what type of item it was
+                # will need to figure out a different way of concatting strings
+                #                if prev_token and type(prev_token.args) is str:
+                #                    token = tokenizer.convert1(VMOp.CAT, self)
+                #                else:
                 token = tokenizer.convert1(VMOp.ADD, self)
 
             elif op in [pyop.BINARY_SUBTRACT, pyop.INPLACE_SUBTRACT]:
@@ -230,8 +220,7 @@ class PyToken():
             elif op in [pyop.BINARY_RSHIFT, pyop.INPLACE_RSHIFT]:
                 token = tokenizer.convert1(VMOp.SHR, self)
 
-
-            #compare
+            # compare
 
             elif op == pyop.COMPARE_OP:
 
@@ -248,25 +237,24 @@ class PyToken():
                 elif self.args == 'is':
                     token = tokenizer.convert1(VMOp.EQUAL, self)
                 elif self.args == '!=':
-                    token = tokenizer.convert1(VMOp.NUMNOTEQUAL,self)
+                    token = tokenizer.convert1(VMOp.NUMNOTEQUAL, self)
 
-
-            #arrays
+            # arrays
             elif op == pyop.BUILD_LIST:
                 token = tokenizer.convert_new_array(VMOp.NEWARRAY, self)
             elif op == pyop.SETITEM:
                 token = tokenizer.convert_set_element(self, self.args)
 #                token = tokenizer.convert1(VMOp.SETITEM,self, data=self.args)
             elif op == pyop.STORE_SUBSCR:
-                #this wont occur because this op is preprocessed into a SETITEM op
+                # this wont occur because this op is preprocessed into a SETITEM op
                 pass
             elif op == pyop.BINARY_SUBSCR:
-                token = tokenizer.convert1(VMOp.PICKITEM,self)
+                token = tokenizer.convert1(VMOp.PICKITEM, self)
 
             elif op == pyop.BUILD_SLICE:
                 token = tokenizer.convert1(VMOp.SUBSTR, self)
 
-            #strings
+            # strings
 
             elif op == pyop.CALL_FUNCTION:
 
@@ -277,4 +265,3 @@ class PyToken():
 #                print("OP NOT CONVERTED %s " % op)
 
         return token
-

@@ -3,7 +3,6 @@ from boa.blockchain.vm.Neo.Runtime import Notify
 
 def Main():
 
-
     a = 4
 
     b = a << 2
@@ -18,11 +17,11 @@ def Main():
 
     m = 16
 
-    m >>=3
+    m >>= 3
 
     q = 670
 
-    q >>=8
+    q >>= 8
 
     Notify(m)
 

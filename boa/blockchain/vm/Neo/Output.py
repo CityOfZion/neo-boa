@@ -14,7 +14,6 @@ class TransactionOutput():
         return GetScriptHash(self)
 
 
-
 def GetAssetId(output):
     pass
 
@@ -25,4 +24,3 @@ def GetValue(output):
 
 def GetScriptHash(output):
     pass
-

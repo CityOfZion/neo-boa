@@ -12,7 +12,6 @@ def Main():
 
     b -= a
 
-
     d = 2
 
     b *= d
@@ -23,6 +22,6 @@ def Main():
 
     f = b + 20
 
-    #f |= 34 # this doesn't curretly work
+    # f |= 34 # this doesn't curretly work
 
-    return f # expect 21
+    return f  # expect 21

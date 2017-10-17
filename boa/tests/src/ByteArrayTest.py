@@ -1,6 +1,6 @@
 
-from boa.blockchain.vm.Neo.Runtime import Log,Notify
 from boa.code.builtins import concat
+
 
 def Main():
 
@@ -13,7 +13,6 @@ def Main():
     j = b'\x01\x02\x03\x04\x05\x06\x07'
 
     k = concat(c, j)
-
 
     m = k[3:6]
 
