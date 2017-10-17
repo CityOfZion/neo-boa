@@ -2,3 +2,7 @@
 venv/
 __pycache__
 .avm
+dist
+build
+*.egg-info
+build/
