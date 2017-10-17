@@ -10,12 +10,12 @@
   Python compiler for the Neo Virtual Machine
 </p>
 
-- [Overview](#Overview)
-- [Installation](#Installation)
-- [Usage](#Usage)
-- [License](#License)
-- [Tests](#Tests)
-- [Donatitons](#Donations)
+- [Overview](#overview)
+- [Installation](#installation)
+- [Usage](#usage)
+- [License](#license)
+- [Tests](#tests)
+- [Donatitons](#donations)
 
 ## Overview
 

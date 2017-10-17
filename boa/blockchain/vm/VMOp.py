@@ -127,7 +127,7 @@ import sys
 import importlib
 import binascii
 
-module = importlib.import_module('neo.VM.OpCode')
+module = importlib.import_module('boa.blockchain.vm.VMOp')
 items = dir(sys.modules[__name__])
 
 

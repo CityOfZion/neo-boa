@@ -3,8 +3,7 @@ from boa.code import pyop
 from byteplay3 import Label
 
 from boa.blockchain.vm import VMOp
-
-from neo.BigInteger import BigInteger
+from boa.blockchain.vm import BigInteger
 
 from collections import OrderedDict
 

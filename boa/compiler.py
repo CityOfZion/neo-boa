@@ -1,8 +1,8 @@
 import os
 from boa.code.module import Module
 
-from neo.IO.MemoryStream import StreamManager
-from neo.IO.BinaryWriter import BinaryWriter
+#from neo.IO.MemoryStream import StreamManager
+#from neo.IO.BinaryWriter import BinaryWriter
 
 class Compiler():
 
@@ -36,14 +36,15 @@ class Compiler():
         f.close()
 
     def write(self):
-        stream = StreamManager.GetStream()
-        writer = BinaryWriter(stream)
+#        stream = StreamManager.GetStream()
+#        writer = BinaryWriter(stream)
 
-        module = self.default
-        writer.WriteBytes( module.write())
-        out = stream.getbuffer()
+#        module = self.default
+ #       writer.WriteBytes( module.write())
+ #       out = stream.getbuffer()
 
-        return bytes(out)
+  #      return bytes(out)
+        pass
 
     @staticmethod
     def load_and_save(path, output_path=None):
