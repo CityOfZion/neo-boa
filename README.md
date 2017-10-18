@@ -13,6 +13,7 @@
 - [Overview](#overview)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Docs](#docs)
 - [License](#license)
 - [Tests](#tests)
 - [Donatitons](#donations)
@@ -71,6 +72,8 @@ Then install requirements
 pip install -r requirements.txt
 ```
 
+
+
 ## Usage
 
 The compiler may be used like the following
@@ -80,6 +83,10 @@ from boa.compiler import Compiler
 
 Compiler.load_and_save('path/to/your/file.py')
 ```
+
+## Docs
+
+You can [read the docs here](http://neo-boa.readthedocs.io/en/latest/)
 
 
 ## Tests
