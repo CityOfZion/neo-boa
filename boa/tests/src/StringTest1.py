@@ -4,6 +4,12 @@ from boa.blockchain.vm.Neo.Runtime import Notify
 
 def Main(a, b):
 
+    """
+
+    :param a:
+    :param b:
+    :return:
+    """
     c = concat(a, b)
 
     Notify(c)

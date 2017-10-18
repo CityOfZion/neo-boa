@@ -4,6 +4,10 @@ from boa.code.builtins import list
 
 def Main():
 
+    """
+
+    :return:
+    """
     a = 1
 
     b = [1, 2, 34]
@@ -19,6 +23,12 @@ def Main():
 
 def addd(a, b):
 
+    """
+
+    :param a:
+    :param b:
+    :return:
+    """
     result = a + b
     print("addd")
     res2 = stuff()
@@ -33,6 +43,10 @@ def addd(a, b):
 
 def stuff():
 
+    """
+
+    :return:
+    """
     a = 4
 
     b = 2
@@ -48,6 +62,12 @@ def stuff():
 
 def add3(a, b):
 
+    """
+
+    :param a:
+    :param b:
+    :return:
+    """
     print("add3")
 
     print("add 3 loggg")

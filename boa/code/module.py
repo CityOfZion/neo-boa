@@ -15,6 +15,9 @@ import pdb
 
 class Module():
 
+    """
+
+    """
     bp = None  # this is to store the byteplay reference
 
     path = None  # the path where this file is
@@ -46,10 +49,18 @@ class Module():
 
     @property
     def module_path(self):
+        """
+
+        :return:
+        """
         return self._module_name
 
     @property
     def main(self):
+        """
+
+        :return:
+        """
         for m in self.methods:
             if m.name == 'Main':
                 return m
@@ -59,6 +70,10 @@ class Module():
 
     @property
     def orderered_methods(self):
+        """
+
+        :return:
+        """
         om = []
         self.methods.reverse()
         if self.main:
@@ -73,6 +88,11 @@ class Module():
 
     def add_method(self, method):
         #        print("ADDING METHODDDDDD %s " % method.full_name)
+        """
+
+        :param method:
+        :return:
+        """
         for m in self.methods:
             if m.name == method.name:
 
@@ -88,6 +108,11 @@ class Module():
 
     def method_by_name(self, method_name):
 
+        """
+
+        :param method_name:
+        :return:
+        """
         for m in self.methods:
             if m.full_name == method_name:
                 return m
@@ -120,6 +145,9 @@ class Module():
 
     def build(self):
 
+        """
+
+        """
         self.lines = []
         self.imports = []
         self.module_variables = []
@@ -157,6 +185,10 @@ class Module():
 
     def process_import(self, import_item):
 
+        """
+
+        :param import_item:
+        """
         self.imports.append(import_item)
 
         self.loaded_modules.append(import_item.imported_module)
@@ -167,6 +199,10 @@ class Module():
 
     def process_method(self, lineset):
 
+        """
+
+        :param lineset:
+        """
         m = Method(lineset.code_object, self)
 
         if 'STAR' in self._names_to_load:
@@ -178,6 +214,11 @@ class Module():
                     self.add_method(m)
 
     def process_action(self, lineset):
+        """
+
+        :param lineset:
+        :return:
+        """
         action = Action(lineset)
         for act in self.actions:
             if act.method_name == action.method_name:
@@ -185,6 +226,11 @@ class Module():
         self.actions.append(action)
 
     def process_smart_contract_app_registration(self, lineset):
+        """
+
+        :param lineset:
+        :return:
+        """
         appcall_registration = SmartContractAppCall(lineset)
         for registration in self.app_call_registrations:
             if registration.method_name == appcall_registration.method_name:
@@ -193,6 +239,9 @@ class Module():
 
     def split_lines(self):
 
+        """
+
+        """
         lineitem = None
 
         for i, (op, arg) in enumerate(self.bp.code):
@@ -210,12 +259,20 @@ class Module():
 
     def write(self):
 
+        """
+
+        :return:
+        """
         self.link_methods()
 
         return self.write_methods()
 
     def write_methods(self):
 
+        """
+
+        :return:
+        """
         b_array = bytearray()
         for key, vm_token in self.all_vm_tokens.items():
 
@@ -228,6 +285,9 @@ class Module():
 
     def link_methods(self):
 
+        """
+
+        """
         self.all_vm_tokens = OrderedDict()
 
         address = 0
@@ -264,6 +324,9 @@ class Module():
 
     def to_s(self):
 
+        """
+
+        """
         lineno = 0
         pstart = True
         for i, (key, value) in enumerate(self.all_vm_tokens.items()):

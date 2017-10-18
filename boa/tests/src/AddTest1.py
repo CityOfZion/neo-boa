@@ -1,6 +1,14 @@
 
 def Main(a, b, c, d):
 
+    """
+
+    :param a:
+    :param b:
+    :param c:
+    :param d:
+    :return:
+    """
     a2 = a * 2
 
     b2 = b + 1

@@ -2,6 +2,10 @@
 
 def Main():
 
+    """
+
+    :return:
+    """
     a = 1
 
     c = 3

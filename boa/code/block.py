@@ -6,6 +6,9 @@ from boa.code import pyop
 
 class Block():
 
+    """
+
+    """
     forloop_counter = 0
 
     localmethod_counter = 0
@@ -54,11 +57,19 @@ class Block():
         return '[Block]: %s' % self.oplist
 
     def set_label(self, label):
+        """
+
+        :param label:
+        """
         self._label = label
         self.oplist[0].jump_label = label
 
     @property
     def line(self):
+        """
+
+        :return:
+        """
         if len(self.oplist):
             token = self.oplist[0]
             return token.line_no
@@ -66,6 +77,10 @@ class Block():
 
     @property
     def has_load_attr(self):
+        """
+
+        :return:
+        """
         for token in self.oplist:
             if token.py_op == pyop.LOAD_ATTR:
                 return True
@@ -73,6 +88,10 @@ class Block():
 
     @property
     def has_make_function(self):
+        """
+
+        :return:
+        """
         for token in self.oplist:
             if token.py_op == pyop.MAKE_FUNCTION:
                 return True
@@ -80,12 +99,20 @@ class Block():
 
     @property
     def has_slice(self):
+        """
+
+        :return:
+        """
         for token in self.oplist:
             if token.py_op == pyop.BUILD_SLICE:
                 return True
 
     @property
     def is_return(self):
+        """
+
+        :return:
+        """
         if len(self.oplist):
             token = self.oplist[-1]
             if token.py_op == pyop.RETURN_VALUE:
@@ -94,6 +121,10 @@ class Block():
 
     @property
     def is_iter(self):
+        """
+
+        :return:
+        """
         has_get_iter = False
         for token in self.oplist:
             if token.py_op == pyop.GET_ITER:
@@ -104,6 +135,10 @@ class Block():
 
     @property
     def iterable_local_vars(self):
+        """
+
+        :return:
+        """
         return [
             self.iterable_looplength,
             self.iterable_loopcounter,
@@ -112,6 +147,10 @@ class Block():
 
     @property
     def list_comp_iterable_local_vars(self):
+        """
+
+        :return:
+        """
         return [
             self.list_comp_iterable_looplength,
             self.list_comp_iterable_loopcounter,
@@ -121,6 +160,10 @@ class Block():
 
     @property
     def has_unprocessed_method_calls(self):
+        """
+
+        :return:
+        """
         if self.has_slice:
             return False
 #        if self.is_list_comprehension:
@@ -132,6 +175,10 @@ class Block():
 
     @property
     def has_unprocessed_array_sub(self):
+        """
+
+        :return:
+        """
         for token in self.oplist:
             if token.py_op == pyop.STORE_SUBSCR and not token.array_processed:
                 return True
@@ -139,6 +186,10 @@ class Block():
 
     @property
     def has_unprocessed_array(self):
+        """
+
+        :return:
+        """
         for token in self.oplist:
             if token.py_op == pyop.BUILD_LIST and not token.array_processed:
                 return True
@@ -146,6 +197,10 @@ class Block():
 
     @property
     def is_list_comprehension(self):
+        """
+
+        :return:
+        """
         if self.has_make_function:
             for token in self.oplist:
                 if token.py_op == pyop.GET_ITER:
@@ -155,6 +210,10 @@ class Block():
         return False
 
     def preprocess_load_attr(self, method):
+        """
+
+        :param method:
+        """
         while self.has_load_attr:
 
             index_to_rep = -1
@@ -180,6 +239,10 @@ class Block():
                 del self.oplist[index_to_rep - 1]
 
     def preprocess_make_function(self, method):
+        """
+
+        :param method:
+        """
         code_obj = self.oplist[0].args
         code_obj_name = self.oplist[1].args
         self.local_func_name = "%s_%s" % (
@@ -195,6 +258,9 @@ class Block():
         self.local_func_varname = self.oplist[-1].args
 
     def preprocess_slice(self):
+        """
+
+        """
         index_to_remove = -1
         do_calculate_item_length = False
         getlength_token = None
@@ -240,6 +306,9 @@ class Block():
         # in a better world this would be done in a more efficient way
         # for now this is kept to be as understandable as possible
 
+        """
+
+        """
         loopsetup = self.oplist[0]
         loopsetup.args = None
         loopsetup.jump_label = None
@@ -351,6 +420,10 @@ class Block():
 
     def process_iter_body(self, setup_block):
 
+        """
+
+        :param setup_block:
+        """
         first_op = self.oplist[0]
 
         #
@@ -399,6 +472,10 @@ class Block():
 
     def preprocess_method_calls(self, orig_method):
 
+        """
+
+        :param orig_method:
+        """
         while self.has_unprocessed_method_calls:
             start_index_change = None
             end_index_change = None
@@ -456,6 +533,9 @@ class Block():
                 self.oplist = tstart + changed_items + tend
 
     def preprocess_array_subs(self):
+        """
+
+        """
         while self.has_unprocessed_array_sub:
             start_index_change = None
             end_index_change = None
@@ -489,6 +569,9 @@ class Block():
 
     def preprocess_arrays(self):
 
+        """
+
+        """
         while self.has_unprocessed_array:
 
             blist_start_index = None
@@ -512,6 +595,9 @@ class Block():
 
     def mark_as_end(self):
 
+        """
+
+        """
         tstart = self.oplist[:-1]
         tend = self.oplist[-1:]
 
@@ -528,6 +614,10 @@ class Block():
 
         # grab the list comprehestion code object and make a method out of it
         # we will use it later
+        """
+
+        :param method:
+        """
         code_obj = self.oplist[0].args
 
         # now get rid of the first 3 ops for now
@@ -737,6 +827,10 @@ class Block():
     def process_list_comp_internal(self, list_comp_item_name):
         # get rid of first op
 
+        """
+
+        :param list_comp_item_name:
+        """
         print("OP 0 %s " % self.oplist[0].py_op)
         if self.oplist[0].py_op == pyop.STORE_FAST:
 

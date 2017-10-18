@@ -9,6 +9,9 @@ from boa.blockchain.vm import VMOp
 
 class PyToken():
 
+    """
+
+    """
     py_op = None
 
     args = None
@@ -36,6 +39,10 @@ class PyToken():
 
     @property
     def op_name(self):
+        """
+
+        :return:
+        """
         if type(self.py_op) is int:
             return opname[self.py_op]
         elif type(self.py_op) is Label:
@@ -44,14 +51,26 @@ class PyToken():
 
     @property
     def is_op(self):
+        """
+
+        :return:
+        """
         return isopcode(self.py_op)
 
     @property
     def is_local(self):
+        """
+
+        :return:
+        """
         return haslocal(self.py_op)
 
     @property
     def arg_s(self):
+        """
+
+        :return:
+        """
         if self.args:
             return str(self.args)
         return ''
@@ -81,6 +100,12 @@ class PyToken():
 
     def to_vm(self, tokenizer, prev_token=None):
 
+        """
+
+        :param tokenizer:
+        :param prev_token:
+        :return:
+        """
         self.tokenizer = tokenizer
         token = None
 

@@ -4,6 +4,10 @@ from boa.blockchain.vm.Neo.Runtime import Notify
 
 def Main():
 
+    """
+
+    :return:
+    """
     mystring = 'abcdefgh'
     count = 3
     mys = mystring[0:count]

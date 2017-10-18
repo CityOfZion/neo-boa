@@ -6,6 +6,10 @@ def Main():
     # this dosen't work. sad
     #        m = [[1,2,3],'fun','cool','neo']
 
+    """
+
+    :return:
+    """
     m = [42, 'yay', 'neo', 'woolong', 'wtf-coin', b'\xff', 3, 10]
 
     answer = m[0]

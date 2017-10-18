@@ -8,6 +8,10 @@ WHAT = 5
 
 def Main():
 
+    """
+
+    :return:
+    """
     print("do main?")
     j = CONST
 
@@ -17,4 +21,8 @@ def Main():
 
 
 def bleh():
+    """
+
+    :return:
+    """
     return 2 + WHAT

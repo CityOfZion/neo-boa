@@ -4,6 +4,10 @@ from boa.blockchain.vm.Neo.Runtime import Notify
 
 def Main():
 
+    """
+
+    :return:
+    """
     a = 'snathoeu'
 
     asha = sha1(a)

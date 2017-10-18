@@ -5,6 +5,10 @@ from boa.blockchain.vm.Neo.Runtime import Log, GetTrigger, Notify
 
 def Main():
 
+    """
+
+    :return:
+    """
     trigger = GetTrigger()
 
     Notify(trigger)

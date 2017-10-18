@@ -4,6 +4,12 @@ from boa.code.builtins import concat
 
 def Main(operation, items):
 
+    """
+
+    :param operation:
+    :param items:
+    :return:
+    """
     j = 10
 
     if operation == 'dostuff':

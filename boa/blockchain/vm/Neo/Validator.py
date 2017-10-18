@@ -4,4 +4,8 @@ class Validator():
 
 
 def Register(pubkey):
+    """
+
+    :param pubkey:
+    """
     pass

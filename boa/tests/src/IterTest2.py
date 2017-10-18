@@ -1,6 +1,10 @@
 
 def Main():
 
+    """
+
+    :return:
+    """
     items = ['a', 'b', 'c', 1, 5]
 
     count = 3

@@ -2,6 +2,10 @@
 
 def Main():
 
+    """
+
+    :return:
+    """
     a = [1, 2, 3, 4, 5]
 
     # this does not work
@@ -20,6 +24,15 @@ def Main():
 
 def add(a, b, c, d, e):
 
+    """
+
+    :param a:
+    :param b:
+    :param c:
+    :param d:
+    :param e:
+    :return:
+    """
     result = a + b + c + d + e
 
     return result
@@ -27,4 +40,9 @@ def add(a, b, c, d, e):
 
 def get_first_item(array_item):
 
+    """
+
+    :param array_item:
+    :return:
+    """
     return array_item[0]

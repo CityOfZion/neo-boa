@@ -5,6 +5,10 @@ from boa.blockchain.vm.Neo.Runtime import Notify
 
 def Main():
 
+    """
+
+    :return:
+    """
     start = 4
     stop = 9  # int
 
@@ -32,5 +36,11 @@ def Main():
 
 def stuff(a, b):
 
+    """
+
+    :param a:
+    :param b:
+    :return:
+    """
     out = a + b
     return out

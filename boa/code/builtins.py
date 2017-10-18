@@ -2,6 +2,10 @@
 
 class list(list):
 
+    """
+
+    """
+
     def __init__(self, length=0):
         #        super(list, self).__init__()
         pass
@@ -140,24 +144,50 @@ def range(start, stop):
 
 
 def sha1(data):
+    """
+
+    :param data:
+    """
     pass
 
 
 def sha256(data):
+    """
+
+    :param data:
+    """
     pass
 
 
 def hash160(data):
+    """
+
+    :param data:
+    """
     pass
 
 
 def hash256(data):
+    """
+
+    :param data:
+    """
     pass
 
 
 def verify_signature(signature, pubkey):
+    """
+
+    :param signature:
+    :param pubkey:
+    """
     pass
 
 
 def verify_signatures(signatures, pubkeys):
+    """
+
+    :param signatures:
+    :param pubkeys:
+    """
     pass

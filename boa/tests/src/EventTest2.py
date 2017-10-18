@@ -9,6 +9,10 @@ Refund = RegisterAction('refund', 'to', 'amount')
 
 def Main():
 
+    """
+
+    :return:
+    """
     a = 2
 
     b = 5
@@ -29,6 +33,11 @@ def Main():
 
 def Second(a):
 
+    """
+
+    :param a:
+    :return:
+    """
     j = 'hello'
     b = 'goodbye'
 

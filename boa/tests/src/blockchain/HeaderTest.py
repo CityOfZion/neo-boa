@@ -6,6 +6,11 @@ from boa.blockchain.vm.Neo.Runtime import Notify, Log
 
 def Main(block_height):
 
+    """
+
+    :param block_height:
+    :return:
+    """
     header = GetHeader(block_height)
 
     Log("got header")

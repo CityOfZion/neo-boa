@@ -8,6 +8,14 @@ OWNER = b'\xaf\x12\xa8h{\x14\x94\x8b\xc4\xa0\x08\x12\x8aU\nci[\xc1\xa5'
 
 def Main(a, b, c, d):
 
+    """
+
+    :param a:
+    :param b:
+    :param c:
+    :param d:
+    :return:
+    """
     print("Executing Four Param Verification code")
     trigger = GetTrigger()
 

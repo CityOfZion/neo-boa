@@ -13,6 +13,9 @@ NEO_SC_FRAMEWORK = 'boa.blockchain.vm.'
 
 class VMToken():
 
+    """
+
+    """
     addr = None
 
     pytoken = None
@@ -31,6 +34,10 @@ class VMToken():
 
     @property
     def out_op(self):
+        """
+
+        :return:
+        """
         if type(self.vm_op) is int:
             return self.vm_op
         elif type(self.vm_op) is bytes:
@@ -56,6 +63,9 @@ class VMToken():
 
 class VMTokenizer():
 
+    """
+
+    """
     method = None
 
     _address = None
@@ -73,6 +83,9 @@ class VMTokenizer():
 
     def to_s(self):
 
+        """
+
+        """
         lineno = self.method.start_line_no
         pstart = True
         for i, (key, value) in enumerate(self.vm_tokens.items()):
@@ -129,6 +142,10 @@ class VMTokenizer():
             pstart = False
 
     def to_b(self):
+        """
+
+        :return:
+        """
         b_array = bytearray()
         for key, vm_token in self.vm_tokens.items():
 
@@ -144,6 +161,9 @@ class VMTokenizer():
         # we just need to inssert the total number of arguments + body variables
         # which is the length of the method `local_stores` dictionary
         # then create a new array for the vm to store
+        """
+
+        """
         total_items = self.method.total_lines  \
             + len(self.method.args) \
             + self.method.dynamic_iterator_count
@@ -158,6 +178,9 @@ class VMTokenizer():
             self.convert_load_parameter(arg, index)
 
     def update_method_begin_items(self):
+        """
+
+        """
         num_current_items = self.total_param_and_body_count_token.updatable_data
 
         if self.method.dynamic_iterator_count > 0:
@@ -167,10 +190,22 @@ class VMTokenizer():
 
     def insert_vm_token_at(self, vm_token, index):
 
+        """
+
+        :param vm_token:
+        :param index:
+        """
         self.vm_tokens[index] = vm_token
 
     def update1(self, vmtoken, vm_op, data=None):
 
+        """
+
+        :param vmtoken:
+        :param vm_op:
+        :param data:
+        :return:
+        """
         vmtoken.vm_op = vm_op
         vmtoken.data = data
 
@@ -180,6 +215,12 @@ class VMTokenizer():
 
     def update_push_data(self, vmtoken, data):
 
+        """
+
+        :param vmtoken:
+        :param data:
+        :return:
+        """
         dlen = len(data)
 
         if dlen == 0:
@@ -205,6 +246,12 @@ class VMTokenizer():
         return self.update1(vmtoken, code, byts)
 
     def update_push_integer(self, vmtoken, i):
+        """
+
+        :param vmtoken:
+        :param i:
+        :return:
+        """
         if i == 0:
             return self.update1(vmtoken, VMOp.PUSH0)
         elif i == -1:
@@ -220,6 +267,12 @@ class VMTokenizer():
 
     def insert1(self, vm_op, data=None):
 
+        """
+
+        :param vm_op:
+        :param data:
+        :return:
+        """
         start_addr = self._address
 
         vmtoken = VMToken(vm_op=vm_op, addr=start_addr, data=data)
@@ -236,6 +289,11 @@ class VMTokenizer():
 
     def insert_push_data(self, data):
 
+        """
+
+        :param data:
+        :return:
+        """
         dlen = len(data)
 
         if dlen == 0:
@@ -261,6 +319,11 @@ class VMTokenizer():
         return self.insert1(code, byts)
 
     def insert_push_integer(self, i):
+        """
+
+        :param i:
+        :return:
+        """
         if i == 0:
             return self.insert1(VMOp.PUSH0)
         elif i == -1:
@@ -276,6 +339,13 @@ class VMTokenizer():
 
     def convert1(self, vm_op, py_token=None, data=None):
 
+        """
+
+        :param vm_op:
+        :param py_token:
+        :param data:
+        :return:
+        """
         start_addr = self._address
 
         vmtoken = VMToken(vm_op=vm_op, addr=start_addr,
@@ -293,6 +363,12 @@ class VMTokenizer():
     def convert_new_array(self, vm_op, py_token=None, data=None):
 
         # push the length of the array
+        """
+
+        :param vm_op:
+        :param py_token:
+        :param data:
+        """
         if type(py_token.args) is int:
 
             self.insert_push_integer(py_token.args)
@@ -303,6 +379,12 @@ class VMTokenizer():
 
     def convert_push_data(self, data, py_token=None):
 
+        """
+
+        :param data:
+        :param py_token:
+        :return:
+        """
         dlen = len(data)
         if dlen == 0:
             return self.convert1(VMOp.PUSH0, py_token=py_token)
@@ -324,6 +406,12 @@ class VMTokenizer():
         return self.convert1(code, py_token=py_token, data=byts)
 
     def convert_push_integer(self, i, py_token=None):
+        """
+
+        :param i:
+        :param py_token:
+        :return:
+        """
         if i == 0:
             return self.convert1(VMOp.PUSH0, py_token=py_token)
         elif i == -1:
@@ -341,6 +429,10 @@ class VMTokenizer():
     def convert_store_local(self, py_token):
 
         # set array
+        """
+
+        :param py_token:
+        """
         self.convert1(VMOp.FROMALTSTACK, py_token=py_token)
         self.convert1(VMOp.DUP)
         self.convert1(VMOp.TOALTSTACK)
@@ -359,6 +451,11 @@ class VMTokenizer():
 
     def convert_load_local(self, py_token, name=None):
 
+        """
+
+        :param py_token:
+        :param name:
+        """
         if name is not None:
             local_name = name
         else:
@@ -376,6 +473,10 @@ class VMTokenizer():
         self.convert1(VMOp.PICKITEM)
 
     def insert_unknown_type(self, item):
+        """
+
+        :param item:
+        """
         if type(item) is int:
             self.insert_push_integer(item)
 
@@ -401,6 +502,11 @@ class VMTokenizer():
 
         #        print("converting set element %s %s" % (position, type(position)))
 
+        """
+
+        :param arg:
+        :param position:
+        """
         if type(position) is int:
 
             self.insert_push_integer(position)
@@ -422,6 +528,11 @@ class VMTokenizer():
 
     def convert_load_parameter(self, arg, position):
 
+        """
+
+        :param arg:
+        :param position:
+        """
         length = len(self.method.local_stores)
         self.method.local_stores[arg] = length
 
@@ -437,6 +548,10 @@ class VMTokenizer():
         self.insert1(VMOp.SETITEM)
 
     def convert_built_in_list(self, pytoken):
+        """
+
+        :param pytoken:
+        """
         new_array_len = 0
         lenfound = False
         for index, token in enumerate(pytoken.func_params):
@@ -459,6 +574,11 @@ class VMTokenizer():
     def convert_method_call(self, pytoken):
 
         # special case for list initialization
+        """
+
+        :param pytoken:
+        :return:
+        """
         if pytoken.func_name == 'list':
             return self.convert_built_in_list(pytoken)
         elif pytoken.func_name == 'bytearray':
@@ -540,6 +660,11 @@ class VMTokenizer():
         return vmtoken
 
     def is_op_call(self, op):
+        """
+
+        :param op:
+        :return:
+        """
         if op in ['len', 'abs', 'min', 'max', 'concat', 'take',
                   'sha1', 'sha256', 'hash160', 'hash256',
                   'verify_signature', 'verify_signatures']:
@@ -548,6 +673,12 @@ class VMTokenizer():
 
     def convert_op_call(self, op, pytoken=None):
 
+        """
+
+        :param op:
+        :param pytoken:
+        :return:
+        """
         if op == 'len':
             return self.convert1(VMOp.ARRAYSIZE, pytoken)
         elif op == 'abs':
@@ -575,6 +706,11 @@ class VMTokenizer():
         return None
 
     def is_sys_call(self, op):
+        """
+
+        :param op:
+        :return:
+        """
         if op is not None and NEO_SC_FRAMEWORK in op:
             if 'TriggerType' not in op:  # we will compile TriggerType normally
                 return True
@@ -582,6 +718,12 @@ class VMTokenizer():
 
     def convert_sys_call(self, op, pytoken=None):
 
+        """
+
+        :param op:
+        :param pytoken:
+        :return:
+        """
         syscall_name = op.replace(NEO_SC_FRAMEWORK, '').encode('utf-8')
         length = len(syscall_name)
         ba = bytearray([length]) + bytearray(syscall_name)
@@ -592,6 +734,11 @@ class VMTokenizer():
 
     def is_built_in(self, op):
 
+        """
+
+        :param op:
+        :return:
+        """
         if op in ['zip', 'type', 'tuple', 'super', 'str', 'slice',
                   'set', 'reversed', 'property', 'memoryview',
                   'map', 'list', 'frozenset', 'float', 'filter',
@@ -609,6 +756,12 @@ class VMTokenizer():
 
     def convert_built_in(self, op, pytoken):
 
+        """
+
+        :param op:
+        :param pytoken:
+        :return:
+        """
         if op == 'print':
             syscall_name = 'Neo.Runtime.Log'.encode('utf-8')
             length = len(syscall_name)
@@ -622,6 +775,11 @@ class VMTokenizer():
 
     def is_notify_event(self, pytoken):
 
+        """
+
+        :param pytoken:
+        :return:
+        """
         name = pytoken.func_name
 
         for action in self.method.module.actions:
@@ -630,6 +788,11 @@ class VMTokenizer():
         return False
 
     def convert_notify_event(self, pytoken):
+        """
+
+        :param pytoken:
+        :return:
+        """
         event_action = None
         for action in self.method.module.actions:
             if action.method_name == pytoken.func_name:
@@ -656,6 +819,11 @@ class VMTokenizer():
         return vmtoken
 
     def is_smart_contract_call(self, pytoken):
+        """
+
+        :param pytoken:
+        :return:
+        """
         name = pytoken.func_name
 
         for appcall in self.method.module.app_call_registrations:
@@ -664,6 +832,11 @@ class VMTokenizer():
         return False
 
     def convert_smart_contract_call(self, pytoken):
+        """
+
+        :param pytoken:
+        :return:
+        """
         sc_appcall = None
         for appcall in self.method.module.app_call_registrations:
             if appcall.method_name == pytoken.func_name:

@@ -7,6 +7,11 @@ INVOKE_TX_TYPE = b'\xd1'
 
 def Main(block_index):
 
+    """
+
+    :param block_index:
+    :return:
+    """
     header = GetHeader(block_index)
 
     print("got block!")

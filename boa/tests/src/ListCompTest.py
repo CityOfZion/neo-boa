@@ -3,6 +3,10 @@ from boa.blockchain.vm.Neo.Runtime import Notify
 
 def Main():
 
+    """
+
+    :return:
+    """
     items = [1, 3]
 
 #    j = 0

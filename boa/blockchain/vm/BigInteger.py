@@ -4,13 +4,29 @@ class BigInteger(int):
 
     @staticmethod
     def FromBytes(data, signed=False):
+        """
+
+        :param data:
+        :param signed:
+        :return:
+        """
         return BigInteger(int.from_bytes(data, 'little', signed=signed))
 
     def Equals(self, other):
+        """
+
+        :param other:
+        :return:
+        """
         return super(BigInteger, self).__eq__(other)
 
     def ToByteArray(self, signed=True):
 
+        """
+
+        :param signed:
+        :return:
+        """
         if self < 0:
             try:
                 return self.to_bytes(1 + ((self.bit_length() + 7) // 8), byteorder='little', signed=True)

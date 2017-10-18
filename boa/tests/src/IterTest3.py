@@ -3,6 +3,10 @@ from boa.code.builtins import range
 
 def Main():
 
+    """
+
+    :return:
+    """
     items = [0, 1, 2]
 
     items2 = [5, 6]

@@ -1,6 +1,10 @@
 
 def Main():
 
+    """
+
+    :return:
+    """
     a = 1
 
     b = 2
@@ -20,6 +24,10 @@ def Main():
 
 def stuff():
 
+    """
+
+    :return:
+    """
     a = 4
 
     b = 2
@@ -29,6 +37,10 @@ def stuff():
 
 def stuff2():
 
+    """
+
+    :return:
+    """
     a = 8
 
     j = 10
@@ -38,11 +50,19 @@ def stuff2():
 
 def prevcall():
 
+    """
+
+    :return:
+    """
     return stuff()
 
 
 def stuff8():
 
+    """
+
+    :return:
+    """
     q = 'hello'
 
     return q
@@ -50,4 +70,8 @@ def stuff8():
 
 def blah():
 
+    """
+
+    :return:
+    """
     return 1 + 8

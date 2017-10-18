@@ -6,12 +6,19 @@ import binascii
 
 
 class Item():
+    """
+
+    """
     items = None
 
     def __init__(self, item_list):
         self.items = item_list
 
     def is_valid(self):
+        """
+
+        :return:
+        """
         return True
 
 
@@ -25,6 +32,9 @@ class Definition(Item):
 
 class Action(Item):
 
+    """
+
+    """
     event_name = None
     event_args = None
 
@@ -48,6 +58,9 @@ class Action(Item):
 
 class SmartContractAppCall(Item):
 
+    """
+
+    """
     script_hash = None
     script_args = None
 
@@ -82,6 +95,10 @@ class SmartContractAppCall(Item):
 
     @property
     def script_hash_addr(self):
+        """
+
+        :return:
+        """
         b_array = None
         if type(self.script_hash) is str:
             bstring = self.script_hash.encode('utf-8')
@@ -100,6 +117,9 @@ class SmartContractAppCall(Item):
 
 class Import(Item):
 
+    """
+
+    """
     NEO_SC_FRAMEWORK = 'neo.SmartContract.Framework.'
 
     module_path = None
@@ -132,6 +152,9 @@ class Import(Item):
     def build(self):
         # here is where we will check imports
 
+        """
+
+        """
         from boa.code.module import Module
 
         module = importlib.import_module(self.module_path, self.module_path)
@@ -148,6 +171,10 @@ class Import(Item):
 
     def is_valid(self):
 
+        """
+
+        :return:
+        """
         return True
 
     def __str__(self):
@@ -156,6 +183,9 @@ class Import(Item):
 
 class Klass(Item):
 
+    """
+
+    """
     name = None
 
     parent_name = None
@@ -176,6 +206,9 @@ class Klass(Item):
 
     def build(self):
 
+        """
+
+        """
         for i, (op, arg) in enumerate(self.items):
 
             # if the item is a byteplay3 code object, it is a method
@@ -201,4 +234,8 @@ class Klass(Item):
 
     def is_valid(self):
         # here is where we check if the class extends something reasonable
+        """
+
+        :return:
+        """
         return True

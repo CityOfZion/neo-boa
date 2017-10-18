@@ -12,6 +12,9 @@ import collections
 
 class Method():
 
+    """
+
+    """
     bp = None
 
     parent = None
@@ -36,10 +39,18 @@ class Method():
 
     @property
     def name(self):
+        """
+
+        :return:
+        """
         return self.bp.name
 
     @property
     def full_name(self):
+        """
+
+        :return:
+        """
         if self.__make_func_name is None:
             if len(self.module.module_path):
                 return '%s.%s' % (self.module.module_path, self.name)
@@ -52,22 +63,42 @@ class Method():
         #        if 'self' in alist:
         #            alist.remove('self')
         #        return alist
+        """
+
+        :return:
+        """
         return self.bp.args
 
     @property
     def code(self):
+        """
+
+        :return:
+        """
         return self.bp.code
 
     @property
     def vm_tokens(self):
+        """
+
+        :return:
+        """
         return self.tokenizer.vm_tokens
 
     @property
     def firstlineno(self):
+        """
+
+        :return:
+        """
         return self.bp.firstlineno
 
     @property
     def total_lines(self):
+        """
+
+        :return:
+        """
         count = 0
         for index, (op, arg) in enumerate(self.code):
             if type(op) is SetLinenoType:
@@ -77,11 +108,19 @@ class Method():
 
     @property
     def total_module_variables(self):
+        """
+
+        :return:
+        """
         return len(self.module.module_variables)
 
     @property
     def module(self):
 
+        """
+
+        :return:
+        """
         from boa.code.module import Module
 
         if type(self.parent) is Module:
@@ -113,15 +152,24 @@ class Method():
 #        self.tokenizer.to_s()
 
     def print(self):
+        """
+
+        """
         print(self.code)
 
     def to_dis(self):
 
+        """
+
+        """
         out = self.bp.to_code()
         dis.dis(out)
 
     def read_module_variables(self):
 
+        """
+
+        """
         for definition in self.module.module_variables:
 
             items = definition.items
@@ -132,6 +180,9 @@ class Method():
 
     def read_initial_tokens(self):
 
+        """
+
+        """
         self.blocks = []
 
         self.local_methods = collections.OrderedDict()
@@ -195,6 +246,9 @@ class Method():
 
     def process_block_groups(self):
 
+        """
+
+        """
         iter_setup_block = None
 
         for index, block in enumerate(self.blocks):
@@ -278,6 +332,9 @@ class Method():
             token.addr = index
 
     def tokenize(self):
+        """
+
+        """
         self.tokenizer.update_method_begin_items()
         prevtoken = None
         for t in self.tokens:
@@ -287,6 +344,9 @@ class Method():
     def convert_jumps(self):
 
         # convert normal jumps
+        """
+
+        """
         for key, vm_token in self.tokenizer.vm_tokens.items():
 
             if vm_token.pytoken and type(vm_token.pytoken.args) is Label:
@@ -307,5 +367,9 @@ class Method():
 
     def write(self):
 
+        """
+
+        :return:
+        """
         out = self.tokenizer.to_b()
         return out

@@ -2,6 +2,10 @@
 
 def Main():
 
+    """
+
+    :return:
+    """
     a = None  # this gets coerced to 0
 
     b = 1

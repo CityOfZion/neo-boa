@@ -5,6 +5,10 @@ from boa.blockchain.vm.Neo.Runtime import Log, Notify
 
 def Main():
 
+    """
+
+    :return:
+    """
     mmm = range(2, 14)
 
     l = mmm[2]
@@ -22,9 +26,19 @@ def Main():
 
 
 def get_thing():
+    """
+
+    :return:
+    """
     return 7
 
 
 def get_items_from_range(items, index):
 
+    """
+
+    :param items:
+    :param index:
+    :return:
+    """
     return items[index]

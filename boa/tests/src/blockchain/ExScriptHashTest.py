@@ -8,6 +8,11 @@ GAS = b'\xe7-(iy\xeel\xb1\xb7\xe6]\xfd\xdf\xb2\xe3\x84\x10\x0b\x8d\x14\x8ewX\xde
 
 def Main(operation):
 
+    """
+
+    :param operation:
+    :return:
+    """
     hash = GetExecutingScriptHash()
 
     Notify(hash)

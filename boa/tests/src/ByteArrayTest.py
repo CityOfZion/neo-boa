@@ -4,6 +4,10 @@ from boa.code.builtins import concat
 
 def Main():
 
+    """
+
+    :return:
+    """
     c = b'\x01\x04\xaf\x09'
 
     l = len(c)

@@ -5,6 +5,10 @@ from boa.blockchain.vm.Neo.Runtime import Notify
 
 def Main():
 
+    """
+
+    :return:
+    """
     height = 1242
     header = GetHeader(height)
 

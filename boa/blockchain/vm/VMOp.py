@@ -136,6 +136,11 @@ items = dir(sys.modules[__name__])
 
 def ToName(op):
 
+    """
+
+    :param op:
+    :return:
+    """
     if isinstance(op, bytes):
         op = int.from_bytes(op, 'little')
 

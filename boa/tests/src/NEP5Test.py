@@ -1,3 +1,23 @@
+"""
+NEP5 Token implementation in Python
+===================================
+
+This file, when compiled to .avm format, would comply with the current NEP5 token standard on the NEO blockchain
+
+Token standard is available in proposal form here:
+`NEP5 Token Standard Proposal <https://github.com/neo-project/proposals/blob/master/nep-5.mediawiki>`_
+
+Compilation can be achieved as such
+
+>>> from boa.compiler import Compiler
+>>> Compiler.load_and_save('./boa/tests/src/NEP5Test.py')
+
+
+Below is the current implementation in Python
+
+
+"""
+
 from boa.blockchain.vm.Neo.Runtime import Log, Notify
 from boa.blockchain.vm.System.ExecutionEngine import GetScriptContainer, GetExecutingScriptHash
 from boa.blockchain.vm.Neo.Transaction import *
@@ -8,7 +28,6 @@ from boa.blockchain.vm.Neo.TriggerType import Application, Verification
 from boa.blockchain.vm.Neo.Output import GetScriptHash, GetValue, GetAssetId
 from boa.blockchain.vm.Neo.Storage import GetContext, Get, Put, Delete
 
-from boa.code.builtins import verify_signature
 
 # -------------------------------------------
 # TOKEN SETTINGS
@@ -48,6 +67,19 @@ OnRefund = RegisterAction('refund', 'to', 'amount')
 
 
 def Main(operation, args):
+
+    """
+    This is the main entry point for the Smart Contract
+
+    :param operation: the operation to be performed ( eg `mintTokens`, `transfer`, etc)
+    :type operation: str
+
+    :param args: an optional list of arguments
+    :type args: list
+
+    :return: indicating the successful execution of the smart contract
+    :rtype: bool
+    """
 
     trigger = GetTrigger()
 
@@ -125,21 +157,48 @@ def Main(operation, args):
 
 
 def Name():
+    """
+    Method that returns the name of this NEP5 token
+
+    :return: name of the token
+    :rtype: str
+
+    """
     print("getting name!")
     return TOKEN_NAME
 
 
 def Symbol():
+    """
+    Method that returns the symbol of this NEP5 token
+
+    :return: symbol of the token
+    :rtype: str
+
+    """
     print("getting symbol!")
     return SYMBOL
 
 
 def Decimals():
+    """
+    Method that returns the number of decimals an NEP5 token uses
+
+    :return: the number of decimals this NEP5 token uses
+    :rtype: int
+
+    """
     print("getting decimals...")
     return DECIMALS
 
 
 def Deploy():
+    """
+    Method for the NEP5 Token owner to use in order to deploy an initial amount of tokens to their own address
+
+    :return: whether the deploy was successful
+    :rtype: bool
+    """
     print("deploying!")
 
     isowner = CheckWitness(OWNER)
@@ -170,6 +229,13 @@ def Deploy():
 
 
 def MintTokens():
+    """
+    Method for an address to call in order to deposit NEO into the NEP5 token owner's address in exchange for a calculated amount of NEP5 tokens
+
+    :return: whether the token minting was successful
+    :rtype: bool
+
+    """
     print("minting tokens!")
 
     tx = GetScriptContainer()
@@ -237,6 +303,13 @@ def MintTokens():
 
 def TotalSupply():
 
+    """
+    Method to return the total amount of NEP5 tokens in current circluation
+
+    :return: the total number of tokens in circulation
+    :rtype: int
+
+    """
     print("total supply!")
 
     context = GetContext()
@@ -251,6 +324,22 @@ def TotalSupply():
 
 def DoTransfer(t_from, t_to, amount):
 
+    """
+    Method to transfer NEP5 tokens of a specified amount from one account to another
+
+    :param t_from: the address to transfer from
+    :type t_from: bytearray
+
+    :param t_to: the address to transfer to
+    :type t_to: bytearray
+
+    :param amount: the amount of NEP5 tokens to transfer
+    :type amount: int
+
+    :return: whether the transfer was successful
+    :rtype: bool
+
+    """
     if amount <= 0:
         print("cannot transfer zero or less")
         return False
@@ -295,6 +384,16 @@ def DoTransfer(t_from, t_to, amount):
 
 def BalanceOf(account):
 
+    """
+    Method to return the current balance of an address
+
+    :param account: the account address to retrieve the balance for
+    :type account: bytearray
+
+    :return: the current balance of an address
+    :rtype: int
+
+    """
     print("getting balance of...")
     context = GetContext()
     print("getting context...")
@@ -306,6 +405,13 @@ def BalanceOf(account):
 
 def CurrentSwapRate():
 
+    """
+    Method to calculate the current 'going rate' or exchange ratio of NEO to NEP5 tokens
+
+    :return: the current rate
+    :rtype: int
+
+    """
     basic = 1000 * FACTOR
     duration = ICO_END_TIME - ICO_START_TIME
     print("getting swap rate")

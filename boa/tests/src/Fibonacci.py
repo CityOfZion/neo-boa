@@ -1,6 +1,11 @@
 
 def Main(fibnumber):
 
+    """
+
+    :param fibnumber:
+    :return:
+    """
     fibresult = fib(fibnumber)
 
     return fibresult
@@ -8,6 +13,11 @@ def Main(fibnumber):
 
 def fib(n):
 
+    """
+
+    :param n:
+    :return:
+    """
     if n == 1 or n == 2:
         return 1
 

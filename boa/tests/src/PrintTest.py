@@ -5,6 +5,10 @@ from boa.blockchain.vm.Neo.Runtime import Log, Notify
 
 def Main():
 
+    """
+
+    :return:
+    """
     print("holla?")  # using pythonic print(), this is tranlated to Neo.Runtime.Log
     start = 4
     stop = 9

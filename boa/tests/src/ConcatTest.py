@@ -3,6 +3,10 @@ from boa.code.builtins import concat
 
 def Main():
 
+    """
+
+    :return:
+    """
     str1 = 'hello'
     str2 = 'world'
 

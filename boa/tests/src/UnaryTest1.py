@@ -1,6 +1,10 @@
 
 def Main():
 
+    """
+
+    :return:
+    """
     a = 1
 
     b = True
