@@ -124,7 +124,7 @@ class Module():
     def module_path(self):
         """
         returns the file path of the module
-        
+
         :return: the path of the module
         :rtype: str
 
