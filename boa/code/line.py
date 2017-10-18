@@ -34,6 +34,24 @@ class Line():
 #        return False
 
     @property
+    def is_docstring(self):
+        """
+        returns whether a line is a docstring
+
+        :return: whether a line is a documentation string
+        :rtype: bool
+
+        """
+        for item in self.items:
+            print("IS DOCSTRING? %s %s " % ( item[0], item[1]))
+            if item[0] == pyop.STORE_NAME and item[1] == '__doc__':
+                print("ITEM IS DOCSTRING")
+                return True
+        return False
+
+
+
+    @property
     def is_method(self):
         """
 

@@ -262,6 +262,8 @@ class Module():
                 else:
                     print("will not import items from sys module")
 
+            elif lineset.is_docstring:
+                print("DONT DO ANYTHING!")
             elif lineset.is_definition:
                 self.module_variables.append(Definition(lineset.items))
             elif lineset.is_class:
