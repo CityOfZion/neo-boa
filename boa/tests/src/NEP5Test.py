@@ -1,6 +1,6 @@
 """
-NEP5 Token implementation in Python
-===================================
+NEP5 Token
+==========
 
 This file, when compiled to .avm format, would comply with the current NEP5 token standard on the NEO blockchain
 

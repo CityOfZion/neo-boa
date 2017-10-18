@@ -56,6 +56,7 @@ class Compiler():
     def default(self):
         """
         Retrieves the default or 'entry' module
+
         :return: the default `boa.code.Module` object
         """
         try:

@@ -17,6 +17,79 @@ class Module():
 
     """
 
+    A Module is the top level component which contains code objects.
+    When, for example compiling ``path/to/my/file.py``, the items contained in ``file.py`` are the module.
+    An executable may have many modules.  The 'default' or 'entry' module in the example above would be ``file.py``
+
+    When calling ``Compiler.load_and_save('path/to/file.py')``, a module is created for ``file.py``.
+    If `file.py` imports any other functionality, those modules will also be added to the executable
+    and placed in the Module.loaded_modules attribute.
+
+
+    After modules have been processed as methods, and then methods processed as blocks, and blocks processed to tokens,
+    The main or ``default`` module's ``write()`` method is called, which writes the executable to a byte string and returns
+    it to be saved to disk.
+
+    If you would like to inspect the contents of a module, you may use the ``Compiler.load('path/to/file.py')`` which will
+    return an instance of the compiler.  With that instance, you can access the ``default`` module of the compiler
+    which will in turn give you access to any other loaded modules contained in the default module.
+
+
+    Each module ( as well as each method object ) contains a reference to a ``byteplay3`` object, named ``bp``.
+    This object contains the instruction set as it would be viewed in the Python interpreter.
+
+    You can call ``print(module.bp.code)`` on any object with a ``bp`` attribute, and it will output the Python interpreter code.
+
+
+    >>> from boa.compiler import Compiler
+    >>> module = Compiler.load('./boa/tests/src/AddTest1.py').default
+    >>> print(module.bp.code)
+    2     1 LOAD_CONST           <byteplay3.Code object at 0x10cc3d6a0>
+          2 LOAD_CONST           'Main'
+          3 MAKE_FUNCTION        0
+          4 STORE_NAME           Main
+          5 LOAD_CONST           None
+          6 RETURN_VALUE
+
+
+    Once an executable has been processed and tokenized, it will then have a set of vm tokens that are similar
+    to the ``byteplay3`` tokens, but different in important ways. These are contained in the module's ``all_vm_tokens`` attribute
+
+    You may call ``module.to_s()`` to view the program as it has been tokenized for the NEO Virtual Machine
+
+    >>> module.to_s()
+    4             31  LOAD_FAST           a                                                 [data]
+                  36  LOAD_CONST          2                                                 [data]
+                  37  BINARY_MULTIPLY                                                       [data]
+                  38  STORE_FAST          a2                                                [data]
+    6             45  LOAD_FAST           b                                                 [data]
+                  50  LOAD_CONST          1                                                 [data]
+                  51  BINARY_ADD                                                            [data]
+                  52  STORE_FAST          b2                                                [data]
+    8             59  LOAD_FAST           c                                                 [data]
+                  64  LOAD_CONST          2                                                 [data]
+                  65  BINARY_TRUE_DIVIDE                                                    [data]
+                  66  STORE_FAST          c2                                                [data]
+    10            73  LOAD_FAST           d                                                 [data]
+                  78  LOAD_CONST          1                                                 [data]
+                  79  BINARY_SUBTRACT                                                       [data]
+                  80  STORE_FAST          d2                                                [data]
+    13            87  243                 b'\x03\x00'                                       [data] 3
+                  90  LOAD_FAST           a2                                                [data]
+                  95  LOAD_FAST           b2                                                [data]
+                  100 BINARY_ADD                                                            [data]
+                  101 LOAD_FAST           c2                                                [data]
+                  106 BINARY_ADD                                                            [data]
+                  107 LOAD_FAST           d2                                                [data]
+                  112 BINARY_ADD                                                            [data]
+                  113 NOP                                                                   [data]
+                  114 241                                                                   [data]
+                  115 242                                                                   [data]
+                  116 RETURN_VALUE                                                          [data]
+
+
+
+
     """
     bp = None  # this is to store the byteplay reference
 
@@ -50,16 +123,22 @@ class Module():
     @property
     def module_path(self):
         """
+        returns the file path of the module
+        
+        :return: the path of the module
+        :rtype: str
 
-        :return:
         """
         return self._module_name
 
     @property
     def main(self):
         """
+        returns the default method in this module
 
-        :return:
+        :return: the default method in this module
+        :rtype: ``boa.code.method.Method``
+
         """
         for m in self.methods:
             if m.name == 'Main':
@@ -71,8 +150,11 @@ class Module():
     @property
     def orderered_methods(self):
         """
+        an ordered list of methods
 
-        :return:
+        :return: a list of ordered methods is this module
+        :rtype: list
+
         """
         om = []
         self.methods.reverse()
@@ -87,11 +169,15 @@ class Module():
         return om
 
     def add_method(self, method):
-        #        print("ADDING METHODDDDDD %s " % method.full_name)
         """
+        Adds a method to this module
 
-        :param method:
-        :return:
+        :param method: the method object to add to this module
+        :type method: ``boa.code.method.Method``
+
+        :return: whether the method was added
+        :rtype: bool
+
         """
         for m in self.methods:
             if m.name == method.name:
@@ -105,13 +191,19 @@ class Module():
 
 #        print("appending method %s %s " % (method.name, method.full_name))
         self.methods.append(method)
+        return True
+
 
     def method_by_name(self, method_name):
 
         """
+        looks up a method by its name from the module ``methods`` list
+        :param method_name: the name of the method to look up
+        :type method_name: str
 
-        :param method_name:
-        :return:
+        :return: the method ( if it is found)
+        :rtype: ``boa.code.method.Method``
+
         """
         for m in self.methods:
             if m.full_name == method_name:
@@ -146,6 +238,7 @@ class Module():
     def build(self):
 
         """
+        Splits the ``bp.code`` object into lines, and assembles the lines into different items
 
         """
         self.lines = []
