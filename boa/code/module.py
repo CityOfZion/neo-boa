@@ -263,7 +263,7 @@ class Module():
                     print("will not import items from sys module")
 
             elif lineset.is_docstring:
-                print("DONT DO ANYTHING!")
+                pass
             elif lineset.is_definition:
                 self.module_variables.append(Definition(lineset.items))
             elif lineset.is_class:
@@ -281,8 +281,11 @@ class Module():
     def process_import(self, import_item):
 
         """
+        processes an import statement within this module
 
         :param import_item:
+        :type import_item: ``boa.code.items.Import subclass``
+
         """
         self.imports.append(import_item)
 
@@ -295,8 +298,11 @@ class Module():
     def process_method(self, lineset):
 
         """
+        processes a set of lines that contain a byteplay3 code object
 
-        :param lineset:
+        :param lineset: the lineset to process and add
+        :type lineset: list
+
         """
         m = Method(lineset.code_object, self)
 
@@ -310,9 +316,23 @@ class Module():
 
     def process_action(self, lineset):
         """
+        processes an action within this module
+        a sample action would be to create an event like so:
+
+        .. code-block:: python
+
+            from boa.blockchain.vm.Neo.Action import RegisterAction
+
+            # register the action
+            onRefund = RegisterAction('refund', 'to_address', 'amount')
+
+            # dispatch an action
+
+            onRefund(my_address, 100)
+
 
         :param lineset:
-        :return:
+        :type lineset: list
         """
         action = Action(lineset)
         for act in self.actions:
@@ -323,8 +343,24 @@ class Module():
     def process_smart_contract_app_registration(self, lineset):
         """
 
-        :param lineset:
-        :return:
+        processes a smart contract app registration, for when you would like to call another
+        smart contract from your contract.  for example:
+
+        .. code-block:: python
+
+            from boa.blockchain.vm.Neo.App import RegisterAppCall
+
+            # register the contract
+            otherContract = RegisterAppCall('contract_hash', 'param1','param2')
+
+            # call the contract
+
+            result = otherContract( a, b )
+
+
+        :param lineset: the set of lines containing an app call registration
+        :type lineset: list
+
         """
         appcall_registration = SmartContractAppCall(lineset)
         for registration in self.app_call_registrations:
@@ -335,6 +371,8 @@ class Module():
     def split_lines(self):
 
         """
+
+        splits the list of lines in the module into a set of objects that can be interpreted.
 
         """
         lineitem = None
@@ -355,8 +393,14 @@ class Module():
     def write(self):
 
         """
+        Writes the current module to a byte string
 
-        :return:
+        Note, if you are using the ``Compiler.load('path/to/file.py')``, you must call ``module.write()`` before any inspection of the module is possible.
+
+        :return: a bytestring of representing the current module
+        :rtype: bytes
+
+
         """
         self.link_methods()
 
@@ -365,8 +409,11 @@ class Module():
     def write_methods(self):
 
         """
+        writes all methods in the current module to a byte string
 
-        :return:
+        :return: a bytestring of all current methods in this module
+        :rtype: bytes
+
         """
         b_array = bytearray()
         for key, vm_token in self.all_vm_tokens.items():
@@ -382,7 +429,10 @@ class Module():
 
         """
 
+        this method performs linkage of addresses between methods.
+
         """
+
         self.all_vm_tokens = OrderedDict()
 
         address = 0
@@ -421,7 +471,36 @@ class Module():
 
         """
 
+        this method is used to print the output of the executable in a readable/ tokenized format.
+        sample usage:
+
+        >>> from boa.compiler import Compiler
+        >>> module = Compiler.load('./boa/tests/src/LambdaTest.py').default
+        >>> module.write()
+        >>> module.to_s()
+        12            3   LOAD_CONST          9                                                 [data]
+                      4   STORE_FAST          j                                                 [data]
+        22            11  LOAD_FAST           j                                                 [data]
+                      17  CALL_FUNCTION       Main.<locals>.q_1 [<boa.code.pytoken.PyToken object at 0x10cb53c50>] [data] 22
+                      20  STORE_FAST          m                                                 [data]
+        24            27  243                 b'\x03\x00'                                       [data] 3
+                      30  LOAD_FAST           m                                                 [data]
+                      35  NOP                                                                   [data]
+                      36  241                                                                   [data]
+                      37  242                                                                   [data]
+                      38  RETURN_VALUE                                                          [data]
+        20            49  243                 b'\x03\x00'                                       [data] 3
+                      52  LOAD_FAST           x                                                 [data]
+                      57  LOAD_CONST          1                                                 [data]
+                      58  BINARY_ADD                                                            [data]
+                      59  NOP                                                                   [data]
+                      60  241                                                                   [data]
+                      61  242                                                                   [data]
+                      62  RETURN_VALUE                                                          [data]
+
+
         """
+
         lineno = 0
         pstart = True
         for i, (key, value) in enumerate(self.all_vm_tokens.items()):

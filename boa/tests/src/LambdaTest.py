@@ -3,8 +3,11 @@
 def Main():
 
     """
+    a sample smart contract demonstrating how to use lambdas in smart contracts
 
-    :return:
+    :return: result of the smart contract execution
+    :rtype: int
+
     """
     j = 9
 

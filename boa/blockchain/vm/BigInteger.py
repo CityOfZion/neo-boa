@@ -6,17 +6,30 @@ class BigInteger(int):
     def FromBytes(data, signed=False):
         """
 
-        :param data:
-        :param signed:
-        :return:
+        Convert a bytearray into a BigInteger object
+
+        :param data: a bytearray representing an integer
+        :type data: bytearray
+
+        :param signed: whether or not the bytearray is signed
+        :type signed: bool
+
+        :return: a BigInteger object
+        :rtype: ``boa.blockchain.vm.BigInteger``
+
         """
         return BigInteger(int.from_bytes(data, 'little', signed=signed))
 
     def Equals(self, other):
         """
+        Compare two BigInteger objects
 
-        :param other:
-        :return:
+        :param other: the BigInteger to compare this one with
+        :type other: BigInteger
+
+        :return: whether the two items are equal
+        :rtype: bool
+
         """
         return super(BigInteger, self).__eq__(other)
 
@@ -24,9 +37,16 @@ class BigInteger(int):
 
         """
 
-        :param signed:
-        :return:
+        converts a big integer object into a bytearray
+
+        :param signed: whether or not it should be signed
+        :type signed: bool
+
+        :return: a bytearray of representing the BigInteger
+        :rtype: bytearray
+
         """
+
         if self < 0:
             try:
                 return self.to_bytes(1 + ((self.bit_length() + 7) // 8), byteorder='little', signed=True)

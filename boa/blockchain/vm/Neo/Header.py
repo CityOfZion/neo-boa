@@ -59,57 +59,64 @@ class Header():
         return GetNextConsensus(self)
 
 
-def GetHash(header):
+def GetHash(header: Header) -> bytearray:
     """
 
-    :param header:
-    """
-    pass
+    gets the hash of the header
 
-
-def GetVersion(header):
-    """
-
-    :param header:
     """
     pass
 
 
-def GetPrevHash(header):
+def GetVersion(header: Header) -> int:
     """
 
-    :param header:
-    """
-    pass
+    gets the version of the header
 
-
-def GetMerkleRoot(header):
-    """
-
-    :param header:
     """
     pass
 
 
-def GetTimestamp(header):
+def GetPrevHash(header: Header) -> bytearray:
     """
 
-    :param header:
-    """
-    pass
+    gets the hash of the previous header in the blockchain
 
-
-def GetConsensusData(header):
-    """
-
-    :param header:
     """
     pass
 
 
-def GetNextConsensus(header):
+def GetMerkleRoot(header: Header) -> bytearray:
     """
 
-    :param header:
+    gets the merkle root of the transactions contained in the block
+
+    """
+    pass
+
+
+def GetTimestamp(header: Header) -> int:
+    """
+
+    gets the timestamp of when the header was created
+
+    """
+    pass
+
+
+def GetConsensusData(header: Header) -> bytearray:
+    """
+
+    gets the address of the consensus
+
+    """
+    pass
+
+
+def GetNextConsensus(header: Header) -> bytearray:
+    """
+
+    gets the address where the next consensus will occur
+
     """
     pass

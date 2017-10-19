@@ -9,7 +9,7 @@ The compiler supports a subset of the Python language ( in the same way that a B
 
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 10
 
     overview
     install
@@ -17,15 +17,12 @@ The compiler supports a subset of the Python language ( in the same way that a B
     contribute
     license
     tests
-
     boa/compiler
     boa/code/module
     boa/code/method
-    boa/code/block
-
     boa/tests/src/index
-
-
+    boa/interop/blockchain
+    boa/interop/executionengine
 
 
 .. _issue: https://github.com/CityOfZion/neo-boa/issues/new

@@ -43,9 +43,7 @@ class Line():
 
         """
         for item in self.items:
-            print("IS DOCSTRING? %s %s " % ( item[0], item[1]))
             if item[0] == pyop.STORE_NAME and item[1] == '__doc__':
-                print("ITEM IS DOCSTRING")
                 return True
         return False
 
