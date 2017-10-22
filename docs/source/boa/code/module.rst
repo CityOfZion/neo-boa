@@ -1,7 +1,7 @@
 boa.code.module.Module
 ======================
 
-Below is the details of the ``boa.code.Module`` implemnation
+What follows are the details of the ``Module`` implementation.
 
 .. autoclass:: boa.code.module.Module
     :members:

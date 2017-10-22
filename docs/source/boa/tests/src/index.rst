@@ -2,19 +2,17 @@
 Sample Python Files
 ===================
 
-Addition example
-================
+Addition
+========
 
-This example demonstratess that you can add items.
-It also shows an example of accepting 4 parameters in your smart contract
+This example show how to add numbers. It is also an example of a smart contract that accepts multiple parameters (4).
 
 .. automodule:: boa.tests.src.AddTest1
 
+Lists
+=====
 
-List example
-============
-
-This example shows how to create and manipulate lists
+This example shows how to create and manipulate lists.
 
 .. automodule:: boa.tests.src.ArrayTest
 
@@ -22,13 +20,14 @@ This example shows how to create and manipulate lists
 Binary Operators
 ================
 
-This example shows how you can use binary operators.
+This example shows how to use binary operators.
 
 .. automodule:: boa.tests.src.BinopTest
 
 
 NEP5 Token
 ==========
-This example shows how you would create an NEP5 token
+
+This example shows how to create a NEP5 token.
 
 .. automodule:: boa.tests.src.NEP5Test

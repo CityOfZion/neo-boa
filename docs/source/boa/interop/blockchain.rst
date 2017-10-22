@@ -4,7 +4,7 @@
 
 The items below are used for gathering state data contained within the blockchain.
 Because all items below are implemented in the Neo Virtual Machine, their source is not available here.
-Please see the `neo-python <https://github.com/CityOfZion/neo-python>`_ project if you would like to know more about their exact implementation.
+Please see the `neo-python <https://github.com/CityOfZion/neo-python>`_ project if you want to know more about their exact implementation.
 
 
 Blockchain
@@ -15,7 +15,7 @@ Blockchain
 
 Header
 ^^^^^^
-The header object contains all of information about a block except for the transaction data
+A Header object contains all information about a block, except for the transaction data.
 
 .. automodule:: boa.blockchain.vm.Neo.Header
 
@@ -23,16 +23,15 @@ The header object contains all of information about a block except for the trans
 Block
 ^^^^^
 
-The block object contains the transaction data for a block
+A Block object contains the transaction data for a block.
 
 .. automodule:: boa.blockchain.vm.Neo.Block
-
 
 
 Account
 ^^^^^^^
 
-The account object represents an address on the blockchain
+The Account object represents an address on the blockchain.
 
 .. automodule:: boa.blockchain.vm.Neo.Account
 
@@ -40,7 +39,7 @@ The account object represents an address on the blockchain
 Action
 ^^^^^^
 
-Actions are used to register an action/ event listener on the blockchain
+An Action object is used to register an action/event listener on the blockchain.
 
 .. automodule:: boa.blockchain.vm.Neo.Action
 
@@ -48,7 +47,7 @@ Actions are used to register an action/ event listener on the blockchain
 App
 ^^^
 
-App calls are used to call other contracts on the blockchain
+An App object used to call other contracts on the blockchain.
 
 .. automodule:: boa.blockchain.vm.Neo.App
 
@@ -56,8 +55,6 @@ App calls are used to call other contracts on the blockchain
 Asset
 ^^^^^
 
-Assets are used to look up information about blockchain native assets such as NEO or Gas
+An Asset object is used to look up information about native assets such as NEO or Gas.
 
 .. automodule:: boa.blockchain.vm.Neo.Asset
-
-
