@@ -1,7 +1,5 @@
-
 from byteplay3 import Code, SetLinenoType, Label
 from boa.code import pyop
-
 
 from boa.code.line import Line
 from boa.code.method import Method
@@ -10,21 +8,19 @@ from boa.code.items import Definition, Klass, Import, Action, SmartContractAppCa
 from boa.blockchain.vm import VMOp
 
 from collections import OrderedDict
+
 import pdb
 
 
 class Module():
-
     """
-
     A Module is the top level component which contains code objects.
-    When, for example compiling ``path/to/my/file.py``, the items contained in ``file.py`` are the module.
+    When, for example, compiling ``path/to/my/file.py``, the items contained in ``file.py`` are the module.
     An executable may have many modules.  The 'default' or 'entry' module in the example above would be ``file.py``
 
     When calling ``Compiler.load_and_save('path/to/file.py')``, a module is created for ``file.py``.
     If `file.py` imports any other functionality, those modules will also be added to the executable
     and placed in the Module.loaded_modules attribute.
-
 
     After modules have been processed as methods, and then methods processed as blocks, and blocks processed to tokens,
     The main or ``default`` module's ``write()`` method is called, which writes the executable to a byte string and returns
@@ -55,42 +51,40 @@ class Module():
     Once an executable has been processed and tokenized, it will then have a set of vm tokens that are similar
     to the ``byteplay3`` tokens, but different in important ways. These are contained in the module's ``all_vm_tokens`` attribute
 
-    You may call ``module.to_s()`` to view the program as it has been tokenized for the NEO Virtual Machine
+    You may call ``module.to_s()`` to view the program as it has been tokenized for the NEO Virtual Machine.
+
 
     >>> module.to_s()
-    4             31  LOAD_FAST           a                                                 [data]
-                  36  LOAD_CONST          2                                                 [data]
-                  37  BINARY_MULTIPLY                                                       [data]
-                  38  STORE_FAST          a2                                                [data]
-    6             45  LOAD_FAST           b                                                 [data]
-                  50  LOAD_CONST          1                                                 [data]
-                  51  BINARY_ADD                                                            [data]
-                  52  STORE_FAST          b2                                                [data]
-    8             59  LOAD_FAST           c                                                 [data]
-                  64  LOAD_CONST          2                                                 [data]
-                  65  BINARY_TRUE_DIVIDE                                                    [data]
-                  66  STORE_FAST          c2                                                [data]
-    10            73  LOAD_FAST           d                                                 [data]
-                  78  LOAD_CONST          1                                                 [data]
-                  79  BINARY_SUBTRACT                                                       [data]
-                  80  STORE_FAST          d2                                                [data]
-    13            87  243                 b'\x03\x00'                                       [data] 3
-                  90  LOAD_FAST           a2                                                [data]
-                  95  LOAD_FAST           b2                                                [data]
-                  100 BINARY_ADD                                                            [data]
-                  101 LOAD_FAST           c2                                                [data]
-                  106 BINARY_ADD                                                            [data]
-                  107 LOAD_FAST           d2                                                [data]
-                  112 BINARY_ADD                                                            [data]
-                  113 NOP                                                                   [data]
-                  114 241                                                                   [data]
-                  115 242                                                                   [data]
-                  116 RETURN_VALUE                                                          [data]
-
-
-
-
+    4             31  LOAD_FAST           a                [data]
+                  36  LOAD_CONST          2                [data]
+                  37  BINARY_MULTIPLY                      [data]
+                  38  STORE_FAST          a2               [data]
+    6             45  LOAD_FAST           b                [data]
+                  50  LOAD_CONST          1                [data]
+                  51  BINARY_ADD                           [data]
+                  52  STORE_FAST          b2               [data]
+    8             59  LOAD_FAST           c                [data]
+                  64  LOAD_CONST          2                [data]
+                  65  BINARY_TRUE_DIVIDE                   [data]
+                  66  STORE_FAST          c2               [data]
+    10            73  LOAD_FAST           d                [data]
+                  78  LOAD_CONST          1                [data]
+                  79  BINARY_SUBTRACT                      [data]
+                  80  STORE_FAST          d2               [data]
+    13            87  243                 b'\x03\x00'      [data] 3
+                  90  LOAD_FAST           a2               [data]
+                  95  LOAD_FAST           b2               [data]
+                  100 BINARY_ADD                           [data]
+                  101 LOAD_FAST           c2               [data]
+                  106 BINARY_ADD                           [data]
+                  107 LOAD_FAST           d2               [data]
+                  112 BINARY_ADD                           [data]
+                  113 NOP                                  [data]
+                  114 241                                  [data]
+                  115 242                                  [data]
+                  116 RETURN_VALUE                         [data]
     """
+    
     bp = None  # this is to store the byteplay reference
 
     path = None  # the path where this file is
@@ -111,8 +105,7 @@ class Module():
 
     is_sys_module = None
 
-    # dict for converting method tokens into linked method tokens for writing
-    all_vm_tokens = None
+    all_vm_tokens = None # dict for converting method tokens into linked method tokens for writing
 
     loaded_modules = None
 
@@ -120,53 +113,63 @@ class Module():
 
     _names_to_load = None
 
+
     @property
     def module_path(self):
         """
-        returns the file path of the module
+        Return the file path of the module.
 
         :return: the path of the module
         :rtype: str
-
         """
+        
         return self._module_name
+        
 
     @property
     def main(self):
         """
-        returns the default method in this module
+        Return the default method in this module.
 
         :return: the default method in this module
         :rtype: ``boa.code.method.Method``
-
         """
+        
         for m in self.methods:
+            
             if m.name == 'Main':
                 return m
+                
         if len(self.methods):
             return self.methods[0]
+            
         return None
+        
 
     @property
     def orderered_methods(self):
         """
-        an ordered list of methods
+        An ordered list of methods
 
-        :return: a list of ordered methods is this module
+        :return: A list of ordered methods is this module
         :rtype: list
-
         """
-        om = []
+        
+        oms = []
+        
         self.methods.reverse()
+        
         if self.main:
-            om = [self.main]
+            oms = [self.main]
 
         for m in self.methods:
+            
             if m == self.main:
                 continue
-            om.append(m)
+            oms.append(m)
 
-        return om
+        return oms
+
 
     def add_method(self, method):
         """
@@ -177,40 +180,43 @@ class Module():
 
         :return: whether the method was added
         :rtype: bool
-
         """
+        
         for m in self.methods:
+            
             if m.name == method.name:
-
+    
                 if m.name != m.full_name:
+                    
                     if m.full_name == method.full_name:
                         return False
                 else:
                     return False
-#                return False
+                # return False
 
-#        print("appending method %s %s " % (method.name, method.full_name))
+        # print("appending method %s %s " % (method.name, method.full_name))
         self.methods.append(method)
+        
         return True
 
 
     def method_by_name(self, method_name):
-
         """
-        looks up a method by its name from the module ``methods`` list
+        Look up a method by its name from the module ``methods`` list.
         :param method_name: the name of the method to look up
         :type method_name: str
 
         :return: the method ( if it is found)
         :rtype: ``boa.code.method.Method``
-
         """
+        
         for m in self.methods:
             if m.full_name == method_name:
                 return m
             elif m.name == method_name:
                 return m
         return None
+        
 
     def __init__(self, path, module_name='', is_sys_module=False, items_to_import=None):
 
@@ -219,11 +225,8 @@ class Module():
         self._module_name = module_name
 
         self.is_sys_module = is_sys_module
-
-        if items_to_import is None:
-            self._names_to_load = ['STAR']
-        else:
-            self._names_to_load = items_to_import
+        
+        self._names_to_load = ['STAR'] if items_to_import is None else items_to_import
 
         source = open(path, 'rb')
 
@@ -234,13 +237,13 @@ class Module():
         source.close()
 
         self.build()
+        
 
     def build(self):
-
         """
-        Splits the ``bp.code`` object into lines, and assembles the lines into different items
-
+        Split the ``bp.code`` object into lines, and assembles the lines into different items.
         """
+        
         self.lines = []
         self.imports = []
         self.module_variables = []
@@ -278,71 +281,71 @@ class Module():
                 print('not sure what to do with line %s ' % lineset)
                 pdb.set_trace()
 
-    def process_import(self, import_item):
 
+    def process_import(self, import_item):
         """
-        processes an import statement within this module
+        Processes an import statement within this module.
 
         :param import_item:
         :type import_item: ``boa.code.items.Import subclass``
-
         """
+        
         self.imports.append(import_item)
 
         self.loaded_modules.append(import_item.imported_module)
 
-        # go through all the methods in the imported module
+        # Go through all the methods in the imported module.
         for method in import_item.imported_module.methods:
             self.add_method(method)
 
-    def process_method(self, lineset):
 
+    def process_method(self, lineset):
         """
         processes a set of lines that contain a byteplay3 code object
 
         :param lineset: the lineset to process and add
         :type lineset: list
-
         """
+        
         m = Method(lineset.code_object, self)
 
         if 'STAR' in self._names_to_load:
             self.add_method(m)
         else:
-
             for item in self._names_to_load:
+                
                 if item == m.name:
                     self.add_method(m)
 
     def process_action(self, lineset):
         """
-        processes an action within this module
-        a sample action would be to create an event like so:
+        Processes an action within this module.
+        A sample action would be to create an event like so:
 
         .. code-block:: python
 
             from boa.blockchain.vm.Neo.Action import RegisterAction
 
-            # register the action
+            # Register the action.
             onRefund = RegisterAction('refund', 'to_address', 'amount')
 
-            # dispatch an action
-
+            # Dispatch an action.
             onRefund(my_address, 100)
 
-
-        :param lineset:
+        :param lineset: The set of lines containing an app call registration
         :type lineset: list
         """
+        
         action = Action(lineset)
         for act in self.actions:
             if act.method_name == action.method_name:
-                return
+                return None
+                
         self.actions.append(action)
+
 
     def process_smart_contract_app_registration(self, lineset):
         """
-
         processes a smart contract app registration, for when you would like to call another
         smart contract from your contract.  for example:
 
@@ -354,27 +357,24 @@ class Module():
             otherContract = RegisterAppCall('contract_hash', 'param1','param2')
 
             # call the contract
-
             result = otherContract( a, b )
 
-
-        :param lineset: the set of lines containing an app call registration
+        :param lineset: The set of lines containing an app call registration
         :type lineset: list
-
         """
+        
         appcall_registration = SmartContractAppCall(lineset)
         for registration in self.app_call_registrations:
             if registration.method_name == appcall_registration.method_name:
                 return
         self.app_call_registrations.append(appcall_registration)
 
+
     def split_lines(self):
-
         """
-
-        splits the list of lines in the module into a set of objects that can be interpreted.
-
+        Split the list of lines in the module into a set of objects that can be interpreted.
         """
+        
         lineitem = None
 
         for i, (op, arg) in enumerate(self.bp.code):
@@ -390,31 +390,30 @@ class Module():
         if len(lineitem):
             self.lines.append(Line(lineitem))
 
+
     def write(self):
-
         """
-        Writes the current module to a byte string
+        Write the current module to a byte string.
 
-        Note, if you are using the ``Compiler.load('path/to/file.py')``, you must call ``module.write()`` before any inspection of the module is possible.
+        Note that if you are using the ``Compiler.load('path/to/file.py')``, you must 
+        call ``module.write()`` before any inspection of the module is possible.
 
-        :return: a bytestring of representing the current module
+        :return: A bytestring of representing the current module
         :rtype: bytes
-
-
         """
         self.link_methods()
 
         return self.write_methods()
 
+
     def write_methods(self):
-
         """
-        writes all methods in the current module to a byte string
+        Write all methods in the current module to a byte string.
 
-        :return: a bytestring of all current methods in this module
+        :return: A bytestring of all current methods in this module
         :rtype: bytes
-
         """
+        
         b_array = bytearray()
         for key, vm_token in self.all_vm_tokens.items():
 
@@ -424,13 +423,11 @@ class Module():
                 b_array = b_array + vm_token.data
 
         return b_array
+        
 
     def link_methods(self):
-
         """
-
-        this method performs linkage of addresses between methods.
-
+        Perform linkage of addresses between methods.
         """
 
         self.all_vm_tokens = OrderedDict()
@@ -438,39 +435,32 @@ class Module():
         address = 0
 
         for method in self.orderered_methods:
-
             method.method_address = address
 
             for key, vmtoken in method.vm_tokens.items():
-
                 self.all_vm_tokens[address] = vmtoken
 
                 address += 1
 
                 if vmtoken.data is not None:
-
                     address += len(vmtoken.data)
 
                 vmtoken.addr = vmtoken.addr + method.method_address
 
         for key, vmtoken in self.all_vm_tokens.items():
-
             if vmtoken.src_method is not None:
 
                 target_method = self.method_by_name(vmtoken.target_method)
-
                 if target_method:
 
                     jump_len = target_method.method_address - vmtoken.addr
                     vmtoken.data = jump_len.to_bytes(2, 'little', signed=True)
                 else:
-                    raise Exception("Target method %s not found" %
-                                    vmtoken.target_method)
+                    raise Exception("Target method %s not found" % vmtoken.target_method)
+
 
     def to_s(self):
-
         """
-
         this method is used to print the output of the executable in a readable/ tokenized format.
         sample usage:
 
@@ -478,39 +468,38 @@ class Module():
         >>> module = Compiler.load('./boa/tests/src/LambdaTest.py').default
         >>> module.write()
         >>> module.to_s()
-        12            3   LOAD_CONST          9                                                 [data]
-                      4   STORE_FAST          j                                                 [data]
-        22            11  LOAD_FAST           j                                                 [data]
-                      17  CALL_FUNCTION       Main.<locals>.q_1 [<boa.code.pytoken.PyToken object at 0x10cb53c50>] [data] 22
-                      20  STORE_FAST          m                                                 [data]
-        24            27  243                 b'\x03\x00'                                       [data] 3
-                      30  LOAD_FAST           m                                                 [data]
-                      35  NOP                                                                   [data]
-                      36  241                                                                   [data]
-                      37  242                                                                   [data]
-                      38  RETURN_VALUE                                                          [data]
-        20            49  243                 b'\x03\x00'                                       [data] 3
-                      52  LOAD_FAST           x                                                 [data]
-                      57  LOAD_CONST          1                                                 [data]
-                      58  BINARY_ADD                                                            [data]
-                      59  NOP                                                                   [data]
-                      60  241                                                                   [data]
-                      61  242                                                                   [data]
-                      62  RETURN_VALUE                                                          [data]
-
-
+        12            3   LOAD_CONST          9                [data]
+                      4   STORE_FAST          j                [data]
+        22            11  LOAD_FAST           j                [data]
+                      17  CALL_FUNCTION       Main.<locals>.q_1 \
+					  [<boa.code.pytoken.PyToken object at 0x10cb53c50>] [data] 22
+                      20  STORE_FAST          m                [data]
+        24            27  243                 b'\x03\x00'      [data] 3
+                      30  LOAD_FAST           m                [data]
+                      35  NOP                                  [data]
+                      36  241                                  [data]
+                      37  242                                  [data]
+                      38  RETURN_VALUE                         [data]
+        20            49  243                 b'\x03\x00'      [data] 3
+                      52  LOAD_FAST           x                [data]
+                      57  LOAD_CONST          1                [data]
+                      58  BINARY_ADD                           [data]
+                      59  NOP                                  [data]
+                      60  241                                  [data]
+                      61  242                                  [data]
+                      62  RETURN_VALUE                         [data]
         """
 
         lineno = 0
         pstart = True
+        
         for i, (key, value) in enumerate(self.all_vm_tokens.items()):
-
             if value.pytoken:
                 pt = value.pytoken
-
                 do_print_line_no = False
                 to_label = None
                 from_label = '    '
+                
                 if pt.line_no != lineno:
                     print("\n")
                     lineno = pt.line_no

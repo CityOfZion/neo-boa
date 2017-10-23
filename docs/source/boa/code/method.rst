@@ -1,7 +1,7 @@
 boa.code.method.Method
 ======================
 
-Below is the details of the ``boa.code.Method`` implemnation
+What follows are the details of the ``Method`` implementation.
 
 .. autoclass:: boa.code.method.Method
     :members:
