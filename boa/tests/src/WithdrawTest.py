@@ -21,7 +21,7 @@ onWithdrawReconciled = RegisterAction('withdraw_reconcile', 'account','amount')
 
 def Main(args):
 
-    print("RUNNING WITHDRAW TEST!!!!")
+    print("Do Withdraw Test")
 
     trigger = GetTrigger()
 
@@ -40,6 +40,7 @@ def Main(args):
         else:
 
             # if it is not the owner, we need to verify a few things
+            print("will test can withdraw")
             can_widthraw = CanWithdrawNeo()
 
             print("can withdraw neo?")
@@ -90,34 +91,26 @@ def Main(args):
 
 
 
-def IsInvocationTx():
-
-    tx = GetScriptContainer()
-
-    type = tx.Type
-
-    Notify(type)
-
-    if type == InvocationTransaction():
-
-        print("Is invocation!!")
-
-        return True
-
-    print("not invocation")
-    return False
-
 
 def CanWithdrawNeo():
 
     print("[can withdraw]")
-    is_invocation = IsInvocationTx()
 
-    if is_invocation:
+    tx = GetScriptContainer()
+
+    type = GetType(tx)
+
+    invoke_type = b'\xd1'
+
+    print("[can withdraw] got tx type...")
+
+    if type == invoke_type:
+        print("[can withdraw] Is invocation!!")
+
+
         # this is the contract's address
         sender_addr = GetExecutingScriptHash()
 
-        tx = GetScriptContainer()
 
         withdrawal_amount = 0
 
@@ -133,12 +126,13 @@ def CanWithdrawNeo():
 
             if output_asset_id == NEO_ASSET_ID:
 
+                output_val = GetValue(output)
+
                 if shash != sender_addr:
 
                     print("[can withdraw] output is to receiver")
                     receiver_addr = shash
 
-                    output_val = GetValue(output)
 
                     withdrawal_amount = withdrawal_amount + output_val
 
@@ -147,7 +141,10 @@ def CanWithdrawNeo():
 
                 else:
 
-                    print("[can withdraw] output is to contract sender addr, ignore")
+                    print("[can withdraw] output is to contract sender addr, subtract from withdraw total")
+
+                    withdrawal_amount = withdrawal_amount - output_val
+
                     Notify(output)
             else:
 
@@ -184,7 +181,9 @@ def CanWithdrawNeo():
         else:
 
             print("[can withdraw] receiver addr not set")
+    else:
 
+        print("[can withdraw] tx is not invocation tx. return false")
 
     return False
 
