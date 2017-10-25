@@ -98,14 +98,16 @@ def concat(str1, str2):
 
 
 # This is not necessary.  you can use mystring[start:end]
-# def substr(source,start_index, count):
-#    """
-#    substr(source, start_index, count) -> list object
-#
-#    Return a subset of a string `source`, starting at `start_index` and
-#    of length `count`
-#    """
-#    pass
+# Actually, it is currently necessary, as mystring[start:end] is not working as expected
+
+def substr(source,start_index, count):
+    """
+    substr(source, start_index, count) -> list object
+
+    Return a subset of a string `source`, starting at `start_index` and
+    of length `count`
+    """
+    pass
 
 
 def take(source, count):

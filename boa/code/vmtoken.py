@@ -7,12 +7,10 @@ from boa.blockchain.vm.BigInteger import BigInteger
 
 from collections import OrderedDict
 
-
 NEO_SC_FRAMEWORK = 'boa.blockchain.vm.'
 
 
 class VMToken():
-
     """
 
     """
@@ -62,7 +60,6 @@ class VMToken():
 
 
 class VMTokenizer():
-
     """
 
     """
@@ -164,9 +161,9 @@ class VMTokenizer():
         """
 
         """
-        total_items = self.method.total_lines  \
-            + len(self.method.args) \
-            + self.method.dynamic_iterator_count
+        total_items = self.method.total_lines \
+                      + len(self.method.args) \
+                      + self.method.dynamic_iterator_count
 
         self.total_param_and_body_count_token = self.insert_push_integer(
             total_items)
@@ -280,7 +277,6 @@ class VMTokenizer():
         self._address += 1
 
         if vmtoken.data is not None:
-
             self._address += len(vmtoken.data)
 
         self.insert_vm_token_at(vmtoken, vmtoken.addr)
@@ -599,13 +595,15 @@ class VMTokenizer():
                 self.insert1(VMOp.SWAP)
 
         elif param_len == 3:
-            self.insert_push_integer(2)
-            self.insert1(VMOp.XSWAP)
+
+            if pytoken.func_name != 'substr':
+                self.insert_push_integer(2)
+                self.insert1(VMOp.XSWAP)
+
         else:
             half_p = int(param_len / 2)
 
             for i in range(0, half_p):
-
                 save_to = param_len - 1 - i
 
                 self.insert_push_integer(save_to)
@@ -665,7 +663,7 @@ class VMTokenizer():
         :param op:
         :return:
         """
-        if op in ['len', 'abs', 'min', 'max', 'concat', 'take',
+        if op in ['len', 'abs', 'min', 'max', 'concat', 'take', 'substr',
                   'sha1', 'sha256', 'hash160', 'hash256',
                   'verify_signature', 'verify_signatures']:
             return True
@@ -691,6 +689,8 @@ class VMTokenizer():
             return self.convert1(VMOp.CAT, pytoken)
         elif op == 'take':
             return self.convert1(VMOp.LEFT, pytoken)
+        elif op == 'substr':
+            return self.convert1(VMOp.SUBSTR, pytoken)
         elif op == 'sha1':
             return self.convert1(VMOp.SHA1, pytoken)
         elif op == 'sha256':
@@ -749,7 +749,6 @@ class VMTokenizer():
                   'help', 'hash', 'hasattr', 'globals', 'format', 'exit',
                   'exec', 'eval', 'dir', 'deleteattr', 'credits', 'copyright',
                   'compile', 'chr', 'callable', 'bin', 'ascii', 'any', 'all', ]:
-
             return True
 
         return False
