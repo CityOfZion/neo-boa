@@ -44,7 +44,7 @@ def Main(args):
             can_widthraw = CanWithdrawNeo()
 
             print("can withdraw neo?")
-            Notify(can_widthraw)
+#            Notify(can_widthraw)
 
             return can_widthraw
 
@@ -100,13 +100,10 @@ def CanWithdrawNeo():
 
     type = GetType(tx)
 
-    invoke_type = b'\xd1'
-
     print("[can withdraw] got tx type...")
 
-    if type == invoke_type:
+    if type == 209:
         print("[can withdraw] Is invocation!!")
-
 
         # this is the contract's address
         sender_addr = GetExecutingScriptHash()
