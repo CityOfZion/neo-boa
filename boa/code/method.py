@@ -381,15 +381,9 @@ class Method():
                         self.local_stores[localvar] = length
 
             if block.has_make_function:
-
                 block.preprocess_make_function(self)
                 self.local_methods[block.local_func_varname] = block.local_func_name
 
-            if block.has_slice:
-                block.preprocess_slice()
-                if block.slice_item_length is not None:
-                    length = len(self.local_stores)
-                    self.local_stores[block.slice_item_length] = length
 
             if block.has_unprocessed_array:
                 block.preprocess_arrays()
@@ -399,6 +393,12 @@ class Method():
 
             if block.has_unprocessed_method_calls:
                 block.preprocess_method_calls(self)
+
+            if block.has_slice:
+                block.preprocess_slice()
+                if block.slice_item_length is not None:
+                    length = len(self.local_stores)
+                    self.local_stores[block.slice_item_length] = length
 
             if iter_setup_block is not None:
                 block.process_iter_body(iter_setup_block)

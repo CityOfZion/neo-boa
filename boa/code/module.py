@@ -413,7 +413,7 @@ class Module():
         :return: A bytestring of all current methods in this module
         :rtype: bytes
         """
-        
+
         b_array = bytearray()
         for key, vm_token in self.all_vm_tokens.items():
 

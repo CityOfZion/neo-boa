@@ -2,7 +2,7 @@
 from byteplay3 import Opcode, Label
 from boa.code.pytoken import PyToken
 from boa.code import pyop
-
+import pdb
 
 class Block():
 
@@ -164,8 +164,8 @@ class Block():
 
         :return:
         """
-        if self.has_slice:
-            return False
+#        if self.has_slice:
+#            return False
 #        if self.is_list_comprehension:
 #            return False
         for token in self.oplist:
@@ -259,12 +259,10 @@ class Block():
 
     def preprocess_slice(self):
         """
-
+        this method processes slices of strings or byte arrays such as item[1:3]
         """
         index_to_remove = -1
-        do_calculate_item_length = False
-        getlength_token = None
-        slicelength_token = None
+
         for index, token in enumerate(self.oplist):
             if token.py_op == pyop.BUILD_SLICE:
                 # first, we want to take out the BINARY_SUBSC op, since we wont need it
@@ -275,31 +273,17 @@ class Block():
                 # but we get None.
                 # in that case, we need to convert None into the length of the item being sliced
                 end_op = self.oplist[index - 1]
-#                print("ENDOP: %s " % end_op.args)
 
                 if end_op.args is None:
-                    #                    print("END OP IS NONE, convert to function len call!")
-                    do_calculate_item_length = True
-                    getlength_token = PyToken(
-                        op=Opcode(pyop.CALL_FUNCTION), lineno=token.line_no, args=1)
-                    getlength_token.func_params = [self.oplist[0]]
-                    getlength_token.func_name = 'len'
+                    # 0xffffff
+                    # if you have a list greater than that length, well you'll have other problems than this
+                    max_len = 16777215
+                    end_op.args = max_len
 
-                    # now we need a variable name to store the length of the array
-                    self.slice_item_length = 'sliceitem_length_%s' % Block.forloop_counter
-
-                    # now store the variable which is the output of the len(items) call
-                    slicelength_token = PyToken(op=Opcode(pyop.STORE_FAST), lineno=token.line_no, index=-1,
-                                                args=self.slice_item_length)
-
-                    end_op.py_op = Opcode(pyop.LOAD_FAST)
-                    end_op.args = self.slice_item_length
 
         if index_to_remove > -1:
             del self.oplist[index_to_remove]
 
-        if do_calculate_item_length:
-            self.oplist = [getlength_token, slicelength_token] + self.oplist
 
     def preprocess_iter(self):
 

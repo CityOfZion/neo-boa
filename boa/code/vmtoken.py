@@ -457,16 +457,28 @@ class VMTokenizer():
         else:
             local_name = py_token.args
 
-        position = self.method.local_stores[local_name]
 
-        # get array
-        self.convert1(VMOp.FROMALTSTACK, py_token=py_token)
-        self.convert1(VMOp.DUP)
-        self.convert1(VMOp.TOALTSTACK)
+        #check to see if this local is a variable
+        if local_name in self.method.local_stores:
 
-        # get i
-        self.convert_push_integer(position)
-        self.convert1(VMOp.PICKITEM)
+            position = self.method.local_stores[local_name]
+
+            # get array
+            self.convert1(VMOp.FROMALTSTACK, py_token=py_token)
+            self.convert1(VMOp.DUP)
+            self.convert1(VMOp.TOALTSTACK)
+
+            # get i
+            self.convert_push_integer(position)
+            self.convert1(VMOp.PICKITEM)
+
+        else:
+            print("hello?")
+            py_token.func_params = []
+            py_token.func_name = local_name
+
+            self.convert_method_call(py_token)
+
 
     def insert_unknown_type(self, item):
         """
@@ -566,6 +578,34 @@ class VMTokenizer():
         if not lenfound:
             self.insert_push_integer(0)
         self.convert1(VMOp.NEWARRAY, pytoken)
+
+    def convert_build_slice(self, pytoken):
+
+        # this was fun!
+
+        # rotate so list is on the top, then move it to alt stack
+        self.convert1(VMOp.ROT)
+        self.convert1(VMOp.TOALTSTACK, py_token=pytoken)
+
+        # swap the end index and the start index, duplicate start index to alt stack
+        self.convert1(VMOp.SWAP)
+        self.convert1(VMOp.DUP)
+        self.convert1(VMOp.TOALTSTACK)
+
+        # subtract end index from start index, this is placed on the stack
+        self.convert1(VMOp.SUB)
+
+        # get the start index and list from alt stack
+        self.convert1(VMOp.FROMALTSTACK)
+        self.convert1(VMOp.FROMALTSTACK)
+
+        # swap the list and the start index
+        self.convert_push_integer(2)
+        self.convert1(VMOp.XSWAP)
+
+        # and now perform substr. whew.
+        self.convert1(VMOp.SUBSTR)
+
 
     def convert_method_call(self, pytoken):
 
@@ -844,8 +884,7 @@ class VMTokenizer():
             raise Exception("Smart Contract Appcall %s not found " %
                             pytoken.func_name)
 
-        # push the contrcat hash
-        print("app call script hash address %s " % sc_appcall.script_hash_addr)
+        # push the contract hash
         vmtoken = self.convert1(
             VMOp.APPCALL, py_token=pytoken, data=sc_appcall.script_hash_addr)
 

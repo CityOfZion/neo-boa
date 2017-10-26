@@ -277,7 +277,7 @@ class PyToken():
                 token = tokenizer.convert1(VMOp.PICKITEM, self)
 
             elif op == pyop.BUILD_SLICE:
-                token = tokenizer.convert1(VMOp.SUBSTR, self)
+                token = tokenizer.convert_build_slice(self)
 
             # strings
 
