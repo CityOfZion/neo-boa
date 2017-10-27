@@ -258,7 +258,7 @@ class PyToken():
                 elif self.args == '<=':
                     token = tokenizer.convert1(VMOp.LTE, self)
                 elif self.args == '==':
-                    token = tokenizer.convert1(VMOp.EQUAL, self)
+                    token = tokenizer.convert1(VMOp.NUMEQUAL, self)
                 elif self.args == 'is':
                     token = tokenizer.convert1(VMOp.EQUAL, self)
                 elif self.args == '!=':
