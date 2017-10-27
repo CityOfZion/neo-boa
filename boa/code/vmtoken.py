@@ -473,7 +473,6 @@ class VMTokenizer():
             self.convert1(VMOp.PICKITEM)
 
         else:
-            print("hello?")
             py_token.func_params = []
             py_token.func_name = local_name
 
