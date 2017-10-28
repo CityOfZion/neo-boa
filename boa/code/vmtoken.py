@@ -9,6 +9,7 @@ from collections import OrderedDict
 
 NEO_SC_FRAMEWORK = 'boa.blockchain.vm.'
 
+import pdb
 
 class VMToken():
     """
@@ -163,7 +164,8 @@ class VMTokenizer():
         """
         total_items = self.method.total_lines \
                       + len(self.method.args) \
-                      + self.method.dynamic_iterator_count
+                      + self.method.dynamic_iterator_count \
+                      + 1
 
         self.total_param_and_body_count_token = self.insert_push_integer(
             total_items)
@@ -620,6 +622,9 @@ class VMTokenizer():
             return self.convert_push_data(bytes(pytoken.func_params[0].args), pytoken)
         elif pytoken.func_name == 'bytes':
             return self.convert_push_data(pytoken.func_params[0].args, pytoken)
+        elif pytoken.func_name == 'AppCall':
+            scripthash_token = pytoken.func_params.pop(0)
+            pytoken.script_hash_token = scripthash_token.args
 
         for t in pytoken.func_params:
             t.to_vm(self)
@@ -864,6 +869,11 @@ class VMTokenizer():
         """
         name = pytoken.func_name
 
+
+        if name == 'AppCall':
+            return True
+
+
         for appcall in self.method.module.app_call_registrations:
             if appcall.method_name == name:
                 return True
@@ -875,6 +885,20 @@ class VMTokenizer():
         :param pytoken:
         :return:
         """
+
+        # the following converts app calls of the pattern
+        # m = AppCall(script_hash, *args)
+        if pytoken.script_hash_addr is not None:
+
+            from boa.code.items import SmartContractAppCall
+
+            shash = SmartContractAppCall.ToScriptHashData( pytoken.script_hash_addr )
+
+            vmtoken = self.convert1(VMOp.APPCALL, py_token=pytoken, data=shash)
+            return vmtoken
+
+        # this is used for app calls that are registered
+        # using RegisterAppCall(script_hash, *args)
         sc_appcall = None
         for appcall in self.method.module.app_call_registrations:
             if appcall.method_name == pytoken.func_name:

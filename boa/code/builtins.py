@@ -119,21 +119,6 @@ def take(source, count):
     """
     pass
 
-def print_var(message, var):
-    """
-    print_var(message, var)
-
-    Uses Runtime.Log to construct a message that is
-    logged to the console which includes a variable
-    This is different from Runtime.Log which can only print a string
-    as well as Runtime.Notify, which doesn't get output unless the Smart Contract
-    executes successfully.
-
-    """
-
-    msg = concat(message,var)
-    print(msg)
-
 
 def range(start, stop):
     """
@@ -158,6 +143,7 @@ def range(start, stop):
         start = orig_start + index
 
     return out
+
 
 
 def sha1(data):

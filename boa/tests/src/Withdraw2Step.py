@@ -1,16 +1,17 @@
 from boa.blockchain.vm.Neo.Runtime import Notify,GetTrigger,CheckWitness
 from boa.blockchain.vm.Neo.Action import RegisterAction
 from boa.blockchain.vm.Neo.TriggerType import Application,Verification
-
+from boa.blockchain.vm.Neo.Blockchain import GetTransaction
 from boa.blockchain.vm.Neo.TransactionType import InvocationTransaction
 from boa.blockchain.vm.Neo.Transaction import *
 
 from boa.blockchain.vm.System.ExecutionEngine import GetScriptContainer,GetExecutingScriptHash,GetCallingScriptHash,GetEntryScriptHash
 
 from boa.blockchain.vm.Neo.Output import GetScriptHash, GetValue, GetAssetId
+from boa.blockchain.vm.Neo.Input import GetHash,GetIndex
 from boa.blockchain.vm.Neo.Storage import GetContext, Get, Put, Delete
 
-from boa.code.builtins import range,concat,list
+from boa.code.builtins import range,concat,list,print_var
 
 OWNER= b'\x13\xff4\xcc\x10\x1cVs\x7fe\xc3\xb3\xd2\xf9iTHESK'
 
@@ -19,7 +20,7 @@ NEO_ASSET_ID = b'\x9b|\xff\xda\xa6t\xbe\xae\x0f\x93\x0e\xbe`\x85\xaf\x90\x93\xe5
 
 onDeposit = RegisterAction('deposit','account','amount')
 
-onWithdrawRequestApproved = RegisterAction('withdrawApproved','account','vin_tx_id','vin_index')
+onWithdrawRequestApproved = RegisterAction('withdrawApproved','account','vin_requests')
 
 
 def Main(operation,args):
@@ -49,11 +50,12 @@ def Main(operation,args):
 
 
         if operation == 'deposit':
+
             deposit = DepositNeo()
             return deposit
 
-
         elif operation == 'withdrawalRequest':
+
             withdrawable_txs = VerifyWithdrawalRequest(args)
             return withdrawable_txs
 
@@ -65,7 +67,11 @@ def Main(operation,args):
         elif operation == 'clearPending':
             account = args[0]
             result = DeletePendingWithdrawal(account)
-            print("CLEARED?")
+            return result
+
+        elif operation == 'balanceOf':
+            account = args[0]
+            result = BalanceOf(account)
             return result
 
         else:
@@ -141,6 +147,12 @@ def VerifyWithdrawalRequest(args):
 
     account = args[0]
 
+    current_balance = BalanceOf(account)
+
+    if current_balance == 0:
+        print("No Current balance")
+        return False
+
     if CheckHasPendingWithdrawal(account):
         print("already a pending withdrawal")
         return False
@@ -150,42 +162,120 @@ def VerifyWithdrawalRequest(args):
     txids_len = arglen / 2
 
 
-    output = None
+    vin_requests= list(length=txids_len)
+
+
+    # so, this is a bit involved, so bear with me here
+    # lets assume a person has a balance that the contract owes them
+    # we need to allow them to put a hold on some tx vins that they can 'claim'
+    # after they have put the hold on them, they can withdraw and in the
+    # verification portion of the contract it will allow them
+
+    # but they may need to put a hold on tx vins that have a value
+    # more than they are owed.  So we want to allow them to put a hold
+    # on x number of txids, where the amount contained in x-1 vins is less than the amount they are owed
+    # and the amount in x txids is greater than or equal to the amount they are owed
+    # but only by one
+
+
+    hold_amount = 0
+    okcount = 0
+
 
     for i in range(0, txids_len):
 
         j = i * 2
-        vin_tx = args[j + 1]
-        vin_index = args[j + 2]
 
-        can_withdraw = PlaceVINHold(account, vin_tx,vin_index)
+        request_vin_tx = args[j + 1]
+        request_vin_index = args[j + 2]
 
-        if can_withdraw:
+        vin = LookupVIN(request_vin_tx, request_vin_index)
 
-            onWithdrawRequestApproved(account,vin_tx,vin_index)
+        if vin and vin[1] == NEO_ASSET_ID:
 
-            vin = concat(vin_index,vin_tx)
+            actual_amount = vin[0]
 
-            if len(output) > 1:
-                output = concat(output,vin)
-            else:
-                output = vin
+            # if the amount being held is less than the current balance
+            # it is ok, we allow the vin request
+            # this allows the hold amount to go over
+            # but if it is too much then invalidate
+            # the entire request
 
+            if hold_amount < current_balance:
+                hold_amount += actual_amount
+
+                vin_request = [request_vin_tx, request_vin_index]
+                vin_requests[i] = vin_request
+                okcount += 1
+
+    if okcount != txids_len:
+        print("Invalid txid request")
+        return False
+
+    Notify(hold_amount)
+    Notify(current_balance)
+
+    # now that we've checked the requestor isn't requesting too much
+    # we will check that the requestor can put a hold on the vins
+    # we make sure they can put a hold on all the vins
+    # before actually placing the hold on the vin
+    for vin in vin_requests:
+
+        vin_tx = vin[0]
+        vin_index = vin[1]
+
+        has_hold = HasVINHold(vin_tx,vin_index)
+
+        if has_hold:
+            print("Cannot request withdrawal, vin(s) already have hold")
+            return False
+
+
+    # now that we're sure we can put holds on all the requested vins
+    # we will put holds on the requested vins
+
+    output = None
+
+    for vin in vin_requests:
+        vin_tx = vin[0]
+        vin_index = vin[1]
+
+        hold_req = PlaceVINHold(account, vin_tx, vin_index)
+
+        # now we assemble a bytearray
+        # to save to storage
+        vin = concat(vin_index,vin_tx)
+
+        if len(output) > 1:
+            output = concat(output,vin)
         else:
-            print("cant withdraw")
+            output = vin
 
-    save = SetPendingWithdrawal(account, output)
 
-    return output
+    onWithdrawRequestApproved(account, vin_requests)
 
-def GetSender():
+    m = SetPendingWithdrawal(account, output)
 
-    # get reference to the tx the invocation is in
-    tx = GetScriptContainer()
+    return vin_requests
 
-    m = GetCallingScriptHash()
-    Notify(m)
-    return 'aouaoeu'
+
+def BalanceOf(account):
+
+    """
+    Method to return the current balance of an address
+
+    :param account: the account address to retrieve the balance for
+    :type account: bytearray
+
+    :return: the current balance of an address
+    :rtype: int
+
+    """
+    context = GetContext()
+    balance = Get(context, account)
+
+    return balance
+
 
 def CheckHasPendingWithdrawal(account):
 
@@ -195,12 +285,8 @@ def CheckHasPendingWithdrawal(account):
 
     pending = Get(context, account_has_pending)
 
-    if pending > 0:
+    return pending
 
-        return True
-
-    print("no pending withdrawal yet!")
-    return False
 
 def SetPendingWithdrawal(account, value):
 
@@ -208,7 +294,7 @@ def SetPendingWithdrawal(account, value):
 
     account_has_pending = concat(account, 'pending')
 
-    if value == '':
+    if value == 0:
 
         Delete(context,account_has_pending)
 
@@ -220,7 +306,7 @@ def SetPendingWithdrawal(account, value):
 
 
 def GetPendingWithdrawal(account):
-    print("looking up pending witdrawal!")
+
     context = GetContext()
 
     account_pending = concat(account,'pending')
@@ -236,8 +322,20 @@ def DeletePendingWithdrawal(account):
     account_pending = concat(account,'pending')
 
     Delete(context, account_pending)
-    print("cleared?")
+
     return True
+
+
+
+def HasVINHold(txid, index):
+
+    context = GetContext()
+    hold_id = concat(txid, index)
+
+    item = Get(context, hold_id)
+
+    return item
+
 
 def PlaceVINHold( account, txid, index):
 
@@ -245,14 +343,53 @@ def PlaceVINHold( account, txid, index):
 
     hold_id= concat(index,txid)
 
-    item = Get(context, hold_id)
+    Put(context, hold_id, account)
 
-    if len(item) < 1:
-        Put(context, hold_id, account)
-        return True
+    return True
 
-    elif item == account:
-        print("existing hold for account")
-        return True
 
+
+def GetTXInputs():
+
+    tx = GetScriptContainer()
+
+    inputs = tx.Inputs
+    inputlen = len(inputs)
+
+    results = list(length=inputlen)
+
+    count = 0
+
+    for input in tx.Inputs:
+
+        txid = GetHash(input)
+        index = GetIndex(input)
+        item = [txid,index]
+        results[count] = item
+        count += 1
+
+    return results
+
+
+def LookupVIN(txid, index):
+
+
+    tx = GetTransaction(txid)
+
+    if tx:
+
+        outputs = tx.Outputs
+
+        output_len = len(outputs)
+
+        if index < output_len:
+
+            output = outputs[index]
+
+            assetType = GetAssetId(output)
+            assetAmount = GetValue(output)
+            toret = [assetAmount,assetType]
+            return toret
+
+    print("could not lookup vin. TX or output not found")
     return False

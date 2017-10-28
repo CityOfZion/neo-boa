@@ -37,6 +37,8 @@ class PyToken():
     func_name = None
     func_type = None
 
+    script_hash_token = None
+
     @property
     def op_name(self):
         """

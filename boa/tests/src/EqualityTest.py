@@ -1,5 +1,3 @@
-from boa.blockchain.vm.Neo.Runtime import Notify
-from boa.code.builtins import print_var
 
 def Main():
 
