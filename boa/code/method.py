@@ -11,9 +11,7 @@ import collections
 
 
 class Method():
-
     """
-
     The method is the main unit of functionality.  Any method can take 0 to many arguments and return 1 value
 
     Each method contains a variable amount of lines, or ``boa.code.block.Block`` objects, which represent
@@ -31,8 +29,8 @@ class Method():
 
     When the method has been tokenized, each token then has an address within the method.  Once these addresses are complete,
     the ``convert_jumps`` method is called to tell each flow control operation where (which address) it will need to jump to.
-
     """
+    
     bp = None
 
     parent = None
@@ -58,22 +56,22 @@ class Method():
     @property
     def name(self):
         """
-        get the name of this method
+        Get the name of this method.
 
         :return: the name of this method
         :rtype: str
-
         """
+        
         return self.bp.name
+
 
     @property
     def full_name(self):
         """
-        gets the full name of this method ( with module path )
+        Get the full name of this method ( with module path ).
 
         :return: module namespaced name of the method
         :rtype: str
-
         """
 
         if self.__make_func_name is None:
@@ -85,58 +83,56 @@ class Method():
     @property
     def args(self):
         """
-        returns a list of arguments in this method
+        Return a list of arguments in this method.
 
         :return: list of arguments for this method
         :rtype: list
-
         """
         return self.bp.args
+        
 
     @property
     def code(self):
         """
-
-        returns the ``byteplay3`` code object
+        Return the ``byteplay3`` code object.
 
         :return: the ``byteplay3`` code object of this method
         :rtype: ``byteplay3.Code``
         """
+        
         return self.bp.code
 
     @property
     def vm_tokens(self):
         """
-        returns a list of all vm tokens in this method
+        Returns a list of all vm tokens in this method.
 
         :return: a list of vm tokens in this method
         :rtype: list
-
         """
+        
         return self.tokenizer.vm_tokens
+        
 
     @property
     def firstlineno(self):
-
         """
-        gets the starting line number of this method
+        Get the starting line number of this method.
 
         :return: starting line number
         :rtype: int
-
         """
 
         return self.bp.firstlineno
+        
 
     @property
     def total_lines(self):
-
         """
-        get the total number of lines ( aka blocks ) in this method
+        Get the total number of lines ( aka blocks ) in this method.
 
         :return: total number of lines
         :rtype: int
-
         """
 
         count = 0
@@ -145,29 +141,29 @@ class Method():
                 count += 1
 
         return count
+        
 
     @property
     def total_module_variables(self):
         """
-        get the total number of local variables
+        Get the total number of local variables.
 
         :return: the number of variables in this module
         :rtype: int
-
         """
+        
         return len(self.module.module_variables)
+        
 
     @property
     def module(self):
-
         """
-
-        retrieves the module this method is a member of
+        Retrieves the module this method is a member of.
 
         :return: the module this method is a member of
         :rtype: ``boa.code.module.Module``
-
         """
+        
         from boa.code.module import Module
 
         if type(self.parent) is Module:
@@ -198,11 +194,11 @@ class Method():
 
 
     def print(self):
-
         """
-
-        this method prints the output of the method's ``byteplay3`` object as it would be seen by a python interpreter
-        compare this with the ``boa.code.method.Method.to_dis()`` output and you will see subtle differences.
+        This method prints the output of the method's ``byteplay3`` object 
+        as it would be seen by a python interpreter.
+        Compare this with the ``boa.code.method.Method.to_dis()`` output 
+        and you will see subtle differences.
 
         sample output:
 
@@ -219,23 +215,23 @@ class Method():
                         12 STORE_FAST           m
               24        14 LOAD_FAST            m
                         15 RETURN_VALUE
-
         """
 
         print(self.code)
+        
 
     def to_dis(self):
-
         """
-
-        this method prints the output of the method as it would be seen by a python interpreter.
-        compare this to the output of the ``boa.code.method.Method.print()`` and you will see
-        some subtle differences.
+        This method prints the output of the method as it would be seen 
+        by a python interpreter.
+        compare this to the output of the ``boa.code.method.Method.print()`` and 
+        you will see some subtle differences.
 
         >>> method.to_dis()
           3             STORE_FAST               0 (j)
          12           0 LOAD_CONST               1 (9)
-         14           6 LOAD_CONST               2 (<code object q at 0x10cbbc810, file "./boa/tests/src/LambdaTest.py", line 14>)
+         14           6 LOAD_CONST               2 (<code object q at 0x10cbbc810, 
+                                                   file "./boa/tests/src/LambdaTest.py", line 14>)
                       9 LOAD_CONST               3 ('Main.<locals>.q')
                      12 MAKE_FUNCTION            0
                      15 STORE_FAST               1 (q)
@@ -245,21 +241,15 @@ class Method():
                      27 STORE_FAST               2 (m)
          24          30 LOAD_FAST                2 (m)
                      33 RETURN_VALUE
-
-
-
-
         """
 
         out = self.bp.to_code()
         dis.dis(out)
+        
 
     def read_module_variables(self):
-
         """
-
-        this method takes all module ``global`` variables and gives this method access to them.
-
+        Take all module ``global`` variables and gives this method access to them.
         """
 
         for definition in self.module.module_variables:
@@ -270,11 +260,8 @@ class Method():
 
 
     def read_initial_tokens(self):
-
         """
-
-        this method taken the initial set of tokens from the ``byteplay3`` code object and turns them into blocks.
-
+        Take the initial set of tokens from the ``byteplay3`` code object and turn them into blocks.
         """
 
         self.blocks = []
@@ -337,14 +324,12 @@ class Method():
 
         if len(block_group):
             self.blocks.append(Block(block_group))
+            
 
     def process_block_groups(self):
-
         """
-
-        this method takes the current blocks ( similar to lines in a method ) and
-        processes them so they can be tokenized properly
-
+        Takes the current blocks ( similar to lines in a method ) and
+        processes them so they can be tokenized properly.
         """
 
         iter_setup_block = None
@@ -428,13 +413,11 @@ class Method():
 
         for index, token in enumerate(self.tokens):
             token.addr = index
+            
 
     def tokenize(self):
-
         """
-
-        this method turns a set of ``boa.code.pytoken.PyToken`` objects into ``boa.code.vmtoken.VMToken`` objects
-
+        Turn a set of ``boa.code.pytoken.PyToken`` objects into ``boa.code.vmtoken.VMToken`` objects.
         """
 
         self.tokenizer.update_method_begin_items()
@@ -442,13 +425,12 @@ class Method():
         for t in self.tokens:
             t.to_vm(self.tokenizer, prevtoken)
             prevtoken = t
+            
 
     def convert_jumps(self):
-
         """
-
-        this method converts jumps that occur from flow control items such as if, else, for loops, while loops, and breaks
-
+        Convert jumps that occur from flow control items 
+        such as if, else, for loops, while loops, and breaks.
         """
 
         for key, vm_token in self.tokenizer.vm_tokens.items():
@@ -469,14 +451,13 @@ class Method():
 
                             vm_token.data = difference.to_bytes(2, 'little', signed=True)
 
-    def write(self):
 
+    def write(self):
         """
-        this method writes the current state of the tokenizer to a byte string
+        Write the current state of the tokenizer to a byte string.
 
         :return: a byte string of the current tokenizer
         :rtype: bytes
-
         """
 
         out = self.tokenizer.to_b()

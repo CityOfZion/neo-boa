@@ -58,8 +58,6 @@ class Compiler():
             return self.modules[0]
         except Exception as e:
             pass
-            
-        return None
         
 
     @staticmethod
@@ -73,8 +71,6 @@ class Compiler():
         
         with open(path, 'wb+') as out_file:
             out_file.write(data)
-            
-        return None
         
 
     def write(self):
