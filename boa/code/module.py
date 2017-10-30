@@ -173,7 +173,7 @@ class Module():
 
     def add_method(self, method):
         """
-        Adds a method to this module
+        Add a method to this module.
 
         :param method: the method object to add to this module
         :type method: ``boa.code.method.Method``

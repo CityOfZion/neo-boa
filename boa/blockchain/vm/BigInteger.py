@@ -1,11 +1,9 @@
 
-
 class BigInteger(int):
 
     @staticmethod
     def FromBytes(data, signed=False):
         """
-
         Convert a bytearray into a BigInteger object
 
         :param data: a bytearray representing an integer
