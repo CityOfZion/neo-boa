@@ -53,6 +53,7 @@ class Method():
 
     __make_func_name = None
 
+
     @property
     def name(self):
         """
@@ -80,6 +81,7 @@ class Method():
             return self.name
         return self.__make_func_name
 
+
     @property
     def args(self):
         """
@@ -88,6 +90,7 @@ class Method():
         :return: list of arguments for this method
         :rtype: list
         """
+        
         return self.bp.args
         
 
@@ -101,6 +104,7 @@ class Method():
         """
         
         return self.bp.code
+
 
     @property
     def vm_tokens(self):
@@ -172,7 +176,9 @@ class Method():
             return self.parent.parent
         elif type(self.parent.parent.parent) is Module:
             return self.parent.parent.parent
+            
         return None
+        
 
     def __init__(self, code_object, parent, make_func_name=None):
 
