@@ -30,6 +30,7 @@ class Compiler():
 
     def __init__(self):
         self.modules = []
+        
 
     @staticmethod
     def instance():
@@ -43,6 +44,7 @@ class Compiler():
         if not Compiler.__instance:
             Compiler.__instance = Compiler()
         return Compiler.__instance
+        
 
     @property
     def default(self):
@@ -58,6 +60,7 @@ class Compiler():
             pass
             
         return None
+        
 
     @staticmethod
     def write_file(data, path):
@@ -72,18 +75,21 @@ class Compiler():
             out_file.write(data)
             
         return None
+        
 
     def write(self):
         """
         Write the default module to a byte string.
 
-        :return: a byte string of the compiled Python program
+        :return: the compiled Python program as a byte string
+        :rtype: bytes
         """
         
         module = self.default
         out_bytes = bytes(module.write())
 
         return out_bytes
+        
 
     @staticmethod
     def load_and_save(path, output_path=None):
@@ -93,9 +99,8 @@ class Compiler():
 
         :param path: The path of the Python file to compile
         :param output_path: Optional path to save the compiled `.avm` file
-        :return: Returns the instance of the compiler
+        :return: the instance of the compiler
 
-        Usage:
         The following returns the compiler object for inspection
 
         .. code-block:: python
@@ -118,6 +123,7 @@ class Compiler():
 
         return data
 
+
     @staticmethod
     def load(path):
         """
@@ -126,7 +132,6 @@ class Compiler():
         :param path: the path of the Python file to compile
         :return: The instance of the compiler
 
-        Usage:
         The following returns the compiler object for inspection.
 
         .. code-block:: python
