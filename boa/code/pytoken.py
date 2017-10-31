@@ -37,6 +37,8 @@ class PyToken():
     func_name = None
     func_type = None
 
+    script_hash_token = None
+
     @property
     def op_name(self):
         """
@@ -258,7 +260,7 @@ class PyToken():
                 elif self.args == '<=':
                     token = tokenizer.convert1(VMOp.LTE, self)
                 elif self.args == '==':
-                    token = tokenizer.convert1(VMOp.EQUAL, self)
+                    token = tokenizer.convert1(VMOp.NUMEQUAL, self)
                 elif self.args == 'is':
                     token = tokenizer.convert1(VMOp.EQUAL, self)
                 elif self.args == '!=':

@@ -145,6 +145,7 @@ def range(start, stop):
     return out
 
 
+
 def sha1(data):
     """
 

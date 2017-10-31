@@ -9,6 +9,7 @@ from collections import OrderedDict
 
 NEO_SC_FRAMEWORK = 'boa.blockchain.vm.'
 
+import pdb
 
 class VMToken():
     """
@@ -473,7 +474,6 @@ class VMTokenizer():
             self.convert1(VMOp.PICKITEM)
 
         else:
-            print("hello?")
             py_token.func_params = []
             py_token.func_name = local_name
 
@@ -621,6 +621,9 @@ class VMTokenizer():
             return self.convert_push_data(bytes(pytoken.func_params[0].args), pytoken)
         elif pytoken.func_name == 'bytes':
             return self.convert_push_data(pytoken.func_params[0].args, pytoken)
+        elif pytoken.func_name == 'AppCall':
+            scripthash_token = pytoken.func_params.pop(0)
+            pytoken.script_hash_token = scripthash_token.args
 
         for t in pytoken.func_params:
             t.to_vm(self)
@@ -865,6 +868,11 @@ class VMTokenizer():
         """
         name = pytoken.func_name
 
+
+        if name == 'AppCall':
+            return True
+
+
         for appcall in self.method.module.app_call_registrations:
             if appcall.method_name == name:
                 return True
@@ -876,6 +884,20 @@ class VMTokenizer():
         :param pytoken:
         :return:
         """
+
+        # the following converts app calls of the pattern
+        # m = AppCall(script_hash, *args)
+        if pytoken.script_hash_addr is not None:
+
+            from boa.code.items import SmartContractAppCall
+
+            shash = SmartContractAppCall.ToScriptHashData( pytoken.script_hash_addr )
+
+            vmtoken = self.convert1(VMOp.APPCALL, py_token=pytoken, data=shash)
+            return vmtoken
+
+        # this is used for app calls that are registered
+        # using RegisterAppCall(script_hash, *args)
         sc_appcall = None
         for appcall in self.method.module.app_call_registrations:
             if appcall.method_name == pytoken.func_name:

@@ -99,14 +99,28 @@ class SmartContractAppCall(Item):
 
         :return:
         """
+
+        return SmartContractAppCall.ToScriptHashData(self.script_hash)
+
+
+
+    @staticmethod
+    def ToScriptHashData(item):
+        """
+
+        :return:
+        """
         b_array = None
-        if type(self.script_hash) is str:
-            bstring = self.script_hash.encode('utf-8')
+        if type(item) is str:
+            print("ITEM!! %s " % item)
+            bstring = item.encode('utf-8')
             b_array = bytearray(binascii.unhexlify(bstring))
-        elif type(self.script_hash) is bytearray:
+        elif type(item) is bytearray:
             pass
-        elif type(self.script_hash) is bytes:
-            b_array = bytearray(self.script_hash)
+        elif type(item) is bytes:
+            print("bytes len %s " % len(item))
+
+            b_array = bytearray(item)
         else:
             raise Exception("Invalid script hash")
 
