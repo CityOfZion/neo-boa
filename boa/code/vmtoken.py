@@ -164,8 +164,7 @@ class VMTokenizer():
         """
         total_items = self.method.total_lines \
                       + len(self.method.args) \
-                      + self.method.dynamic_iterator_count \
-                      + 1
+                      + self.method.dynamic_iterator_count
 
         self.total_param_and_body_count_token = self.insert_push_integer(
             total_items)
