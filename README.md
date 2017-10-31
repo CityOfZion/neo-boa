@@ -50,6 +50,22 @@ The compiler supports a subset of the Python language ( in the same way that a _
 pip install neo-boa
 ```
 
+#### Docker
+
+This project contains a Dockerfile to batch compile Python smart contracts. Clone the repository and navigate into the docker sub directory of the project. Run the following command to build the container:
+
+```
+docker build -t neo-boa .
+```
+
+The neo-boa Docker container takes a directory on the host containing python smart contracts as an input and a directory to compile the .avm files to as an output. It can be executed like this: 
+
+``
+docker run -it -v /absolute/path/input_dir:/python-contracts -v /absolute/path/output_dir:/compiled-contracts neo-boa
+```
+
+The -v (volume) command maps the directories on the host to the directories within the container. 
+
 #### Manual
 
 Clone the repository and navigate into the project directory. Make a Python 3 virtual environment and activate
