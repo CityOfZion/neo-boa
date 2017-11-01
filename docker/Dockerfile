@@ -1,4 +1,4 @@
-ROM ubuntu:16.04
+FROM ubuntu:16.04
 
 RUN apt-get update && apt-get -y install python3-dev python3-pip
 
