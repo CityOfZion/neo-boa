@@ -2,7 +2,13 @@
 NEP5 Token
 ===================================
 
+
+.. moduleauthor:: Thomas Saunders <tom@cityofzion.io>
+
 This file, when compiled to .avm format, would comply with the current NEP5 token standard on the NEO blockchain
+
+The script hash for this contract on testnet is:
+``eb9c48ac1a5b9254cc101c70c78ebfce22cdd241``
 
 Token standard is available in proposal form here:
 `NEP5 Token Standard Proposal <https://github.com/neo-project/proposals/blob/master/nep-5.mediawiki>`_
@@ -21,14 +27,10 @@ Below is the current implementation in Python
 
 """
 
-from boa.blockchain.vm.Neo.Runtime import Log, Notify
-from boa.blockchain.vm.System.ExecutionEngine import GetScriptContainer, GetExecutingScriptHash
-from boa.blockchain.vm.Neo.Transaction import *
-from boa.blockchain.vm.Neo.Blockchain import GetHeight, GetHeader
+from boa.blockchain.vm.Neo.Runtime import Log
 from boa.blockchain.vm.Neo.Action import RegisterAction
 from boa.blockchain.vm.Neo.Runtime import GetTrigger, CheckWitness
 from boa.blockchain.vm.Neo.TriggerType import Application, Verification
-from boa.blockchain.vm.Neo.Output import GetScriptHash, GetValue, GetAssetId
 from boa.blockchain.vm.Neo.Storage import GetContext, Get, Put, Delete
 from boa.code.builtins import concat
 
@@ -37,16 +39,19 @@ from boa.code.builtins import concat
 # -------------------------------------------
 
 TOKEN_NAME = 'NEP5 Standard'
+# Name of the Token
+
 SYMBOL = 'NEP5'
+# Symbol of the Token
 
-# Script hash of the contract owner
 OWNER = b'\xaf\x12\xa8h{\x14\x94\x8b\xc4\xa0\x08\x12\x8aU\nci[\xc1\xa5'
+# Script hash of the contract owner
 
-# Number of decimal places
 DECIMALS = 8
+# Number of decimal places
 
-# Total supply of tokens
 TOTAL_SUPPLY = 500000000000000
+# Total supply of tokens
 
 
 # -------------------------------------------
@@ -118,14 +123,12 @@ def Main(operation, args):
             return 0
 
         elif operation == 'transfer':
-
             if len(args) == 3:
                 t_from = args[0]
                 t_to = args[1]
                 t_amount = args[2]
                 transfer = DoTransfer(t_from, t_to, t_amount)
                 return transfer
-
             else:
                 return False
 

@@ -30,4 +30,4 @@ NEP5 Token
 
 This example shows how to create a NEP5 token.
 
-.. automodule:: boa.tests.src.NEP5Test
+.. automodule:: boa.tests.src.NEP5
