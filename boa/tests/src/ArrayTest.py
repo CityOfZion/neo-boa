@@ -4,7 +4,6 @@ from boa.blockchain.vm.Neo.Runtime import Log, Notify
 
 
 def Main():
-
     """
 
     :return:
@@ -34,7 +33,6 @@ def get_thing():
 
 
 def get_items_from_range(items, index):
-
     """
 
     :param items:

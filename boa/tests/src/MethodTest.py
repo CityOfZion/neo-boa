@@ -3,7 +3,6 @@ from boa.code.builtins import list
 
 
 def Main():
-
     """
 
     :return:
@@ -22,7 +21,6 @@ def Main():
 
 
 def addd(a, b):
-
     """
 
     :param a:
@@ -42,7 +40,6 @@ def addd(a, b):
 
 
 def stuff():
-
     """
 
     :return:
@@ -61,7 +58,6 @@ def stuff():
 
 
 def add3(a, b):
-
     """
 
     :param a:

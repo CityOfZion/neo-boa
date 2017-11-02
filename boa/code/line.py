@@ -47,8 +47,6 @@ class Line():
                 return True
         return False
 
-
-
     @property
     def is_method(self):
         """

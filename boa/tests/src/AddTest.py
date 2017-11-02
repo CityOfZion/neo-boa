@@ -6,7 +6,7 @@ def Main(a, b):
     :return: a + b
     :rtype: int
     """
-    
+
     c = a + b
 
     return c

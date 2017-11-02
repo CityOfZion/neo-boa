@@ -1,7 +1,6 @@
 
 
 def Main():
-
     """
 
     :return:
@@ -23,7 +22,6 @@ def Main():
 
 
 def add(a, b, c, d, e):
-
     """
 
     :param a:
@@ -39,7 +37,6 @@ def add(a, b, c, d, e):
 
 
 def get_first_item(array_item):
-
     """
 
     :param array_item:

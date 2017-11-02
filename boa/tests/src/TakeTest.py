@@ -2,7 +2,6 @@ from boa.code.builtins import take
 
 
 def Main():
-
     """
 
     :return:

@@ -1,23 +1,24 @@
-from boa.blockchain.vm.Neo.Runtime import Notify,GetTrigger,CheckWitness
+from boa.blockchain.vm.Neo.Runtime import Notify, GetTrigger, CheckWitness
 from boa.blockchain.vm.Neo.Action import RegisterAction
-from boa.blockchain.vm.Neo.TriggerType import Application,Verification
+from boa.blockchain.vm.Neo.TriggerType import Application, Verification
 
 from boa.blockchain.vm.Neo.TransactionType import InvocationTransaction
 from boa.blockchain.vm.Neo.Transaction import *
 
-from boa.blockchain.vm.System.ExecutionEngine import GetScriptContainer,GetExecutingScriptHash
+from boa.blockchain.vm.System.ExecutionEngine import GetScriptContainer, GetExecutingScriptHash
 from boa.blockchain.vm.Neo.TriggerType import Application, Verification
 from boa.blockchain.vm.Neo.Output import GetScriptHash, GetValue, GetAssetId
 from boa.blockchain.vm.Neo.Storage import GetContext, Get, Put, Delete
 
-OWNER= b'\x13\xff4\xcc\x10\x1cVs\x7fe\xc3\xb3\xd2\xf9iTHESK'
+OWNER = b'\x13\xff4\xcc\x10\x1cVs\x7fe\xc3\xb3\xd2\xf9iTHESK'
 
 NEO_ASSET_ID = b'\x9b|\xff\xda\xa6t\xbe\xae\x0f\x93\x0e\xbe`\x85\xaf\x90\x93\xe5\xfeV\xb3J\\"\x0c\xcd\xcfn\xfc3o\xc5'
 
 
-onDeposit = RegisterAction('deposit','account','amount')
-onWithdraw = RegisterAction('withdraw','account','amount')
-onWithdrawReconciled = RegisterAction('withdraw_reconcile', 'account','amount')
+onDeposit = RegisterAction('deposit', 'account', 'amount')
+onWithdraw = RegisterAction('withdraw', 'account', 'amount')
+onWithdrawReconciled = RegisterAction('withdraw_reconcile', 'account', 'amount')
+
 
 def Main(args):
 
@@ -48,8 +49,6 @@ def Main(args):
 
             return can_widthraw
 
-
-
     elif trigger == Application():
         print("doing application")
 
@@ -61,7 +60,6 @@ def Main(args):
         # we don't really care what operation is called
         # no matter what we will try to reconcile
         did_withdraw = ReconcileBalances()
-
 
         operation = args[0]
 
@@ -86,10 +84,7 @@ def Main(args):
 
             return getbalance
 
-
     return False
-
-
 
 
 def CanWithdrawNeo():
@@ -107,7 +102,6 @@ def CanWithdrawNeo():
 
         # this is the contract's address
         sender_addr = GetExecutingScriptHash()
-
 
         withdrawal_amount = 0
 
@@ -130,7 +124,6 @@ def CanWithdrawNeo():
                     print("[can withdraw] output is to receiver")
                     receiver_addr = shash
 
-
                     withdrawal_amount = withdrawal_amount + output_val
 
                     Notify(withdrawal_amount)
@@ -147,7 +140,6 @@ def CanWithdrawNeo():
 
                 print("[can withdraw] output is not neo")
                 Notify(output)
-
 
         # we check recevier addr and amount
 
@@ -183,7 +175,6 @@ def CanWithdrawNeo():
         print("[can withdraw] tx is not invocation tx. return false")
 
     return False
-
 
 
 def DepositNeo():
@@ -233,7 +224,7 @@ def DepositNeo():
 
         context = GetContext()
 
-        #check the current balance of the sender
+        # check the current balance of the sender
         current_balance = Get(context, sender)
         print("current balance...")
         Notify(current_balance)
@@ -247,7 +238,7 @@ def DepositNeo():
 
         print("deposited")
 
-        onDeposit(sender,value)
+        onDeposit(sender, value)
 
         return True
 
@@ -255,7 +246,6 @@ def DepositNeo():
 
 
 def BalanceOf(account):
-
     """
     Method to return the current balance of an address
 
@@ -276,7 +266,6 @@ def BalanceOf(account):
         balance = 0
 
     return balance
-
 
 
 def ReconcileBalances():

@@ -4,7 +4,6 @@ from boa.blockchain.vm.Neo.Runtime import Notify
 
 
 def Main():
-
     """
 
     :return:
@@ -35,7 +34,6 @@ def Main():
 
 
 def stuff(a, b):
-
     """
 
     :param a:

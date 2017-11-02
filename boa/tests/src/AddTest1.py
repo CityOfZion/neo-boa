@@ -8,7 +8,7 @@ def Main(a, b, c, d):
     :return: (a * 2) + (b + 1) + (c / 2) + (d - 1)
     :rtype: int
     """
-    
+
     a2 = a * 2
 
     b2 = b + 1

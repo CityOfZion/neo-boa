@@ -20,7 +20,7 @@ class Block():
         return GetTransactions(self)
 
 
-def GetTransactionCount(block :Block) -> int:
+def GetTransactionCount(block: Block) -> int:
     """
 
     returns the number of transactions in a block
@@ -39,7 +39,7 @@ def GetTransactions(block: Block) -> list:
     pass
 
 
-def GetTransaction(block: Block, index:int) -> Transaction:
+def GetTransaction(block: Block, index: int) -> Transaction:
     """
 
     :param block: the block to get the transaction from

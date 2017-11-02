@@ -7,7 +7,6 @@ def Main(ba1, ba2):
     #    b = ba2
 
     # m = ba2[1] # subscribt for a byte array does not work
-
     """
 
     :param ba1:

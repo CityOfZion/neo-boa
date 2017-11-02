@@ -67,7 +67,6 @@ OnRefund = RegisterAction('refund', 'to', 'amount')
 
 
 def Main(operation, args):
-
     """
     This is the main entry point for the Smart Contract
 
@@ -302,7 +301,6 @@ def MintTokens():
 
 
 def TotalSupply():
-
     """
     Method to return the total amount of NEP5 tokens in current circluation
 
@@ -323,7 +321,6 @@ def TotalSupply():
 
 
 def DoTransfer(t_from, t_to, amount):
-
     """
     Method to transfer NEP5 tokens of a specified amount from one account to another
 
@@ -383,7 +380,6 @@ def DoTransfer(t_from, t_to, amount):
 
 
 def BalanceOf(account):
-
     """
     Method to return the current balance of an address
 
@@ -404,7 +400,6 @@ def BalanceOf(account):
 
 
 def CurrentSwapRate():
-
     """
     Method to calculate the current 'going rate' or exchange ratio of NEO to NEP5 tokens
 

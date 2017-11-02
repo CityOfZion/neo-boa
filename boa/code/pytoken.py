@@ -101,7 +101,6 @@ class PyToken():
         return '%s      %s   %s' % (self.line_no, self.addr, self.op_name)
 
     def to_vm(self, tokenizer, prev_token=None):
-
         """
 
         :param tokenizer:

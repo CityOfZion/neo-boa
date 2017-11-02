@@ -1,7 +1,6 @@
 
 
 def Main():
-
     """
     a sample smart contract demonstrating how to use lambdas in smart contracts
 

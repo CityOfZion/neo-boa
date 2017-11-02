@@ -3,7 +3,6 @@ from boa.code.builtins import concat
 
 
 def Main(operation, items):
-
     """
 
     :param operation:

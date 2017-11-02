@@ -43,7 +43,6 @@ def Create(script,
            email,
            description
            ):
-
     """
 
     :param script:
@@ -67,7 +66,6 @@ def Migrate(script,
             email,
             description
             ):
-
     """
 
     :param script:

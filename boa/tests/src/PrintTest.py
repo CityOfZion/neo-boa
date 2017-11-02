@@ -4,7 +4,6 @@ from boa.blockchain.vm.Neo.Runtime import Log, Notify
 
 
 def Main():
-
     """
 
     :return:

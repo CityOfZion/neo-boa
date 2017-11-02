@@ -1,6 +1,5 @@
 
 def Main(a, b, c, d):
-
     """
 
     :param a:

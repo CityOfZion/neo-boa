@@ -1,29 +1,29 @@
-from boa.blockchain.vm.Neo.Runtime import Notify,GetTrigger,CheckWitness
+from boa.blockchain.vm.Neo.Runtime import Notify, GetTrigger, CheckWitness
 from boa.blockchain.vm.Neo.Action import RegisterAction
-from boa.blockchain.vm.Neo.TriggerType import Application,Verification
+from boa.blockchain.vm.Neo.TriggerType import Application, Verification
 from boa.blockchain.vm.Neo.Blockchain import GetTransaction
 from boa.blockchain.vm.Neo.TransactionType import InvocationTransaction
 from boa.blockchain.vm.Neo.Transaction import *
 
-from boa.blockchain.vm.System.ExecutionEngine import GetScriptContainer,GetExecutingScriptHash,GetCallingScriptHash,GetEntryScriptHash
+from boa.blockchain.vm.System.ExecutionEngine import GetScriptContainer, GetExecutingScriptHash, GetCallingScriptHash, GetEntryScriptHash
 
 from boa.blockchain.vm.Neo.Output import GetScriptHash, GetValue, GetAssetId
-from boa.blockchain.vm.Neo.Input import GetHash,GetIndex
+from boa.blockchain.vm.Neo.Input import GetHash, GetIndex
 from boa.blockchain.vm.Neo.Storage import GetContext, Get, Put, Delete
 
-from boa.code.builtins import range,concat,list,print_var
+from boa.code.builtins import range, concat, list, print_var
 
-OWNER= b'\xaf\x12\xa8h{\x14\x94\x8b\xc4\xa0\x08\x12\x8aU\nci[\xc1\xa5'
+OWNER = b'\xaf\x12\xa8h{\x14\x94\x8b\xc4\xa0\x08\x12\x8aU\nci[\xc1\xa5'
 
 NEO_ASSET_ID = b'\x9b|\xff\xda\xa6t\xbe\xae\x0f\x93\x0e\xbe`\x85\xaf\x90\x93\xe5\xfeV\xb3J\\"\x0c\xcd\xcfn\xfc3o\xc5'
 
 
-onDeposit = RegisterAction('deposit','account','amount')
+onDeposit = RegisterAction('deposit', 'account', 'amount')
 
-onWithdrawRequestApproved = RegisterAction('withdrawApproved','account','vin_requests')
+onWithdrawRequestApproved = RegisterAction('withdrawApproved', 'account', 'vin_requests')
 
 
-def Main(operation,args):
+def Main(operation, args):
 
     trigger = GetTrigger()
 
@@ -44,10 +44,7 @@ def Main(operation,args):
 
             return can_widthraw
 
-
-
     elif trigger == b'\x10':
-
 
         if operation == 'deposit':
 
@@ -79,7 +76,6 @@ def Main(operation,args):
             return 'unknown operation'
 
     return False
-
 
 
 def CanWithdraw():
@@ -136,7 +132,7 @@ def DepositNeo():
         Put(context, sender, new_balance)
 
         # send deposit event
-        onDeposit(sender,value)
+        onDeposit(sender, value)
 
         return True
 
@@ -161,9 +157,7 @@ def VerifyWithdrawalRequest(args):
 
     txids_len = arglen / 2
 
-
-    vin_requests= list(length=txids_len)
-
+    vin_requests = list(length=txids_len)
 
     # so, this is a bit involved, so bear with me here
     # lets assume a person has a balance that the contract owes them
@@ -177,10 +171,8 @@ def VerifyWithdrawalRequest(args):
     # and the amount in x txids is greater than or equal to the amount they are owed
     # but only by one
 
-
     hold_amount = 0
     okcount = 0
-
 
     for i in range(0, txids_len):
 
@@ -224,12 +216,11 @@ def VerifyWithdrawalRequest(args):
         vin_tx = vin[0]
         vin_index = vin[1]
 
-        has_hold = HasVINHold(vin_tx,vin_index)
+        has_hold = HasVINHold(vin_tx, vin_index)
 
         if has_hold:
             print("Cannot request withdrawal, vin(s) already have hold")
             return False
-
 
     # now that we're sure we can put holds on all the requested vins
     # we will put holds on the requested vins
@@ -244,13 +235,12 @@ def VerifyWithdrawalRequest(args):
 
         # now we assemble a bytearray
         # to save to storage
-        vin = concat(vin_index,vin_tx)
+        vin = concat(vin_index, vin_tx)
 
         if len(output) > 1:
-            output = concat(output,vin)
+            output = concat(output, vin)
         else:
             output = vin
-
 
     onWithdrawRequestApproved(account, vin_requests)
 
@@ -260,7 +250,6 @@ def VerifyWithdrawalRequest(args):
 
 
 def BalanceOf(account):
-
     """
     Method to return the current balance of an address
 
@@ -281,7 +270,7 @@ def CheckHasPendingWithdrawal(account):
 
     context = GetContext()
 
-    account_has_pending= concat(account,'pending')
+    account_has_pending = concat(account, 'pending')
 
     pending = Get(context, account_has_pending)
 
@@ -296,11 +285,11 @@ def SetPendingWithdrawal(account, value):
 
     if value == 0:
 
-        Delete(context,account_has_pending)
+        Delete(context, account_has_pending)
 
     else:
 
-        Put(context,account_has_pending,value)
+        Put(context, account_has_pending, value)
 
     return True
 
@@ -309,7 +298,7 @@ def GetPendingWithdrawal(account):
 
     context = GetContext()
 
-    account_pending = concat(account,'pending')
+    account_pending = concat(account, 'pending')
 
     result = Get(context, account_pending)
 
@@ -319,12 +308,11 @@ def GetPendingWithdrawal(account):
 def DeletePendingWithdrawal(account):
 
     context = GetContext()
-    account_pending = concat(account,'pending')
+    account_pending = concat(account, 'pending')
 
     Delete(context, account_pending)
 
     return True
-
 
 
 def HasVINHold(txid, index):
@@ -337,16 +325,15 @@ def HasVINHold(txid, index):
     return item
 
 
-def PlaceVINHold( account, txid, index):
+def PlaceVINHold(account, txid, index):
 
     context = GetContext()
 
-    hold_id= concat(index,txid)
+    hold_id = concat(index, txid)
 
     Put(context, hold_id, account)
 
     return True
-
 
 
 def GetTXInputs():
@@ -364,7 +351,7 @@ def GetTXInputs():
 
         txid = GetHash(input)
         index = GetIndex(input)
-        item = [txid,index]
+        item = [txid, index]
         results[count] = item
         count += 1
 
@@ -372,7 +359,6 @@ def GetTXInputs():
 
 
 def LookupVIN(txid, index):
-
 
     tx = GetTransaction(txid)
 
@@ -388,7 +374,7 @@ def LookupVIN(txid, index):
 
             assetType = GetAssetId(output)
             assetAmount = GetValue(output)
-            toret = [assetAmount,assetType]
+            toret = [assetAmount, assetType]
             return toret
 
     print("could not lookup vin. TX or output not found")

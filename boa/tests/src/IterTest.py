@@ -2,7 +2,6 @@ from boa.code.builtins import range
 
 
 def Main():
-
     """
 
     :return:
@@ -18,7 +17,6 @@ def Main():
 
 
 def awesome():
-
     """
 
     :return:

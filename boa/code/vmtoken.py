@@ -11,6 +11,7 @@ NEO_SC_FRAMEWORK = 'boa.blockchain.vm.'
 
 import pdb
 
+
 class VMToken():
     """
 
@@ -80,7 +81,6 @@ class VMTokenizer():
         self.method_begin_items()
 
     def to_s(self):
-
         """
 
         """
@@ -163,8 +163,8 @@ class VMTokenizer():
 
         """
         total_items = self.method.total_lines \
-                      + len(self.method.args) \
-                      + self.method.dynamic_iterator_count
+            + len(self.method.args) \
+            + self.method.dynamic_iterator_count
 
         self.total_param_and_body_count_token = self.insert_push_integer(
             total_items)
@@ -187,7 +187,6 @@ class VMTokenizer():
                 self.total_param_and_body_count_token, num_current_items)
 
     def insert_vm_token_at(self, vm_token, index):
-
         """
 
         :param vm_token:
@@ -196,7 +195,6 @@ class VMTokenizer():
         self.vm_tokens[index] = vm_token
 
     def update1(self, vmtoken, vm_op, data=None):
-
         """
 
         :param vmtoken:
@@ -212,7 +210,6 @@ class VMTokenizer():
         return vmtoken
 
     def update_push_data(self, vmtoken, data):
-
         """
 
         :param vmtoken:
@@ -264,7 +261,6 @@ class VMTokenizer():
         return self.update_push_data(vmtoken, outdata)
 
     def insert1(self, vm_op, data=None):
-
         """
 
         :param vm_op:
@@ -285,7 +281,6 @@ class VMTokenizer():
         return vmtoken
 
     def insert_push_data(self, data):
-
         """
 
         :param data:
@@ -335,7 +330,6 @@ class VMTokenizer():
         return self.insert_push_data(outdata)
 
     def convert1(self, vm_op, py_token=None, data=None):
-
         """
 
         :param vm_op:
@@ -375,7 +369,6 @@ class VMTokenizer():
         self.convert1(VMOp.PACK, py_token)
 
     def convert_push_data(self, data, py_token=None):
-
         """
 
         :param data:
@@ -447,7 +440,6 @@ class VMTokenizer():
         self.convert1(VMOp.SETITEM)
 
     def convert_load_local(self, py_token, name=None):
-
         """
 
         :param py_token:
@@ -458,8 +450,7 @@ class VMTokenizer():
         else:
             local_name = py_token.args
 
-
-        #check to see if this local is a variable
+        # check to see if this local is a variable
         if local_name in self.method.local_stores:
 
             position = self.method.local_stores[local_name]
@@ -478,7 +469,6 @@ class VMTokenizer():
             py_token.func_name = local_name
 
             self.convert_method_call(py_token)
-
 
     def insert_unknown_type(self, item):
         """
@@ -509,7 +499,6 @@ class VMTokenizer():
     def convert_set_element(self, arg, position):
 
         #        print("converting set element %s %s" % (position, type(position)))
-
         """
 
         :param arg:
@@ -535,7 +524,6 @@ class VMTokenizer():
         self.convert1(VMOp.SETITEM, arg)
 
     def convert_load_parameter(self, arg, position):
-
         """
 
         :param arg:
@@ -605,7 +593,6 @@ class VMTokenizer():
 
         # and now perform substr. whew.
         self.convert1(VMOp.SUBSTR)
-
 
     def convert_method_call(self, pytoken):
 
@@ -713,7 +700,6 @@ class VMTokenizer():
         return False
 
     def convert_op_call(self, op, pytoken=None):
-
         """
 
         :param op:
@@ -760,7 +746,6 @@ class VMTokenizer():
         return False
 
     def convert_sys_call(self, op, pytoken=None):
-
         """
 
         :param op:
@@ -776,7 +761,6 @@ class VMTokenizer():
         return vmtoken
 
     def is_built_in(self, op):
-
         """
 
         :param op:
@@ -797,7 +781,6 @@ class VMTokenizer():
         return False
 
     def convert_built_in(self, op, pytoken):
-
         """
 
         :param op:
@@ -816,7 +799,6 @@ class VMTokenizer():
             "[Compilation error] Built in %s is not implemented" % op)
 
     def is_notify_event(self, pytoken):
-
         """
 
         :param pytoken:
@@ -868,10 +850,8 @@ class VMTokenizer():
         """
         name = pytoken.func_name
 
-
         if name == 'AppCall':
             return True
-
 
         for appcall in self.method.module.app_call_registrations:
             if appcall.method_name == name:
@@ -891,7 +871,7 @@ class VMTokenizer():
 
             from boa.code.items import SmartContractAppCall
 
-            shash = SmartContractAppCall.ToScriptHashData( pytoken.script_hash_addr )
+            shash = SmartContractAppCall.ToScriptHashData(pytoken.script_hash_addr)
 
             vmtoken = self.convert1(VMOp.APPCALL, py_token=pytoken, data=shash)
             return vmtoken

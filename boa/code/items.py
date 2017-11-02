@@ -102,8 +102,6 @@ class SmartContractAppCall(Item):
 
         return SmartContractAppCall.ToScriptHashData(self.script_hash)
 
-
-
     @staticmethod
     def ToScriptHashData(item):
         """
@@ -165,7 +163,6 @@ class Import(Item):
 
     def build(self):
         # here is where we will check imports
-
         """
 
         """
@@ -184,7 +181,6 @@ class Import(Item):
                                       items_to_import=self.module_items_to_import)
 
     def is_valid(self):
-
         """
 
         :return:
@@ -219,7 +215,6 @@ class Klass(Item):
         self.build()
 
     def build(self):
-
         """
 
         """

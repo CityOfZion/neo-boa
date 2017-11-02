@@ -4,6 +4,7 @@ from boa.code.pytoken import PyToken
 from boa.code import pyop
 import pdb
 
+
 class Block():
 
     """
@@ -280,16 +281,13 @@ class Block():
                     max_len = 16777215
                     end_op.args = max_len
 
-
         if index_to_remove > -1:
             del self.oplist[index_to_remove]
-
 
     def preprocess_iter(self):
 
         # in a better world this would be done in a more efficient way
         # for now this is kept to be as understandable as possible
-
         """
 
         """
@@ -403,7 +401,6 @@ class Block():
         Block.forloop_counter += 1
 
     def process_iter_body(self, setup_block):
-
         """
 
         :param setup_block:
@@ -455,7 +452,6 @@ class Block():
         ] + self.oplist
 
     def preprocess_method_calls(self, orig_method):
-
         """
 
         :param orig_method:
@@ -552,7 +548,6 @@ class Block():
                 self.oplist = tstart + changed_items + tend
 
     def preprocess_arrays(self):
-
         """
 
         """
@@ -578,7 +573,6 @@ class Block():
                     array_items + self.oplist[blist_end_index:]
 
     def mark_as_end(self):
-
         """
 
         """
@@ -810,7 +804,6 @@ class Block():
 
     def process_list_comp_internal(self, list_comp_item_name):
         # get rid of first op
-
         """
 
         :param list_comp_item_name:

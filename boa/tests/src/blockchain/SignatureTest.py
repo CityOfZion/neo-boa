@@ -13,7 +13,6 @@ OWNER_HASH = b'F\xc2\xbb\x9c\x17Ci\x89\xca\xa7\x85>|\xbd\x87B>H#\xf2'
 
 
 def Main(operation):
-
     """
 
     :param operation:

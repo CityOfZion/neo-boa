@@ -3,7 +3,6 @@ from boa.blockchain.vm.Neo.Runtime import Notify
 
 
 def Main(a, b):
-
     """
 
     :param a:

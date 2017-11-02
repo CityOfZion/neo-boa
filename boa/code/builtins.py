@@ -100,7 +100,7 @@ def concat(str1, str2):
 # This is not necessary.  you can use mystring[start:end]
 # Actually, it is currently necessary, as mystring[start:end] is not working as expected
 
-def substr(source,start_index, count):
+def substr(source, start_index, count):
     """
     substr(source, start_index, count) -> list object
 
@@ -143,7 +143,6 @@ def range(start, stop):
         start = orig_start + index
 
     return out
-
 
 
 def sha1(data):

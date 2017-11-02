@@ -10,7 +10,10 @@ Token standard is available in proposal form here:
 Compilation can be achieved as such
 
 >>> from boa.compiler import Compiler
->>> Compiler.load_and_save('./boa/tests/src/NEP5Test.py')
+>>> Compiler.load_and_save('./boa/tests/src/NEP5.py')
+
+Or, from within the neo-python shell
+``build path/to/NEP5.py test 0710 05 True name []``
 
 
 Below is the current implementation in Python
@@ -56,11 +59,10 @@ OnApprove = RegisterAction('approval', 'owner', 'spender', 'value')
 
 
 def Main(operation, args):
-
     """
     This is the main entry point for the Smart Contract
 
-    :param operation: the operation to be performed ( eg `mintTokens`, `transfer`, etc)
+    :param operation: the operation to be performed ( eg `balanceOf`, `transfer`, etc)
     :type operation: str
 
     :param args: an optional list of arguments
@@ -70,11 +72,17 @@ def Main(operation, args):
     :rtype: bool
     """
 
+    # The trigger determines whether this smart contract is being
+    # run in 'verification' mode or 'application'
+
     trigger = GetTrigger()
 
+    # 'Verification' mode is used when trying to spend assets ( eg NEO, Gas)
+    # on behalf of this contract's address
     if trigger == Verification():
 
-
+        # if the script that sent this is the owner
+        # we allow the spend
         is_owner = CheckWitness(OWNER)
 
         if is_owner:
@@ -83,6 +91,7 @@ def Main(operation, args):
 
         return False
 
+    # 'Application' mode is the main body of the smart contract
     elif trigger == Application():
 
         if operation == 'name':
@@ -125,7 +134,7 @@ def Main(operation, args):
                 t_from = args[0]
                 t_to = args[1]
                 t_amount = args[2]
-                transfer = DoTransferFrom(t_from,t_to,t_amount)
+                transfer = DoTransferFrom(t_from, t_to, t_amount)
                 return transfer
             return False
 
@@ -134,19 +143,17 @@ def Main(operation, args):
                 t_owner = args[0]
                 t_spender = args[1]
                 t_amount = args[2]
-                approve = DoApprove(t_owner,t_spender,t_amount)
+                approve = DoApprove(t_owner, t_spender, t_amount)
                 return approve
             return False
 
         elif operation == 'allowance':
-            if len(args) == 3:
+            if len(args) == 2:
                 t_owner = args[0]
                 t_spender = args[1]
-                approve = GetAllowance(t_owner,t_spender)
-                return approve
+                amount = GetAllowance(t_owner, t_spender)
+                return amount
             return False
-
-
 
         # The following method is not a part of the NEP5 Standard
         # But is used to 'mint' the original tokens
@@ -158,14 +165,10 @@ def Main(operation, args):
 
         return result
 
-
     return False
 
 
-
-
 def DoTransfer(t_from, t_to, amount):
-
     """
     Method to transfer NEP5 tokens of a specified amount from one account to another
 
@@ -183,47 +186,46 @@ def DoTransfer(t_from, t_to, amount):
 
     """
     if amount <= 0:
+        Log("Cannot transfer negative amount")
         return False
 
     from_is_sender = CheckWitness(t_from)
 
-    if from_is_sender:
+    if not from_is_sender:
+        Log("Not owner of funds to be transferred")
+        return False
 
-        if t_from == t_to:
-            return True
-
-        context = GetContext()
-
-        from_val = Get(context, t_from)
-
-        if from_val < amount:
-            return False
-
-        if from_val == amount:
-            Delete(context, t_from)
-
-        else:
-            difference = from_val - amount
-            Put(context, t_from, difference)
-
-        to_value = Get(context, t_to)
-
-        to_total = to_value + amount
-
-        Put(context, t_to, to_total)
-
-        OnTransfer(t_from, t_to, amount)
-
+    if t_from == t_to:
+        Log("Sending funds to self")
         return True
+
+    context = GetContext()
+
+    from_val = Get(context, t_from)
+
+    if from_val < amount:
+        Log("Insufficient funds to transfer")
+        return False
+
+    if from_val == amount:
+        Delete(context, t_from)
+
     else:
-        Log("from address is not the tx sender")
+        difference = from_val - amount
+        Put(context, t_from, difference)
 
-    return False
+    to_value = Get(context, t_to)
 
+    to_total = to_value + amount
+
+    Put(context, t_to, to_total)
+
+    OnTransfer(t_from, t_to, amount)
+
+    return True
 
 
 def DoTransferFrom(t_from, t_to, amount):
-
     """
     Method to transfer NEP5 tokens of a specified amount from one account to another
 
@@ -245,9 +247,9 @@ def DoTransferFrom(t_from, t_to, amount):
 
     context = GetContext()
 
-    available_key = concat(t_from, t_to)
+    allowance_key = concat(t_from, t_to)
 
-    available_to_to_addr = Get(context, available_key)
+    available_to_to_addr = Get(context, allowance_key)
 
     if available_to_to_addr < amount:
         Log("Insufficient funds approved")
@@ -261,16 +263,19 @@ def DoTransferFrom(t_from, t_to, amount):
 
     to_balance = Get(context, t_to)
 
-
+    # calculate the new balances
     new_from_balance = from_balance - amount
-
     new_to_balance = to_balance + amount
+    new_allowance = available_to_to_addr - amount
 
+    # persist the new balances
+    Put(context, allowance_key, new_allowance)
     Put(context, t_to, new_to_balance)
     Put(context, t_from, new_from_balance)
 
     Log("transfer complete")
 
+    # dispatch transfer event
     OnTransfer(t_from, t_to, amount)
 
     return True
@@ -279,11 +284,23 @@ def DoTransferFrom(t_from, t_to, amount):
 def DoApprove(t_owner, t_spender, amount):
     """
 
-    @param t_owner: Owner of tokens
-    @param t_spender: Requestor of tokens
-    @param amount: Amount requested to be spent by Requestor on behalf of owner
-    @return:
+    Method by which the owner of an address can approve another address
+    ( the spender ) to spend an amount
+
+    :param t_owner: Owner of tokens
+    :type bytearray
+
+    :param t_spender: Requestor of tokens
+    :type bytearray
+
+    :param amount: Amount requested to be spent by Requestor on behalf of owner
+    :type bytearray
+
+    :return: success of the operation
+    :rtype: bool
+
     """
+
     owner_is_sender = CheckWitness(t_owner)
 
     if not owner_is_sender:
@@ -292,7 +309,7 @@ def DoApprove(t_owner, t_spender, amount):
 
     context = GetContext()
 
-    from_balance = Get(context,t_owner)
+    from_balance = Get(context, t_owner)
 
     # cannot approve an amount that is
     # currently greater than the from balance
@@ -317,9 +334,17 @@ def DoApprove(t_owner, t_spender, amount):
 
 def GetAllowance(t_owner, t_spender):
     """
-    @param t_owner: Owner of tokens
-    @param t_spender: Requestor of tokens
-    @return: int: Amount allowed to be spent by Requestor on behalf of owner
+    Gets the amount of tokens that a spender is allowed to spend
+    from the owners' account.
+
+    :param t_owner: Owner of tokens
+    :type bytearray
+
+    :param t_spender: Requestor of tokens
+    :type bytearray
+
+    :return: Amount allowed to be spent by Requestor on behalf of owner
+    :rtype: int
 
     """
 
@@ -331,8 +356,8 @@ def GetAllowance(t_owner, t_spender):
 
     return amount
 
-def BalanceOf(account):
 
+def BalanceOf(account):
     """
     Method to return the current balance of an address
 
@@ -350,14 +375,15 @@ def BalanceOf(account):
     return balance
 
 
-
 def Deploy():
     """
     This is used to distribute the initial tokens to the owner
 
-    @return: bool: whether the deploy was successful
+    :return: whether the deploy was successful
+    :rtype: bool
 
     """
+
     if not CheckWitness(OWNER):
         Log("Must be owner to deploy")
         return False
@@ -369,7 +395,6 @@ def Deploy():
 
         # do deploy logic
         Put(context, 'initialized', 1)
-
         Put(context, OWNER, TOTAL_SUPPLY)
 
         return True

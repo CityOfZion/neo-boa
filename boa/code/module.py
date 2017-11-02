@@ -84,7 +84,7 @@ class Module():
                   115 242                                  [data]
                   116 RETURN_VALUE                         [data]
     """
-    
+
     bp = None  # this is to store the byteplay reference
 
     path = None  # the path where this file is
@@ -105,14 +105,13 @@ class Module():
 
     is_sys_module = None
 
-    all_vm_tokens = None # dict for converting method tokens into linked method tokens for writing
+    all_vm_tokens = None  # dict for converting method tokens into linked method tokens for writing
 
     loaded_modules = None
 
     _module_name = None
 
     _names_to_load = None
-
 
     @property
     def module_path(self):
@@ -122,9 +121,8 @@ class Module():
         :return: the path of the module
         :rtype: str
         """
-        
+
         return self._module_name
-        
 
     @property
     def main(self):
@@ -134,17 +132,16 @@ class Module():
         :return: the default method in this module
         :rtype: ``boa.code.method.Method``
         """
-        
+
         for m in self.methods:
-            
+
             if m.name == 'Main':
                 return m
-                
+
         if len(self.methods):
             return self.methods[0]
-            
+
         return None
-        
 
     @property
     def orderered_methods(self):
@@ -154,22 +151,21 @@ class Module():
         :return: A list of ordered methods is this module
         :rtype: list
         """
-        
+
         oms = []
-        
+
         self.methods.reverse()
-        
+
         if self.main:
             oms = [self.main]
 
         for m in self.methods:
-            
+
             if m == self.main:
                 continue
             oms.append(m)
 
         return oms
-
 
     def add_method(self, method):
         """
@@ -181,13 +177,13 @@ class Module():
         :return: whether the method was added
         :rtype: bool
         """
-        
+
         for m in self.methods:
-            
+
             if m.name == method.name:
-    
+
                 if m.name != m.full_name:
-                    
+
                     if m.full_name == method.full_name:
                         return False
                 else:
@@ -196,9 +192,8 @@ class Module():
 
         # print("appending method %s %s " % (method.name, method.full_name))
         self.methods.append(method)
-        
-        return True
 
+        return True
 
     def method_by_name(self, method_name):
         """
@@ -209,14 +204,13 @@ class Module():
         :return: the method ( if it is found)
         :rtype: ``boa.code.method.Method``
         """
-        
+
         for m in self.methods:
             if m.full_name == method_name:
                 return m
             elif m.name == method_name:
                 return m
         return None
-        
 
     def __init__(self, path, module_name='', is_sys_module=False, items_to_import=None):
 
@@ -225,7 +219,7 @@ class Module():
         self._module_name = module_name
 
         self.is_sys_module = is_sys_module
-        
+
         self._names_to_load = ['STAR'] if items_to_import is None else items_to_import
 
         source = open(path, 'rb')
@@ -237,13 +231,12 @@ class Module():
         source.close()
 
         self.build()
-        
 
     def build(self):
         """
         Split the ``bp.code`` object into lines, and assembles the lines into different items.
         """
-        
+
         self.lines = []
         self.imports = []
         self.module_variables = []
@@ -281,7 +274,6 @@ class Module():
                 print('not sure what to do with line %s ' % lineset)
                 pdb.set_trace()
 
-
     def process_import(self, import_item):
         """
         Processes an import statement within this module.
@@ -289,7 +281,7 @@ class Module():
         :param import_item:
         :type import_item: ``boa.code.items.Import subclass``
         """
-        
+
         self.imports.append(import_item)
 
         self.loaded_modules.append(import_item.imported_module)
@@ -298,7 +290,6 @@ class Module():
         for method in import_item.imported_module.methods:
             self.add_method(method)
 
-
     def process_method(self, lineset):
         """
         processes a set of lines that contain a byteplay3 code object
@@ -306,14 +297,14 @@ class Module():
         :param lineset: the lineset to process and add
         :type lineset: list
         """
-        
+
         m = Method(lineset.code_object, self)
 
         if 'STAR' in self._names_to_load:
             self.add_method(m)
         else:
             for item in self._names_to_load:
-                
+
                 if item == m.name:
                     self.add_method(m)
 
@@ -335,14 +326,13 @@ class Module():
         :param lineset: The set of lines containing an app call registration
         :type lineset: list
         """
-        
+
         action = Action(lineset)
         for act in self.actions:
             if act.method_name == action.method_name:
                 return None
-                
-        self.actions.append(action)
 
+        self.actions.append(action)
 
     def process_smart_contract_app_registration(self, lineset):
         """
@@ -362,19 +352,18 @@ class Module():
         :param lineset: The set of lines containing an app call registration
         :type lineset: list
         """
-        
+
         appcall_registration = SmartContractAppCall(lineset)
         for registration in self.app_call_registrations:
             if registration.method_name == appcall_registration.method_name:
                 return
         self.app_call_registrations.append(appcall_registration)
 
-
     def split_lines(self):
         """
         Split the list of lines in the module into a set of objects that can be interpreted.
         """
-        
+
         lineitem = None
 
         for i, (op, arg) in enumerate(self.bp.code):
@@ -390,7 +379,6 @@ class Module():
         if len(lineitem):
             self.lines.append(Line(lineitem))
 
-
     def write(self):
         """
         Write the current module to a byte string.
@@ -404,7 +392,6 @@ class Module():
         self.link_methods()
 
         return self.write_methods()
-
 
     def write_methods(self):
         """
@@ -423,7 +410,6 @@ class Module():
                 b_array = b_array + vm_token.data
 
         return b_array
-        
 
     def link_methods(self):
         """
@@ -458,7 +444,6 @@ class Module():
                 else:
                     raise Exception("Target method %s not found" % vmtoken.target_method)
 
-
     def to_s(self):
         """
         this method is used to print the output of the executable in a readable/ tokenized format.
@@ -472,7 +457,7 @@ class Module():
                       4   STORE_FAST          j                [data]
         22            11  LOAD_FAST           j                [data]
                       17  CALL_FUNCTION       Main.<locals>.q_1 \
-					  [<boa.code.pytoken.PyToken object at 0x10cb53c50>] [data] 22
+                                          [<boa.code.pytoken.PyToken object at 0x10cb53c50>] [data] 22
                       20  STORE_FAST          m                [data]
         24            27  243                 b'\x03\x00'      [data] 3
                       30  LOAD_FAST           m                [data]
@@ -492,14 +477,14 @@ class Module():
 
         lineno = 0
         pstart = True
-        
+
         for i, (key, value) in enumerate(self.all_vm_tokens.items()):
             if value.pytoken:
                 pt = value.pytoken
                 do_print_line_no = False
                 to_label = None
                 from_label = '    '
-                
+
                 if pt.line_no != lineno:
                     print("\n")
                     lineno = pt.line_no

@@ -30,7 +30,7 @@ class Method():
     When the method has been tokenized, each token then has an address within the method.  Once these addresses are complete,
     the ``convert_jumps`` method is called to tell each flow control operation where (which address) it will need to jump to.
     """
-    
+
     bp = None
 
     parent = None
@@ -53,7 +53,6 @@ class Method():
 
     __make_func_name = None
 
-
     @property
     def name(self):
         """
@@ -62,9 +61,8 @@ class Method():
         :return: the name of this method
         :rtype: str
         """
-        
-        return self.bp.name
 
+        return self.bp.name
 
     @property
     def full_name(self):
@@ -81,7 +79,6 @@ class Method():
             return self.name
         return self.__make_func_name
 
-
     @property
     def args(self):
         """
@@ -90,9 +87,8 @@ class Method():
         :return: list of arguments for this method
         :rtype: list
         """
-        
+
         return self.bp.args
-        
 
     @property
     def code(self):
@@ -102,9 +98,8 @@ class Method():
         :return: the ``byteplay3`` code object of this method
         :rtype: ``byteplay3.Code``
         """
-        
-        return self.bp.code
 
+        return self.bp.code
 
     @property
     def vm_tokens(self):
@@ -114,9 +109,8 @@ class Method():
         :return: a list of vm tokens in this method
         :rtype: list
         """
-        
+
         return self.tokenizer.vm_tokens
-        
 
     @property
     def firstlineno(self):
@@ -128,7 +122,6 @@ class Method():
         """
 
         return self.bp.firstlineno
-        
 
     @property
     def total_lines(self):
@@ -145,7 +138,6 @@ class Method():
                 count += 1
 
         return count
-        
 
     @property
     def total_module_variables(self):
@@ -155,9 +147,8 @@ class Method():
         :return: the number of variables in this module
         :rtype: int
         """
-        
+
         return len(self.module.module_variables)
-        
 
     @property
     def module(self):
@@ -167,7 +158,7 @@ class Method():
         :return: the module this method is a member of
         :rtype: ``boa.code.module.Module``
         """
-        
+
         from boa.code.module import Module
 
         if type(self.parent) is Module:
@@ -176,9 +167,8 @@ class Method():
             return self.parent.parent
         elif type(self.parent.parent.parent) is Module:
             return self.parent.parent.parent
-            
+
         return None
-        
 
     def __init__(self, code_object, parent, make_func_name=None):
 
@@ -197,7 +187,6 @@ class Method():
         self.tokenize()
 
         self.convert_jumps()
-
 
     def print(self):
         """
@@ -224,7 +213,6 @@ class Method():
         """
 
         print(self.code)
-        
 
     def to_dis(self):
         """
@@ -251,7 +239,6 @@ class Method():
 
         out = self.bp.to_code()
         dis.dis(out)
-        
 
     def read_module_variables(self):
         """
@@ -263,7 +250,6 @@ class Method():
             items = definition.items
 
             self.bp.code = items + self.bp.code
-
 
     def read_initial_tokens(self):
         """
@@ -330,7 +316,6 @@ class Method():
 
         if len(block_group):
             self.blocks.append(Block(block_group))
-            
 
     def process_block_groups(self):
         """
@@ -375,7 +360,6 @@ class Method():
                 block.preprocess_make_function(self)
                 self.local_methods[block.local_func_varname] = block.local_func_name
 
-
             if block.has_unprocessed_array:
                 block.preprocess_arrays()
 
@@ -419,7 +403,6 @@ class Method():
 
         for index, token in enumerate(self.tokens):
             token.addr = index
-            
 
     def tokenize(self):
         """
@@ -431,7 +414,6 @@ class Method():
         for t in self.tokens:
             t.to_vm(self.tokenizer, prevtoken)
             prevtoken = t
-            
 
     def convert_jumps(self):
         """
@@ -456,7 +438,6 @@ class Method():
                             difference = vm_token_target.addr - vm_token.addr
 
                             vm_token.data = difference.to_bytes(2, 'little', signed=True)
-
 
     def write(self):
         """

@@ -15,8 +15,6 @@ def Main():
 
         print("not equal!")
 
-
-
     if sample_method_call() == sample_method_call_2():
         print("method equal")
     else:
@@ -30,9 +28,7 @@ def Main():
 
         print("not is!")
 
-
     return True
-
 
 
 def sample_method_call():

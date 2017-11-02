@@ -1,6 +1,5 @@
 
 def Main():
-
     """
 
     :return:
@@ -23,7 +22,6 @@ def Main():
 
 
 def stuff():
-
     """
 
     :return:
@@ -36,7 +34,6 @@ def stuff():
 
 
 def stuff2():
-
     """
 
     :return:
@@ -49,7 +46,6 @@ def stuff2():
 
 
 def prevcall():
-
     """
 
     :return:
@@ -58,7 +54,6 @@ def prevcall():
 
 
 def stuff8():
-
     """
 
     :return:
@@ -69,7 +64,6 @@ def stuff8():
 
 
 def blah():
-
     """
 
     :return:

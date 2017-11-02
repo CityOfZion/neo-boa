@@ -32,7 +32,6 @@ class BigInteger(int):
         return super(BigInteger, self).__eq__(other)
 
     def ToByteArray(self, signed=True):
-
         """
 
         converts a big integer object into a bytearray

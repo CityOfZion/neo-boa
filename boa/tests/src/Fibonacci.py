@@ -1,6 +1,5 @@
 
 def Main(fibnumber):
-
     """
 
     :param fibnumber:
@@ -12,7 +11,6 @@ def Main(fibnumber):
 
 
 def fib(n):
-
     """
 
     :param n:

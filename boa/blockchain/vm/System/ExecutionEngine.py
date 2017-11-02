@@ -5,7 +5,7 @@ class ExecutionEngine():
 
     - Note: This method is implemented inside the Neo Virtual Machine.
     """
-    
+
     pass
 
 
@@ -19,7 +19,7 @@ def GetScriptContainer():
     :return: the current ScriptContainer of a smart contract execution.
     :rtype: ``boa.blockchain.vm.Neo.Transaction``
     """
-    
+
     pass
 
 
@@ -32,7 +32,7 @@ def GetExecutingScriptHash():
     :return: the hash of the script ( smart contract ) which is currently being executed
     :rtype: bytearray
     """
-    
+
     pass
 
 
@@ -45,7 +45,7 @@ def GetCallingScriptHash():
     :return: the hash of the script ( smart contract ) which began execution of the current script
     :rtype: bytearray
     """
-    
+
     pass
 
 
@@ -58,5 +58,5 @@ def GetEntryScriptHash():
     :return: the hash of the script ( smart contract ) which began execution of the smart contract
     :rtype: bytearray
     """
-    
+
     pass

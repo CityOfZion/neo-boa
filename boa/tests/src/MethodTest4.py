@@ -1,7 +1,6 @@
 
 
 def Main():
-
     """
 
     :return:
@@ -20,7 +19,6 @@ def Main():
 
 
 def add(a, b, c):
-
     """
 
     :param a:
