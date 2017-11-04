@@ -24,9 +24,8 @@ Below is the current implementation in Python
 
 """
 
-from boa.blockchain.vm.Neo.Runtime import Log
+from boa.blockchain.vm.Neo.Runtime import Log,GetTrigger,CheckWitness
 from boa.blockchain.vm.Neo.Action import RegisterAction
-from boa.blockchain.vm.Neo.Runtime import GetTrigger, CheckWitness
 from boa.blockchain.vm.Neo.TriggerType import Application, Verification
 from boa.blockchain.vm.Neo.Storage import GetContext, Get, Put, Delete
 from boa.code.builtins import concat
