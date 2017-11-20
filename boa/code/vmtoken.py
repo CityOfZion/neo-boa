@@ -368,6 +368,31 @@ class VMTokenizer():
 
         self.convert1(VMOp.PACK, py_token)
 
+
+    def convert_load_const(self, pytoken):
+        token = None
+        if type(pytoken.args) is int:
+            token = self.convert_push_integer(pytoken.args, pytoken)
+        elif type(pytoken.args) is str:
+            str_bytes = pytoken.args.encode('utf-8')
+            pytoken.args = str_bytes
+            token = self.convert_push_data(pytoken.args, pytoken)
+        elif type(pytoken.args) is bytes:
+            token = self.convert_push_data(pytoken.args, pytoken)
+        elif type(pytoken.args) is bytearray:
+            token = self.convert_push_data(bytes(pytoken.args), pytoken)
+        elif type(pytoken.args) is bool:
+            token = self.convert_push_integer(pytoken.args)
+        elif type(pytoken.args) == type(None):
+            token = self.convert_push_data(bytearray(0))
+#        elif type(pytoken.args) == Code:
+#            pass
+        else:
+
+            raise Exception("Could not load type %s for item %s " % (
+                type(pytoken.args), pytoken.args))
+        return token
+
     def convert_push_data(self, data, py_token=None):
         """
 
@@ -445,10 +470,12 @@ class VMTokenizer():
         :param py_token:
         :param name:
         """
+
         if name is not None:
             local_name = name
         else:
             local_name = py_token.args
+
 
         # check to see if this local is a variable
         if local_name in self.method.local_stores:
@@ -469,6 +496,26 @@ class VMTokenizer():
             py_token.func_name = local_name
 
             self.convert_method_call(py_token)
+
+
+    def convert_load_attr(self, pytoken):
+
+        self.convert_load_local(pytoken, name=pytoken.instance_name)
+
+        index = pytoken.instance_type.index_of_varname(pytoken.args)
+
+        self.convert_push_integer(index)
+        self.convert1(VMOp.PICKITEM, pytoken)
+
+
+    def convert_store_attr(self, pytoken):
+
+        index = pytoken.instance_type.index_of_varname(pytoken.args)
+
+        self.convert_push_integer(index)
+        self.convert1(VMOp.ROT)
+        self.convert1(VMOp.SETITEM, py_token=pytoken)
+
 
     def insert_unknown_type(self, item):
         """
@@ -677,6 +724,10 @@ class VMTokenizer():
         elif self.is_built_in(fname):
             vmtoken = self.convert_built_in(fname, pytoken)
 
+
+        elif self.is_class_init(fname, pytoken):
+            vmtoken = self.convert_class_init(fname, pytoken)
+
         # otherwise we assume the method is defined by the module
         else:
             vmtoken = self.convert1(
@@ -839,6 +890,7 @@ class VMTokenizer():
         length = len(syscall_name)
         ba = bytearray([length]) + bytearray(syscall_name)
         vmtoken = self.convert1(VMOp.SYSCALL, pytoken, data=ba)
+        self.insert1(VMOp.NOP)
 
         return vmtoken
 
@@ -890,4 +942,58 @@ class VMTokenizer():
         vmtoken = self.convert1(
             VMOp.APPCALL, py_token=pytoken, data=sc_appcall.script_hash_addr)
 
+        self.insert1(VMOp.NOP)
+
         return vmtoken
+
+
+    def is_class_init(self, fname, pytoken):
+
+        for module in self.method.module.loaded_modules:
+            for cls in module.classes:
+                if cls.name == fname:
+                    print("token is class init!! %s " % pytoken)
+                    return True
+        return False
+
+    def convert_class_init(self, fname, pytoken):
+        print("CONVERT CLASS NAME: %s %s" % (fname,pytoken))
+        klass = None
+        for module in self.method.module.loaded_modules:
+            for cls in module.classes:
+                if cls.name == fname:
+                    klass = cls
+
+        print("total fields %s" % klass.total_fields)
+        # push the number of fields in the class
+        # and create a new struct for it
+        self.insert_push_integer(klass.total_fields)
+        token = self.convert1(VMOp.NEWSTRUCT,py_token=pytoken)
+
+        self.convert1(VMOp.TOALTSTACK)
+
+
+        count=0
+        for definition in klass.class_vars:
+
+            print("ITEM: %s %s %s" % (definition, definition.value, definition.attr))
+            self.convert_load_const(definition.value)
+
+            # get array
+            self.insert1(VMOp.FROMALTSTACK)
+            self.insert1(VMOp.DUP)
+            self.insert1(VMOp.TOALTSTACK)
+
+            self.insert_push_integer(count)
+            self.insert_push_integer(2)
+
+            self.insert1(VMOp.ROLL)
+            self.insert1(VMOp.SETITEM)
+
+            print("converting load constant: %s " % definition.value.args)
+
+            count += 1
+
+        self.convert1(VMOp.FROMALTSTACK)
+
+        return token

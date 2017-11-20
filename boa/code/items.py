@@ -1,9 +1,21 @@
 from byteplay3 import Code, Opcode
 from boa.code.method import Method
+from boa.code.pytoken import PyToken
 from boa.code import pyop
 import importlib
 import binascii
+import sys
+import os
 
+from byteplay3 import Code, SetLinenoType, Label
+from boa.code import pyop
+
+from boa.code.line import Line
+from boa.code.method import Method
+
+from boa.blockchain.vm import VMOp
+
+from collections import OrderedDict
 
 class Item():
     """
@@ -23,12 +35,15 @@ class Item():
 
 
 class Definition(Item):
-    pass
-#    def __init__(self, item_list):
-#        super(Definition, self).__init__(item_list)
-#        self.items[-1] = (Opcode(pyop.STORE_FAST),self.items[-1][1])
-#       print("self items %s " % self.items)
 
+    value = None
+    attr = None
+
+    def __init__(self, item_list):
+        super(Definition, self).__init__(item_list)
+
+        self.value = PyToken(self.items[1],1, args=self.items[1][1])
+        self.attr = PyToken(self.items[2],1, args=self.items[2][1])
 
 class Action(Item):
 
@@ -143,9 +158,15 @@ class Import(Item):
 
     module_items_to_import = None
 
-    def __init__(self, item_list):
+    file_path = None
+
+    def __init__(self, item_list, current_file_path):
         super(Import, self).__init__(item_list)
         self.module_items_to_import = []
+
+        self.file_path = os.path.dirname(os.path.abspath(current_file_path))
+
+        sys.path.append(self.file_path)
 
         for i, (op, arg) in enumerate(self.items):
             if op == pyop.IMPORT_NAME:
@@ -208,16 +229,43 @@ class Klass(Item):
 
     module = None
 
+    lines  = None
+
+    class_vars = None
+    class_method_calls = None
+
+
+    @property
+    def total_fields(self):
+        return len(self.class_vars)
+
+
+    @property
+    def class_var_names(self):
+        names = []
+        for var in self.class_vars:
+            names.append(var.attr.args)
+        return names
+
+    def index_of_varname(self, name):
+        names = self.class_var_names
+        return names.index(name)
+
     def __init__(self, item_list, module):
         super(Klass, self).__init__(item_list)
         self.module = self.parent = module
         self.methods = []
+        self.lines = []
+        self.class_vars = []
+        self.class_method_calls = []
         self.build()
 
     def build(self):
         """
 
         """
+
+
         for i, (op, arg) in enumerate(self.items):
 
             # if the item is a byteplay3 code object, it is a method
@@ -232,14 +280,28 @@ class Klass(Item):
             if op == pyop.STORE_NAME:
                 self.name = arg
 
-#        print('Created class %s inherits from %s ' % (self.name, self.parent))
 
-        # go through code object of the class and extract the method code
-        # objects
-        for i, (op, arg) in enumerate(self.bp.code):
+        self.split_lines()
 
-            if type(arg) is Code:
-                self.methods.append(Method(arg, self))
+
+        for lineset in self.lines:
+
+            if lineset.is_docstring:
+                pass
+            elif lineset.is_constant:
+                self.class_vars.append(Definition(lineset.items))
+            elif lineset.is_module_method_call:
+                self.class_method_calls.append(lineset)
+
+            elif lineset.is_method:
+
+                m = Method(lineset.code_object, self)
+
+                self.methods.append(m)
+
+
+
+
 
     def is_valid(self):
         # here is where we check if the class extends something reasonable
@@ -248,3 +310,23 @@ class Klass(Item):
         :return:
         """
         return True
+
+    def split_lines(self):
+        """
+        Split the list of lines in the module into a set of objects that can be interpreted.
+        """
+
+        lineitem = None
+
+        for i, (op, arg) in enumerate(self.bp.code):
+
+            if isinstance(op, SetLinenoType):
+                if lineitem is not None:
+                    self.lines.append(Line(lineitem))
+
+                lineitem = []
+
+            lineitem.append((op, arg))
+
+        if len(lineitem):
+            self.lines.append(Line(lineitem))

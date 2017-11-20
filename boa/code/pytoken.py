@@ -39,6 +39,9 @@ class PyToken():
 
     script_hash_token = None
 
+    instance_type = None
+    instance_name = None
+
     @property
     def op_name(self):
         """
@@ -164,27 +167,7 @@ class PyToken():
 
             # loading constants ( ie 1, 2 etc)
             elif op == pyop.LOAD_CONST:
-
-                if type(self.args) is int:
-                    token = tokenizer.convert_push_integer(self.args, self)
-                elif type(self.args) is str:
-                    str_bytes = self.args.encode('utf-8')
-                    self.args = str_bytes
-                    token = tokenizer.convert_push_data(self.args, self)
-                elif type(self.args) is bytes:
-                    token = tokenizer.convert_push_data(self.args, self)
-                elif type(self.args) is bytearray:
-                    token = tokenizer.convert_push_data(bytes(self.args), self)
-                elif type(self.args) is bool:
-                    token = tokenizer.convert_push_integer(self.args)
-                elif type(self.args) == type(None):
-                    token = tokenizer.convert_push_data(bytearray(0))
-                elif type(self.args) == Code:
-                    pass
-                else:
-
-                    raise Exception("Could not load type %s for item %s " % (
-                        type(self.args), self.args))
+                token = tokenizer.convert_load_const(self)
 
             # storing / loading local variables
             elif op in [pyop.STORE_FAST, pyop.STORE_NAME]:
@@ -280,7 +263,14 @@ class PyToken():
             elif op == pyop.BUILD_SLICE:
                 token = tokenizer.convert_build_slice(self)
 
-            # strings
+
+            # objects
+
+            elif op == pyop.LOAD_CLASS_ATTR:
+                token = tokenizer.convert_load_attr(self)
+
+            elif op == pyop.STORE_ATTR:
+                token = tokenizer.convert_store_attr(self)
 
             elif op == pyop.CALL_FUNCTION:
 

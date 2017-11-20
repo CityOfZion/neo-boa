@@ -25,13 +25,21 @@ class Line():
         return False
 
     @property
-    def is_definition(self):
+    def is_constant(self):
         """
 
         :return:
         """
-        return len(self.items) == 3 and self.items[1][0] == pyop.LOAD_CONST and self.items[2][0] == pyop.STORE_NAME
+
+        return (len(self.items) == 3 or len(self.items) == 5) and self.items[1][0] == pyop.LOAD_CONST and self.items[2][0] == pyop.STORE_NAME
 #        return False
+
+    @property
+    def is_module_method_call(self):
+
+        if not self.is_class:
+            return self.items[-2][0] == pyop.CALL_FUNCTION and self.items[-1][0] == pyop.STORE_NAME
+        return False
 
     @property
     def is_docstring(self):

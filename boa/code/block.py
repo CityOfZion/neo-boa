@@ -88,6 +88,18 @@ class Block():
         return False
 
     @property
+    def has_store_attr(self):
+        """
+
+        Returns:
+            bool
+        """
+        for token in self.oplist:
+            if token.py_op == pyop.STORE_ATTR:
+                return True
+        return False
+
+    @property
     def has_make_function(self):
         """
 
@@ -107,6 +119,7 @@ class Block():
         for token in self.oplist:
             if token.py_op == pyop.BUILD_SLICE:
                 return True
+
 
     @property
     def is_return(self):
@@ -210,34 +223,94 @@ class Block():
             return True
         return False
 
+
+    def preprocess_store_attr(self, method):
+
+        for index,token in enumerate(self.oplist):
+            if token.py_op == pyop.STORE_ATTR:
+                to_store_into = self.oplist[index-1].args
+                print("TO STORE: %s " % to_store_into)
+                try:
+                    ivar_type = method.instance_vars[to_store_into]
+                    print("IVAR TYPE: %s " % ivar_type)
+                    token.instance_type = ivar_type
+                    token.instance_name = to_store_into
+                except Exception as e:
+                    print("Couldnt load instance variable: %s %s " % (to_store_into, e))
+
+
     def preprocess_load_attr(self, method):
         """
 
         :param method:
         """
+
+        print("processing load attr: %s " % [vars(op) for op in self.oplist])
+
         while self.has_load_attr:
 
             index_to_rep = -1
             new_call = None
 
+
+
             for index, token in enumerate(self.oplist):
 
                 if token.py_op == pyop.LOAD_ATTR:
 
-                    what_to_load = 'Get%s' % token.args
+                    from boa.code.items import Klass
 
-                    call_func = PyToken(
-                        Opcode(pyop.CALL_FUNCTION), lineno=self.line, index=-1, args=what_to_load)
-                    call_func.func_processed = True
-                    call_func.func_name = what_to_load
-                    call_func.func_params = [self.oplist[index - 1]]
+                    to_load_from = self.oplist[index -1]
+                    varname = to_load_from.args
+                    ivar_type = None
+                    is_func_call = True
+                    if varname in method.instance_vars.keys():
+                        ivar_type = method.instance_vars[varname]
+                        what_to_load = '%s.%s' % (ivar_type.name,token.args)
+                        if token.args in ivar_type.class_var_names:
+                            is_func_call = False
+                            what_to_load = token.args
 
-                    index_to_rep = index
-                    new_call = call_func
+                    elif varname == 'self' and type(method.parent) is Klass:
+                        ivar_type = method.parent
+                        what_to_load = '%s.%s' % (ivar_type, token.args)
+                        if token.args in ivar_type.class_var_names:
+                            is_func_call = False
+                            what_to_load = token.args
+
+                    else:
+                        what_to_load = 'Get%s' % token.args
+
+#                    pdb.set_trace()
+#                    print("what to load: %s " % what_to_load)
+
+                    if is_func_call:
+                        call_func = PyToken(
+                            Opcode(pyop.CALL_FUNCTION), lineno=self.line, index=-1, args=what_to_load)
+                        call_func.instance_type = ivar_type
+                        call_func.func_processed = True
+                        call_func.func_name = what_to_load
+                        call_func.func_params = [self.oplist[index - 1]]
+#                        print("IS FUNC CALL, CREATING CALL FUNC!!!!! %s " % call_func)
+
+                        index_to_rep = index
+                        new_call = call_func
+                    else:
+#                        print("IN LOAD CLASS ATTR CALL!!!")
+                        new_call = PyToken(Opcode(pyop.LOAD_CLASS_ATTR), lineno=self.line, args=what_to_load )
+                        new_call.instance_type = ivar_type
+                        new_call.instance_name = varname
+                        new_call.func_processed = True
+                        index_to_rep = index
 
             if index_to_rep > -1 and new_call is not None:
                 self.oplist[index_to_rep] = new_call
                 del self.oplist[index_to_rep - 1]
+
+
+    def preprocess_load_class(self, method):
+        print("PREPROCESS LOAD BUilD CLASS: %s %s " % (method, method.name))
+
 
     def preprocess_make_function(self, method):
         """
@@ -456,11 +529,15 @@ class Block():
 
         :param orig_method:
         """
+
+        ivars = {}
+
         while self.has_unprocessed_method_calls:
             start_index_change = None
             end_index_change = None
             changed_items = None
 
+            klass = None
             for index, token in enumerate(self.oplist):
                 #                print("TOKEN::: %s %s " % (token.jump_label, token.args))
 
@@ -490,6 +567,20 @@ class Block():
                     token.func_name = call_method_name
                     token.func_type = call_method_type
 
+                    print("PROCESSING METHOD CALL: %s %s " % (token, token.func_name))
+
+                    # check to see if this method call creates an instance of another object
+                    klass = None
+                    for module in orig_method.module.loaded_modules:
+                        for cls in module.classes:
+                            if cls.name == token.func_name:
+                                klass = cls
+
+                    if klass:
+                        ivar_iname = self.oplist[2].args
+                        print("ivar name %s " % ivar_iname)
+                        ivars[ivar_iname] = klass
+
                     # if this method is the target of a jump
                     # or if one of its parameters is the target of a jump
                     # we need to catch that and use that jump label
@@ -501,7 +592,6 @@ class Block():
                             token.jump_label = call_method_op.jump_label
 
                     token.func_params = params
-
                     changed_items = [token]
 
                     start_index_change = index - param_count - 1
@@ -511,6 +601,9 @@ class Block():
                 tstart = self.oplist[0:start_index_change]
                 tend = self.oplist[end_index_change + 1:]
                 self.oplist = tstart + changed_items + tend
+
+        return ivars
+
 
     def preprocess_array_subs(self):
         """

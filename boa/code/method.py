@@ -53,6 +53,8 @@ class Method():
 
     __make_func_name = None
 
+    instance_vars = None
+
     @property
     def name(self):
         """
@@ -74,6 +76,12 @@ class Method():
         """
 
         if self.__make_func_name is None:
+
+            from boa.code.items import Klass
+
+            if type(self.parent) is Klass:
+                clsname = self.parent.name
+                return '%s.%s' % (clsname, self.name)
             if len(self.module.module_path):
                 return '%s.%s' % (self.module.module_path, self.name)
             return self.name
@@ -172,13 +180,19 @@ class Method():
 
     def __init__(self, code_object, parent, make_func_name=None):
 
+#        assert code_object is not None
+
         self.bp = code_object
 
         self.parent = parent
 
+        self.instance_vars = {}
+
         self.__make_func_name = make_func_name
 
         self.read_module_variables()
+
+        self.read_module_method_calls()
 
         self.read_initial_tokens()
 
@@ -187,6 +201,9 @@ class Method():
         self.tokenize()
 
         self.convert_jumps()
+
+        self.print()
+#        self.tokenizer.to_s()
 
     def print(self):
         """
@@ -244,10 +261,20 @@ class Method():
         """
         Take all module ``global`` variables and gives this method access to them.
         """
-
         for definition in self.module.module_variables:
 
             items = definition.items
+
+            self.bp.code = items + self.bp.code
+
+
+    def read_module_method_calls(self):
+        """
+        Take all module ``global`` method call variables and gives this method access to them.
+        """
+        for module_method_call in self.module.module_method_calls:
+
+            items = module_method_call.items
 
             self.bp.code = items + self.bp.code
 
@@ -271,6 +298,7 @@ class Method():
         current_label = None
 
         current_loop_token = None
+
 
         for i, (op, arg) in enumerate(self.code):
 
@@ -337,15 +365,19 @@ class Method():
 
                 ret_token = PyToken(Opcode(pyop.BR_S),
                                     block.line, args=block_addr)
+                nop_token = PyToken(Opcode(pyop.NOP), block.line)
+                drop_token = PyToken(Opcode(pyop.DROP), block.line)
+
                 ret_token.jump_label = block.oplist[0].jump_label
                 block.oplist[0].jump_label = None
                 block.oplist.insert(0, ret_token)
                 block.mark_as_end()
-#                length = len(self.local_stores)
-#                self.local_stores[block.local_return_name] = length
 
             if block.has_load_attr:
                 block.preprocess_load_attr(self)
+
+            if block.has_store_attr:
+                block.preprocess_store_attr(self)
 
             if block.is_list_comprehension:
                 block.preprocess_list_comprehension(self)
@@ -355,6 +387,8 @@ class Method():
                     else:
                         length = len(self.local_stores)
                         self.local_stores[localvar] = length
+
+
 
             if block.has_make_function:
                 block.preprocess_make_function(self)
@@ -367,7 +401,9 @@ class Method():
                 block.preprocess_array_subs()
 
             if block.has_unprocessed_method_calls:
-                block.preprocess_method_calls(self)
+                ivars = block.preprocess_method_calls(self)
+                for key,val in ivars.items():
+                    self.instance_vars[key] = val
 
             if block.has_slice:
                 block.preprocess_slice()
@@ -390,6 +426,10 @@ class Method():
                         self.local_stores[localvar] = length
                 iter_setup_block = block
                 self.dynamic_iterator_count += 1
+
+
+
+        print("INSTANCE VARIABLES: %s " % self.instance_vars)
 
         alltokens = []
 

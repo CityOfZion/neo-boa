@@ -95,6 +95,8 @@ class Module():
 
     module_variables = None  # list of module variables
 
+    module_method_calls = None # list of module level method calls
+
     classes = None  # a list of classes
 
     methods = None  # a list to keep all methods in the module
@@ -205,7 +207,9 @@ class Module():
         :rtype: ``boa.code.method.Method``
         """
 
+#        print("METHODS FOR MODULE: %s " % self.path)
         for m in self.methods:
+#            print("METHODS: %s %s" % (m.name, m.full_name))
             if m.full_name == method_name:
                 return m
             elif m.name == method_name:
@@ -240,6 +244,7 @@ class Module():
         self.lines = []
         self.imports = []
         self.module_variables = []
+        self.module_method_calls = []
         self.methods = []
         self.actions = []
         self.app_call_registrations = []
@@ -253,16 +258,19 @@ class Module():
             if lineset.is_import:
 
                 if not self.is_sys_module:
-                    imp = Import(lineset.items)
+                    imp = Import(lineset.items, self.path)
                     self.process_import(imp)
                 else:
                     print("will not import items from sys module")
 
             elif lineset.is_docstring:
                 pass
-            elif lineset.is_definition:
+            elif lineset.is_constant:
                 self.module_variables.append(Definition(lineset.items))
+            elif lineset.is_module_method_call:
+                self.module_method_calls.append(lineset)
             elif lineset.is_class:
+                print("ADDING CLASS!!!!!")
                 self.classes.append(Klass(lineset.items, self))
             elif lineset.is_method:
                 self.process_method(lineset)
@@ -289,6 +297,13 @@ class Module():
         # Go through all the methods in the imported module.
         for method in import_item.imported_module.methods:
             self.add_method(method)
+
+        for cls in import_item.imported_module.classes:
+            for method in cls.methods:
+                print("adding method %s " % method)
+                self.add_method(method)
+
+
 
     def process_method(self, lineset):
         """
@@ -442,6 +457,8 @@ class Module():
                     jump_len = target_method.method_address - vmtoken.addr
                     vmtoken.data = jump_len.to_bytes(2, 'little', signed=True)
                 else:
+
+                    pdb.set_trace()
                     raise Exception("Target method %s not found" % vmtoken.target_method)
 
     def to_s(self):
