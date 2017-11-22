@@ -61,6 +61,8 @@ class Method():
 
     _args = None
 
+    _fullargs = None
+
     @property
     def name(self):
         """
@@ -516,7 +518,9 @@ class Method():
                 instance_type_name = param[1]
                 klass = None
 
-                for module in self.module.loaded_modules:
+                all_modules = [self.module] + self.module.loaded_modules
+
+                for module in all_modules:
                     for cls in module.classes:
                         if cls.name == instance_type_name:
                             klass = cls

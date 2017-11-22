@@ -574,11 +574,15 @@ class Block():
                     if call_method_op.instance_type:
                         print("METHOD HAS INSTANCE TyPE! %s " % call_method_op.instance_type)
                         print("PARAM COUNT: %s " % param_count)
-                        token.args = len(call_method_op.func_params)
-                        param_count = token.args
-                        params = call_method_op.func_params
-                        call_method_name = "%s.%s" % (call_method_op.instance_type.name, call_method_op.args)
 
+                        # the call_method_op has a referecnce to the instance being called
+                        # as the only item in the func_params ( this is python's self object )
+                        # we will create a new param array by adding that one to the beginning of the method params
+                        params = call_method_op.func_params + params
+
+                        token.args = len(params)
+                        param_count = token.args
+                        call_method_name = "%s.%s" % (call_method_op.instance_type.name, call_method_op.args)
 
 
 
@@ -595,25 +599,20 @@ class Block():
 
                     # check to see if this method call creates an instance of another object
                     klass = None
-                    for module in orig_method.module.loaded_modules:
+                    all_modules = [orig_method.module] + orig_method.module.loaded_modules
+
+                    for module in all_modules:
                         for cls in module.classes:
                             print("ALL CLASS METHODS: %s " % cls.all_method_names)
                             if cls.name == token.func_name:
                                 klass = cls
 
-#                            elif token.func_name in cls.all_method_names:
-#                                print("is a method of this class!!! %s " % cls)
-#                                if call_method_op.py_op == pyop.CALL_FUNCTION:
-#                                    print("this is a class method call")
+
                     if klass:
                         ivar_iname = self.oplist[2].args
-#                        print("ivar name %s " % ivar_iname)
                         ivars[ivar_iname] = klass
 
 
-                    # now check to see if this is a method call on a class instance
-
-#                    pdb.set_trace()
 
                     # if this method is the target of a jump
                     # or if one of its parameters is the target of a jump
@@ -625,8 +624,6 @@ class Block():
                         else:
                             token.jump_label = call_method_op.jump_label
 
-                    if len(params) != token.args:
-                        print("SET TOKEN ARGS TO CORRECT AMOUNT OF PARAMS!: ... ")
 
                     token.func_params = params
                     changed_items = [token]

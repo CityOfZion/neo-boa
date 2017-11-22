@@ -954,8 +954,8 @@ class VMTokenizer():
 
 
     def is_class_init(self, fname, pytoken):
-
-        for module in self.method.module.loaded_modules:
+        all_modules = [self.method.module] + self.method.module.loaded_modules
+        for module in all_modules:
             for cls in module.classes:
                 if cls.name == fname:
                     print("token is class init!! %s " % pytoken)
@@ -963,14 +963,13 @@ class VMTokenizer():
         return False
 
     def convert_class_init(self, fname, pytoken):
-        print("CONVERT CLASS NAME: %s %s" % (fname,pytoken))
         klass = None
-        for module in self.method.module.loaded_modules:
+        all_modules = [self.method.module] + self.method.module.loaded_modules
+        for module in all_modules:
             for cls in module.classes:
                 if cls.name == fname:
                     klass = cls
 
-        print("total fields %s" % klass.total_fields)
         # push the number of fields in the class
         # and create a new struct for it
         self.insert_push_integer(klass.total_fields)
