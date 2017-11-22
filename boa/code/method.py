@@ -338,6 +338,7 @@ class Method():
                 if op in [pyop.STORE_FAST, pyop.STORE_NAME, pyop.STORE_GLOBAL] and arg not in self.local_stores.keys():
                     length = len(self.local_stores)
                     self.local_stores[arg] = length
+                    pdb.set_trace()
 
                 token = PyToken(op, current_line_no, i, arg)
 
@@ -439,9 +440,6 @@ class Method():
                 iter_setup_block = block
                 self.dynamic_iterator_count += 1
 
-
-
-        print("INSTANCE VARIABLES: %s " % self.instance_vars)
 
         alltokens = []
 
