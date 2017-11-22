@@ -311,7 +311,7 @@ class Method():
 
         current_loop_token = None
 
-
+        total_lines = 0
         for i, (op, arg) in enumerate(self.code):
 
             # print("[%s] %s  ->  %s " % (i, op, arg))
@@ -319,6 +319,7 @@ class Method():
             if type(op) is SetLinenoType:
 
                 current_line_no = arg
+                total_lines += 1
 
                 if self.start_line_no is None:
                     self.start_line_no = current_line_no
@@ -334,11 +335,12 @@ class Method():
                 current_label = op
 
             else:
-
+                instance_type = None
                 if op in [pyop.STORE_FAST, pyop.STORE_NAME, pyop.STORE_GLOBAL] and arg not in self.local_stores.keys():
+
+                    self._check_for_type(arg, total_lines)
                     length = len(self.local_stores)
                     self.local_stores[arg] = length
-                    pdb.set_trace()
 
                 token = PyToken(op, current_line_no, i, arg)
 
@@ -357,6 +359,7 @@ class Method():
 
         if len(block_group):
             self.blocks.append(Block(block_group))
+
 
     def process_block_groups(self):
         """
@@ -451,6 +454,8 @@ class Method():
                 alltokens = alltokens + block.oplist
         self.tokens = alltokens
 
+        print("INSTANCE TYPES: %s  " % self.instance_vars)
+
         for index, token in enumerate(self.tokens):
             token.addr = index
 
@@ -514,18 +519,44 @@ class Method():
             if len(param) > 1:
 
                 instance_type_name = param[1]
-                klass = None
 
-                all_modules = [self.module] + self.module.loaded_modules
-
-                for module in all_modules:
-                    for cls in module.classes:
-                        if cls.name == instance_type_name:
-                            klass = cls
+                klass = self._lookup_type(instance_type_name)
                 if klass:
-                    print("method arg has class type!")
                     self.instance_vars[param[0]] = klass
 
-
-
         self._args = self.bp.args
+
+
+    def _check_for_type(self, argname, index):
+
+        code = self.bp.to_code()
+
+        lines = inspect.getsourcelines(code)[0]
+
+        real_lines = []
+        for l in lines:
+            line = l.strip()
+            if len(line) > 0:
+                if line[0] != '#':
+                    real_lines.append(line)
+
+        item = real_lines[index]
+
+        if ' # type:' in item:
+            type_annotation = item.split(' # type:')[-1].strip()
+            klass = self._lookup_type(type_annotation)
+            if klass:
+                self.instance_vars[argname] = klass
+
+
+    def _lookup_type(self, typename):
+        klass = None
+
+        all_modules = [self.module] + self.module.loaded_modules
+
+        for module in all_modules:
+            for cls in module.classes:
+                if cls.name == typename:
+                    klass = cls
+
+        return klass

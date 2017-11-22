@@ -245,14 +245,10 @@ class Block():
         :param method:
         """
 
-        print("processing load attr: %s " % [vars(op) for op in self.oplist])
-
         while self.has_load_attr:
 
             index_to_rep = -1
             new_call = None
-
-
 
             for index, token in enumerate(self.oplist):
 
@@ -300,7 +296,6 @@ class Block():
                             call_func.func_processed = True
                             call_func.func_name = what_to_load
                             call_func.func_params = [self.oplist[index - 1]]
-                            print("IS FUNC CALL, CREATING CALL FUNC!!!!! %s " % call_func)
 
                             index_to_rep = index
                             new_call = call_func
@@ -572,8 +567,6 @@ class Block():
 
 
                     if call_method_op.instance_type:
-                        print("METHOD HAS INSTANCE TyPE! %s " % call_method_op.instance_type)
-                        print("PARAM COUNT: %s " % param_count)
 
                         # the call_method_op has a referecnce to the instance being called
                         # as the only item in the func_params ( this is python's self object )
@@ -594,8 +587,6 @@ class Block():
 
                     token.func_name = call_method_name
                     token.func_type = call_method_type
-                    print("PARAM COUNT: %s " % param_count)
-                    print("PROCESSING METHOD CALL: %s %s %s" % (token, token.func_name, params))
 
                     # check to see if this method call creates an instance of another object
                     klass = None
@@ -603,7 +594,6 @@ class Block():
 
                     for module in all_modules:
                         for cls in module.classes:
-                            print("ALL CLASS METHODS: %s " % cls.all_method_names)
                             if cls.name == token.func_name:
                                 klass = cls
 
