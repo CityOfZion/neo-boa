@@ -162,6 +162,10 @@ class VMTokenizer():
         """
 
         """
+
+#        if self.method.name == 'second':
+#            pdb.set_trace()
+
         total_items = self.method.total_lines \
             + len(self.method.args) \
             + self.method.dynamic_iterator_count
@@ -659,7 +663,9 @@ class VMTokenizer():
             scripthash_token = pytoken.func_params.pop(0)
             pytoken.script_hash_token = scripthash_token.args
 
+        print("TOTAL ARGS: %s %s " % (pytoken.func_name, pytoken.func_params))
         for t in pytoken.func_params:
+            print("CONVERTING TOKEN TO VM: %s " % t)
             t.to_vm(self)
 
         param_len = len(pytoken.func_params)

@@ -83,7 +83,7 @@ class Block():
         :return:
         """
         for token in self.oplist:
-            if token.py_op == pyop.LOAD_ATTR:
+            if token.py_op == pyop.LOAD_ATTR and token.instance_type is None:
                 return True
         return False
 
@@ -264,12 +264,20 @@ class Block():
                     varname = to_load_from.args
                     ivar_type = None
                     is_func_call = True
+                    do_nothing = False
                     if varname in method.instance_vars.keys():
                         ivar_type = method.instance_vars[varname]
                         what_to_load = '%s.%s' % (ivar_type.name,token.args)
+                        token.instance_type = ivar_type
+                        # if this is a class variable lookup, do this
                         if token.args in ivar_type.class_var_names:
                             is_func_call = False
                             what_to_load = token.args
+
+                        # otherwise, it is a method call on an object, we don't want to do anything
+                        else:
+                            token.func_params = [self.oplist[index - 1]]
+                            do_nothing = True
 
                     elif varname == 'self' and type(method.parent) is Klass:
                         ivar_type = method.parent
@@ -284,24 +292,25 @@ class Block():
 #                    pdb.set_trace()
 #                    print("what to load: %s " % what_to_load)
 
-                    if is_func_call:
-                        call_func = PyToken(
-                            Opcode(pyop.CALL_FUNCTION), lineno=self.line, index=-1, args=what_to_load)
-                        call_func.instance_type = ivar_type
-                        call_func.func_processed = True
-                        call_func.func_name = what_to_load
-                        call_func.func_params = [self.oplist[index - 1]]
-#                        print("IS FUNC CALL, CREATING CALL FUNC!!!!! %s " % call_func)
+                    if not do_nothing:
+                        if is_func_call:
+                            call_func = PyToken(
+                                Opcode(pyop.CALL_FUNCTION), lineno=self.line, index=-1, args=what_to_load)
+                            call_func.instance_type = ivar_type
+                            call_func.func_processed = True
+                            call_func.func_name = what_to_load
+                            call_func.func_params = [self.oplist[index - 1]]
+                            print("IS FUNC CALL, CREATING CALL FUNC!!!!! %s " % call_func)
 
-                        index_to_rep = index
-                        new_call = call_func
-                    else:
-#                        print("IN LOAD CLASS ATTR CALL!!!")
-                        new_call = PyToken(Opcode(pyop.LOAD_CLASS_ATTR), lineno=self.line, args=what_to_load )
-                        new_call.instance_type = ivar_type
-                        new_call.instance_name = varname
-                        new_call.func_processed = True
-                        index_to_rep = index
+                            index_to_rep = index
+                            new_call = call_func
+                        else:
+    #                        print("IN LOAD CLASS ATTR CALL!!!")
+                            new_call = PyToken(Opcode(pyop.LOAD_CLASS_ATTR), lineno=self.line, args=what_to_load )
+                            new_call.instance_type = ivar_type
+                            new_call.instance_name = varname
+                            new_call.func_processed = True
+                            index_to_rep = index
 
             if index_to_rep > -1 and new_call is not None:
                 self.oplist[index_to_rep] = new_call
@@ -538,12 +547,16 @@ class Block():
             changed_items = None
 
             klass = None
+
             for index, token in enumerate(self.oplist):
                 #                print("TOKEN::: %s %s " % (token.jump_label, token.args))
+
+
 
                 if token.py_op == pyop.CALL_FUNCTION and not token.func_processed:
 
                     token.func_processed = True
+
                     param_count = token.args
 
                     # why would param count be 256 when calling w/ kwargs?
@@ -554,9 +567,20 @@ class Block():
                     params = self.oplist[index - param_count:index]
 
                     call_method_op = self.oplist[index - param_count - 1]
-
                     call_method_type = call_method_op.py_op
                     call_method_name = call_method_op.args
+
+
+                    if call_method_op.instance_type:
+                        print("METHOD HAS INSTANCE TyPE! %s " % call_method_op.instance_type)
+                        print("PARAM COUNT: %s " % param_count)
+                        token.args = len(call_method_op.func_params)
+                        param_count = token.args
+                        params = call_method_op.func_params
+                        call_method_name = "%s.%s" % (call_method_op.instance_type.name, call_method_op.args)
+
+
+
 
                     # we need to check if this is a method
                     # that is local to this block's method
@@ -566,20 +590,30 @@ class Block():
 
                     token.func_name = call_method_name
                     token.func_type = call_method_type
-
-                    print("PROCESSING METHOD CALL: %s %s " % (token, token.func_name))
+                    print("PARAM COUNT: %s " % param_count)
+                    print("PROCESSING METHOD CALL: %s %s %s" % (token, token.func_name, params))
 
                     # check to see if this method call creates an instance of another object
                     klass = None
                     for module in orig_method.module.loaded_modules:
                         for cls in module.classes:
+                            print("ALL CLASS METHODS: %s " % cls.all_method_names)
                             if cls.name == token.func_name:
                                 klass = cls
 
+#                            elif token.func_name in cls.all_method_names:
+#                                print("is a method of this class!!! %s " % cls)
+#                                if call_method_op.py_op == pyop.CALL_FUNCTION:
+#                                    print("this is a class method call")
                     if klass:
                         ivar_iname = self.oplist[2].args
-                        print("ivar name %s " % ivar_iname)
+#                        print("ivar name %s " % ivar_iname)
                         ivars[ivar_iname] = klass
+
+
+                    # now check to see if this is a method call on a class instance
+
+#                    pdb.set_trace()
 
                     # if this method is the target of a jump
                     # or if one of its parameters is the target of a jump
@@ -591,11 +625,16 @@ class Block():
                         else:
                             token.jump_label = call_method_op.jump_label
 
+                    if len(params) != token.args:
+                        print("SET TOKEN ARGS TO CORRECT AMOUNT OF PARAMS!: ... ")
+
                     token.func_params = params
                     changed_items = [token]
 
                     start_index_change = index - param_count - 1
                     end_index_change = index
+
+
 
             if start_index_change is not None and end_index_change is not None:
                 tstart = self.oplist[0:start_index_change]

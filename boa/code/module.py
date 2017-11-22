@@ -280,7 +280,7 @@ class Module():
                 self.process_smart_contract_app_registration(lineset)
             else:
                 print('not sure what to do with line %s ' % lineset)
-                pdb.set_trace()
+                #pdb.set_trace()
 
     def process_import(self, import_item):
         """
@@ -424,6 +424,8 @@ class Module():
             if vm_token.data is not None and vm_token.vm_op != VMOp.NOP:
                 b_array = b_array + vm_token.data
 
+        print("final: %s " % self.to_s())
+
         return b_array
 
     def link_methods(self):
@@ -458,7 +460,7 @@ class Module():
                     vmtoken.data = jump_len.to_bytes(2, 'little', signed=True)
                 else:
 
-                    pdb.set_trace()
+#                    pdb.set_trace()
                     raise Exception("Target method %s not found" % vmtoken.target_method)
 
     def to_s(self):

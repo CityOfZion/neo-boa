@@ -5,10 +5,14 @@ from boa.code.vmtoken import VMTokenizer
 from boa.code.block import Block
 from boa.code import pyop
 
+import inspect
+
 import dis
 
 import collections
+import pdb
 
+from byteplay3 import object_attributes,print_attr_values,printcodelist
 
 class Method():
     """
@@ -55,6 +59,8 @@ class Method():
 
     instance_vars = None
 
+    _args = None
+
     @property
     def name(self):
         """
@@ -96,7 +102,11 @@ class Method():
         :rtype: list
         """
 
-        return self.bp.args
+        if not self._args:
+
+            self._build_args()
+
+        return self._args
 
     @property
     def code(self):
@@ -489,3 +499,31 @@ class Method():
 
         out = self.tokenizer.to_b()
         return out
+
+
+
+    def _build_args(self):
+
+        code = self.bp.to_code()
+        a = inspect.getsourcelines(code)[0][0]
+        params = a[a.index("(") + 1:a.rindex(")")].split(',')
+
+        for p in params:
+            param = [item.strip() for item in p.split(':')]
+
+            if len(param) > 1:
+
+                instance_type_name = param[1]
+                klass = None
+
+                for module in self.module.loaded_modules:
+                    for cls in module.classes:
+                        if cls.name == instance_type_name:
+                            klass = cls
+                if klass:
+                    print("method arg has class type!")
+                    self.instance_vars[param[0]] = klass
+
+
+
+        self._args = self.bp.args

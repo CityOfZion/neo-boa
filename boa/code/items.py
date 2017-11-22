@@ -125,7 +125,6 @@ class SmartContractAppCall(Item):
         """
         b_array = None
         if type(item) is str:
-            print("ITEM!! %s " % item)
             bstring = item.encode('utf-8')
             b_array = bytearray(binascii.unhexlify(bstring))
         elif type(item) is bytearray:
@@ -250,6 +249,10 @@ class Klass(Item):
     def index_of_varname(self, name):
         names = self.class_var_names
         return names.index(name)
+
+    @property
+    def all_method_names(self):
+        return [m.full_name for m in self.methods]
 
     def __init__(self, item_list, module):
         super(Klass, self).__init__(item_list)
