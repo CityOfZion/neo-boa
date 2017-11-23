@@ -133,6 +133,7 @@ class Block():
                 return True
         return False
 
+
     @property
     def is_iter(self):
         """
@@ -544,8 +545,6 @@ class Block():
             klass = None
 
             for index, token in enumerate(self.oplist):
-                #                print("TOKEN::: %s %s " % (token.jump_label, token.args))
-
 
 
                 if token.py_op == pyop.CALL_FUNCTION and not token.func_processed:
@@ -589,19 +588,11 @@ class Block():
                     token.func_type = call_method_type
 
                     # check to see if this method call creates an instance of another object
-                    klass = None
-                    all_modules = [orig_method.module] + orig_method.module.loaded_modules
-
-                    for module in all_modules:
-                        for cls in module.classes:
-                            if cls.name == token.func_name:
-                                klass = cls
-
+                    klass = orig_method.lookup_type(token.func_name)
 
                     if klass:
                         ivar_iname = self.oplist[2].args
                         ivars[ivar_iname] = klass
-
 
 
                     # if this method is the target of a jump

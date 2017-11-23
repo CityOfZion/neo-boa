@@ -711,12 +711,16 @@ class VMTokenizer():
             if fname == m.name:
                 full_name = m.full_name
 
+        print("METHOD TO VM: %s " % fname)
+
         # operational call like len(items) or abs(value)
         if self.is_op_call(fname):
+            print("CONVERTING OPCALL??? %s  " % fname)
             vmtoken = self.convert_op_call(fname, pytoken)
 
         # runtime.notify event
         elif self.is_notify_event(pytoken):
+            print("converting notify event")
             vmtoken = self.convert_notify_event(pytoken)
 
         # app call ( for calling other contracts on blockchain )
@@ -730,12 +734,13 @@ class VMTokenizer():
         elif self.is_built_in(fname):
             vmtoken = self.convert_built_in(fname, pytoken)
 
-
-        elif self.is_class_init(fname, pytoken):
+        # look to see if this is a new intance of an object
+        elif self.is_class_init(fname):
             vmtoken = self.convert_class_init(fname, pytoken)
 
         # otherwise we assume the method is defined by the module
         else:
+            print("CONVERTING NORMAL METHOD CALL?")
             vmtoken = self.convert1(
                 VMOp.CALL, py_token=pytoken, data=bytearray(b'\x05\x00'))
 
@@ -862,8 +867,9 @@ class VMTokenizer():
         :return:
         """
         name = pytoken.func_name
-
+        print("CHecking method module actions for name %s " % name)
         for action in self.method.module.actions:
+            print("name: %s " % action.method_name)
             if action.method_name == name:
                 return True
         return False
@@ -953,22 +959,17 @@ class VMTokenizer():
         return vmtoken
 
 
-    def is_class_init(self, fname, pytoken):
-        all_modules = [self.method.module] + self.method.module.loaded_modules
-        for module in all_modules:
-            for cls in module.classes:
-                if cls.name == fname:
-                    print("token is class init!! %s " % pytoken)
-                    return True
+    def is_class_init(self, fname):
+        kls = self.method.lookup_type(fname)
+        if kls:
+            return True
         return False
 
     def convert_class_init(self, fname, pytoken):
-        klass = None
-        all_modules = [self.method.module] + self.method.module.loaded_modules
-        for module in all_modules:
-            for cls in module.classes:
-                if cls.name == fname:
-                    klass = cls
+        klass = self.method.lookup_type(fname)
+
+        if not klass:
+            raise Exception("Could not find class for %s " % fname)
 
         # push the number of fields in the class
         # and create a new struct for it
@@ -977,11 +978,9 @@ class VMTokenizer():
 
         self.convert1(VMOp.TOALTSTACK)
 
-
         count=0
         for definition in klass.class_vars:
 
-            print("ITEM: %s %s %s" % (definition, definition.value, definition.attr))
             self.convert_load_const(definition.value)
 
             # get array

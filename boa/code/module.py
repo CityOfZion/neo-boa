@@ -267,8 +267,8 @@ class Module():
                 pass
             elif lineset.is_constant:
                 self.module_variables.append(Definition(lineset.items))
-            elif lineset.is_module_method_call:
-                self.module_method_calls.append(lineset)
+#            elif lineset.is_module_method_call:
+#                self.module_method_calls.append(lineset)
             elif lineset.is_class:
                 print("ADDING CLASS!!!!!")
                 self.classes.append(Klass(lineset.items, self))
@@ -433,11 +433,16 @@ class Module():
         Perform linkage of addresses between methods.
         """
 
+        for method in self.orderered_methods:
+            method.link_return_types()
+            method.prepare()
+
         self.all_vm_tokens = OrderedDict()
 
         address = 0
 
         for method in self.orderered_methods:
+
             method.method_address = address
 
             for key, vmtoken in method.vm_tokens.items():

@@ -61,7 +61,7 @@ class Method():
 
     _args = None
 
-    _fullargs = None
+    _return_type = None
 
     @property
     def name(self):
@@ -109,6 +109,18 @@ class Method():
             self._build_args()
 
         return self._args
+
+    @property
+    def return_type(self):
+        """
+        Gets the return type of this method if it has one
+
+        """
+        if not self._return_type:
+
+            self._build_args()
+
+        return self._return_type
 
     @property
     def code(self):
@@ -208,13 +220,26 @@ class Method():
 
         self.read_initial_tokens()
 
+#        self.process_block_groups()
+
+#        self.tokenize()
+
+#        self.convert_jumps()
+
+    def link_return_types(self):
+
+        print("LOOKIng UP RETURN TypES!")
+
+
+    def prepare(self):
+
         self.process_block_groups()
 
         self.tokenize()
 
         self.convert_jumps()
 
-        self.print()
+#        self.print()
 #        self.tokenizer.to_s()
 
     def print(self):
@@ -507,49 +532,8 @@ class Method():
 
 
 
-    def _build_args(self):
 
-        code = self.bp.to_code()
-        a = inspect.getsourcelines(code)[0][0]
-        params = a[a.index("(") + 1:a.rindex(")")].split(',')
-
-        for p in params:
-            param = [item.strip() for item in p.split(':')]
-
-            if len(param) > 1:
-
-                instance_type_name = param[1]
-
-                klass = self._lookup_type(instance_type_name)
-                if klass:
-                    self.instance_vars[param[0]] = klass
-
-        self._args = self.bp.args
-
-
-    def _check_for_type(self, argname, index):
-
-        code = self.bp.to_code()
-
-        lines = inspect.getsourcelines(code)[0]
-
-        real_lines = []
-        for l in lines:
-            line = l.strip()
-            if len(line) > 0:
-                if line[0] != '#':
-                    real_lines.append(line)
-
-        item = real_lines[index]
-
-        if ' # type:' in item:
-            type_annotation = item.split(' # type:')[-1].strip()
-            klass = self._lookup_type(type_annotation)
-            if klass:
-                self.instance_vars[argname] = klass
-
-
-    def _lookup_type(self, typename):
+    def lookup_type(self, typename):
         klass = None
 
         all_modules = [self.module] + self.module.loaded_modules
@@ -560,3 +544,84 @@ class Method():
                     klass = cls
 
         return klass
+
+
+    def _build_args(self):
+
+        self._args = self.bp.args
+
+        try:
+            code = self.bp.to_code()
+        except Exception as e:
+            print("COUld not convert to code %s " % e)
+            return
+
+        indexcount = 0
+        a = None
+
+        # we need to iterate until we get past any @decorators
+        while a is None:
+            m = inspect.getsourcelines(code)[0][indexcount].strip()
+            if '@' in m:
+                print("wont use decorator m: %s " % m)
+                indexcount+=1
+            else:
+                a = m
+
+        print("A IS: %s " % a)
+
+        # try to read the params.  this will break on methods that are defined over multiple lines
+        try:
+            params = a[a.index("(") + 1:a.rindex(")")].split(',')
+            print("params: %s " % params)
+        except Exception as e:
+            print("Error reading method argument types.  Please define methods on one line")
+            raise e
+
+        # look for an annotation of the return type
+        # if it is str or int or a built in, we don't save the rtype ( for now )
+        try:
+            rtype_str = a[a.index("->") + 2:a.rindex(":")].strip()
+            self._return_type = self.lookup_type(rtype_str)
+        except Exception as e:
+            pass
+
+        for p in params:
+            param = [item.strip() for item in p.split(':')]
+
+            if len(param) > 1:
+
+                instance_type_name = param[1]
+
+                klass = self.lookup_type(instance_type_name)
+                if klass:
+                    self.instance_vars[param[0]] = klass
+
+        self._args = self.bp.args
+
+    def _check_for_type(self, argname, index):
+
+        try:
+            code = self.bp.to_code()
+        except Exception as e:
+            print("Could not lookup type %s " % e)
+            return
+
+        lines = inspect.getsourcelines(code)[0]
+
+        real_lines = []
+        for l in lines:
+            line = l.strip()
+            if len(line) > 0:
+                if line[0] not in ['#','@']:
+                    real_lines.append(line)
+
+        item = real_lines[index]
+
+        # look for a type annotation
+        if ' # type:' in item:
+            type_annotation = item.split(' # type:')[-1].strip()
+            klass = self.lookup_type(type_annotation)
+            if klass:
+                self.instance_vars[argname] = klass
+
