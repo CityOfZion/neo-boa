@@ -220,6 +220,9 @@ class Method():
 
         self.read_initial_tokens()
 
+        print("INITIALIZED METHOD: %s " % self.name)
+        print("IVARS: %s " % self.instance_vars)
+        print("RETURN TYPE: %s " % self.return_type)
 #        self.process_block_groups()
 
 #        self.tokenize()
@@ -420,16 +423,6 @@ class Method():
             if block.has_store_attr:
                 block.preprocess_store_attr(self)
 
-            if block.is_list_comprehension:
-                block.preprocess_list_comprehension(self)
-                for localvar in block.list_comp_iterable_local_vars:
-                    if localvar in self.local_stores.keys():
-                        pass
-                    else:
-                        length = len(self.local_stores)
-                        self.local_stores[localvar] = length
-
-
 
             if block.has_make_function:
                 block.preprocess_make_function(self)
@@ -456,7 +449,7 @@ class Method():
                 block.process_iter_body(iter_setup_block)
                 iter_setup_block = None
 
-            if block.is_iter and not block.is_list_comprehension:
+            if block.is_iter:
                 block.preprocess_iter()
                 for localvar in block.iterable_local_vars:
 
@@ -473,10 +466,10 @@ class Method():
 
         for block in self.blocks:
             if block.has_make_function:
-                if block.is_list_comprehension:
-                    alltokens = alltokens + block.oplist
+                pass
             else:
                 alltokens = alltokens + block.oplist
+
         self.tokens = alltokens
 
         print("INSTANCE TYPES: %s  " % self.instance_vars)

@@ -12,7 +12,7 @@ def Main(a):
 
     q = b.mycount
 
-    return q # should be 2
+    return q # should be 25
 
 
 
