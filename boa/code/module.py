@@ -95,7 +95,7 @@ class Module():
 
     module_variables = None  # list of module variables
 
-    module_method_calls = None # list of module level method calls
+    module_method_calls = None  # list of module level method calls
 
     classes = None  # a list of classes
 
@@ -209,7 +209,7 @@ class Module():
 
 #        print("METHODS FOR MODULE: %s " % self.path)
         for m in self.methods:
-#            print("METHODS: %s %s" % (m.name, m.full_name))
+            #            print("METHODS: %s %s" % (m.name, m.full_name))
             if m.full_name == method_name:
                 return m
             elif m.name == method_name:
@@ -270,7 +270,6 @@ class Module():
 #            elif lineset.is_module_method_call:
 #                self.module_method_calls.append(lineset)
             elif lineset.is_class:
-                print("ADDING CLASS!!!!!")
                 self.classes.append(Klass(lineset.items, self))
             elif lineset.is_method:
                 self.process_method(lineset)
@@ -280,7 +279,7 @@ class Module():
                 self.process_smart_contract_app_registration(lineset)
             else:
                 print('not sure what to do with line %s ' % lineset)
-                #pdb.set_trace()
+                # pdb.set_trace()
 
     def process_import(self, import_item):
         """
@@ -300,10 +299,7 @@ class Module():
 
         for cls in import_item.imported_module.classes:
             for method in cls.methods:
-                print("adding method %s " % method)
                 self.add_method(method)
-
-
 
     def process_method(self, lineset):
         """
@@ -424,8 +420,6 @@ class Module():
             if vm_token.data is not None and vm_token.vm_op != VMOp.NOP:
                 b_array = b_array + vm_token.data
 
-        print("final: %s " % self.to_s())
-
         return b_array
 
     def link_methods(self):
@@ -465,7 +459,7 @@ class Module():
                     vmtoken.data = jump_len.to_bytes(2, 'little', signed=True)
                 else:
 
-#                    pdb.set_trace()
+                    #                    pdb.set_trace()
                     raise Exception("Target method %s not found" % vmtoken.target_method)
 
     def to_s(self):

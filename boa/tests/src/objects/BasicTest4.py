@@ -1,7 +1,6 @@
 from boa.blockchain.vm.Neo.Runtime import Notify
 
-from .stuff.things import MoreAwesome,Awesome
-
+from .stuff.things import MoreAwesome, Awesome
 
 
 def Main(a):
@@ -10,7 +9,6 @@ def Main(a):
     moar = MoreAwesome()
 
     awe = Awesome()
-
 
     count = moar.intval + 3
 
@@ -23,16 +21,13 @@ def Main(a):
 
     Notify(j)
 
-
     thing = moar.do_something_with_awesome(awe)
 
     Notify(thing)
 
-
     mm = moar.make_awesome()
 
     Notify(mm)
-
 
     # this works
     r = moar.multiply_nums(awe.mycount, 4)
@@ -42,11 +37,6 @@ def Main(a):
 
     r = moar.multiply_nums(5, awe.mycount)
 
-
     Notify(r)
 
-
     return count
-
-
-

@@ -17,6 +17,7 @@ from boa.blockchain.vm import VMOp
 
 from collections import OrderedDict
 
+
 class Item():
     """
 
@@ -42,8 +43,9 @@ class Definition(Item):
     def __init__(self, item_list):
         super(Definition, self).__init__(item_list)
 
-        self.value = PyToken(self.items[1],1, args=self.items[1][1])
-        self.attr = PyToken(self.items[2],1, args=self.items[2][1])
+        self.value = PyToken(self.items[1], 1, args=self.items[1][1])
+        self.attr = PyToken(self.items[2], 1, args=self.items[2][1])
+
 
 class Action(Item):
 
@@ -228,16 +230,14 @@ class Klass(Item):
 
     module = None
 
-    lines  = None
+    lines = None
 
     class_vars = None
     class_method_calls = None
 
-
     @property
     def total_fields(self):
         return len(self.class_vars)
-
 
     @property
     def class_var_names(self):
@@ -268,7 +268,6 @@ class Klass(Item):
 
         """
 
-
         for i, (op, arg) in enumerate(self.items):
 
             # if the item is a byteplay3 code object, it is a method
@@ -283,9 +282,7 @@ class Klass(Item):
             if op == pyop.STORE_NAME:
                 self.name = arg
 
-
         self.split_lines()
-
 
         for lineset in self.lines:
 
@@ -301,10 +298,6 @@ class Klass(Item):
                 m = Method(lineset.code_object, self)
 
                 self.methods.append(m)
-
-
-
-
 
     def is_valid(self):
         # here is where we check if the class extends something reasonable

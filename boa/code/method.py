@@ -12,7 +12,8 @@ import dis
 import collections
 import pdb
 
-from byteplay3 import object_attributes,print_attr_values,printcodelist
+from byteplay3 import object_attributes, print_attr_values, printcodelist
+
 
 class Method():
     """
@@ -204,7 +205,7 @@ class Method():
 
     def __init__(self, code_object, parent, make_func_name=None):
 
-#        assert code_object is not None
+        #        assert code_object is not None
 
         self.bp = code_object
 
@@ -220,9 +221,6 @@ class Method():
 
         self.read_initial_tokens()
 
-        print("INITIALIZED METHOD: %s " % self.name)
-        print("IVARS: %s " % self.instance_vars)
-        print("RETURN TYPE: %s " % self.return_type)
 #        self.process_block_groups()
 
 #        self.tokenize()
@@ -231,8 +229,11 @@ class Method():
 
     def link_return_types(self):
 
-        print("LOOKIng UP RETURN TypES!")
-
+        for index, block in enumerate(self.blocks):
+            if block.has_unprocessed_method_calls:
+                ivars = block.lookup_return_types(self)
+                for key, val in ivars.items():
+                    self.instance_vars[key] = val
 
     def prepare(self):
 
@@ -306,7 +307,6 @@ class Method():
             items = definition.items
 
             self.bp.code = items + self.bp.code
-
 
     def read_module_method_calls(self):
         """
@@ -388,7 +388,6 @@ class Method():
         if len(block_group):
             self.blocks.append(Block(block_group))
 
-
     def process_block_groups(self):
         """
         Takes the current blocks ( similar to lines in a method ) and
@@ -423,7 +422,6 @@ class Method():
             if block.has_store_attr:
                 block.preprocess_store_attr(self)
 
-
             if block.has_make_function:
                 block.preprocess_make_function(self)
                 self.local_methods[block.local_func_varname] = block.local_func_name
@@ -436,7 +434,7 @@ class Method():
 
             if block.has_unprocessed_method_calls:
                 ivars = block.preprocess_method_calls(self)
-                for key,val in ivars.items():
+                for key, val in ivars.items():
                     self.instance_vars[key] = val
 
             if block.has_slice:
@@ -461,7 +459,6 @@ class Method():
                 iter_setup_block = block
                 self.dynamic_iterator_count += 1
 
-
         alltokens = []
 
         for block in self.blocks:
@@ -471,8 +468,6 @@ class Method():
                 alltokens = alltokens + block.oplist
 
         self.tokens = alltokens
-
-        print("INSTANCE TYPES: %s  " % self.instance_vars)
 
         for index, token in enumerate(self.tokens):
             token.addr = index
@@ -523,9 +518,6 @@ class Method():
         out = self.tokenizer.to_b()
         return out
 
-
-
-
     def lookup_type(self, typename):
         klass = None
 
@@ -538,7 +530,6 @@ class Method():
 
         return klass
 
-
     def _build_args(self):
 
         self._args = self.bp.args
@@ -546,7 +537,7 @@ class Method():
         try:
             code = self.bp.to_code()
         except Exception as e:
-            print("COUld not convert to code %s " % e)
+            # print("COUld not convert to code %s " % e)
             return
 
         indexcount = 0
@@ -557,16 +548,13 @@ class Method():
             m = inspect.getsourcelines(code)[0][indexcount].strip()
             if '@' in m:
                 print("wont use decorator m: %s " % m)
-                indexcount+=1
+                indexcount += 1
             else:
                 a = m
-
-        print("A IS: %s " % a)
 
         # try to read the params.  this will break on methods that are defined over multiple lines
         try:
             params = a[a.index("(") + 1:a.rindex(")")].split(',')
-            print("params: %s " % params)
         except Exception as e:
             print("Error reading method argument types.  Please define methods on one line")
             raise e
@@ -597,7 +585,7 @@ class Method():
         try:
             code = self.bp.to_code()
         except Exception as e:
-            print("Could not lookup type %s " % e)
+            # print("Could not lookup type %s " % e)
             return
 
         lines = inspect.getsourcelines(code)[0]
@@ -606,7 +594,7 @@ class Method():
         for l in lines:
             line = l.strip()
             if len(line) > 0:
-                if line[0] not in ['#','@']:
+                if line[0] not in ['#', '@']:
                     real_lines.append(line)
 
         item = real_lines[index]
@@ -617,4 +605,3 @@ class Method():
             klass = self.lookup_type(type_annotation)
             if klass:
                 self.instance_vars[argname] = klass
-

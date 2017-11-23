@@ -3,7 +3,6 @@ from boa.blockchain.vm.Neo.Runtime import Notify
 from .stuff.things import Awesome
 
 
-
 def Main(a):
 
     # create an instance
@@ -14,7 +13,4 @@ def Main(a):
 
     Notify(name)
 
-    return q # should be 2
-
-
-
+    return q  # should be 2

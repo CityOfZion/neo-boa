@@ -23,7 +23,6 @@ class Block():
     iterable_looplength = None
     iterable_item_name = None
 
-
     slice_item_length = None
 
     has_dynamic_iterator = False
@@ -38,7 +37,6 @@ class Block():
         self.iterable_loopcounter = None
         self.iterable_looplength = None
         self.iterable_item_name = None
-
 
         self.has_dynamic_iterator = False
 
@@ -67,6 +65,13 @@ class Block():
             token = self.oplist[0]
             return token.line_no
         return None
+
+    @property
+    def has_store_fast(self):
+        for token in self.oplist:
+            if token.py_op == pyop.STORE_FAST:
+                return True
+        return False
 
     @property
     def has_load_attr(self):
@@ -112,7 +117,6 @@ class Block():
             if token.py_op == pyop.BUILD_SLICE:
                 return True
 
-
     @property
     def is_return(self):
         """
@@ -124,7 +128,6 @@ class Block():
             if token.py_op == pyop.RETURN_VALUE:
                 return True
         return False
-
 
     @property
     def is_iter(self):
@@ -151,7 +154,6 @@ class Block():
             self.iterable_loopcounter,
             self.iterable_item_name,
         ]
-
 
     @property
     def has_unprocessed_method_calls(self):
@@ -186,22 +188,17 @@ class Block():
                 return True
         return False
 
-
-
     def preprocess_store_attr(self, method):
 
-        for index,token in enumerate(self.oplist):
+        for index, token in enumerate(self.oplist):
             if token.py_op == pyop.STORE_ATTR:
-                to_store_into = self.oplist[index-1].args
-                print("TO STORE: %s " % to_store_into)
+                to_store_into = self.oplist[index - 1].args
                 try:
                     ivar_type = method.instance_vars[to_store_into]
-                    print("IVAR TYPE: %s " % ivar_type)
                     token.instance_type = ivar_type
                     token.instance_name = to_store_into
                 except Exception as e:
                     print("Couldnt load instance variable: %s %s " % (to_store_into, e))
-
 
     def preprocess_load_attr(self, method):
         """
@@ -220,14 +217,14 @@ class Block():
 
                     from boa.code.items import Klass
 
-                    to_load_from = self.oplist[index -1]
+                    to_load_from = self.oplist[index - 1]
                     varname = to_load_from.args
                     ivar_type = None
                     is_func_call = True
                     do_nothing = False
                     if varname in method.instance_vars.keys():
                         ivar_type = method.instance_vars[varname]
-                        what_to_load = '%s.%s' % (ivar_type.name,token.args)
+                        what_to_load = '%s.%s' % (ivar_type.name, token.args)
                         token.instance_type = ivar_type
                         # if this is a class variable lookup, do this
                         if token.args in ivar_type.class_var_names:
@@ -264,8 +261,8 @@ class Block():
                             index_to_rep = index
                             new_call = call_func
                         else:
-    #                        print("IN LOAD CLASS ATTR CALL!!!")
-                            new_call = PyToken(Opcode(pyop.LOAD_CLASS_ATTR), lineno=self.line, args=what_to_load )
+                            #                        print("IN LOAD CLASS ATTR CALL!!!")
+                            new_call = PyToken(Opcode(pyop.LOAD_CLASS_ATTR), lineno=self.line, args=what_to_load)
                             new_call.instance_type = ivar_type
                             new_call.instance_name = varname
                             new_call.func_processed = True
@@ -275,10 +272,8 @@ class Block():
                 self.oplist[index_to_rep] = new_call
                 del self.oplist[index_to_rep - 1]
 
-
     def preprocess_load_class(self, method):
         print("PREPROCESS LOAD BUilD CLASS: %s %s " % (method, method.name))
-
 
     def preprocess_make_function(self, method):
         """
@@ -492,6 +487,33 @@ class Block():
 
         ] + self.oplist
 
+    def lookup_return_types(self, orig_method):
+        ivars = {}
+        klass_type = None
+        for index, token in enumerate(self.oplist):
+            if token.py_op == pyop.CALL_FUNCTION:
+                param_count = token.args
+
+                # why would param count be 256 when calling w/ kwargs?
+                # when keyword args are sent, the param count is 256 * num paramms?
+                if param_count % 256 == 0:
+                    param_count = 2 * int(param_count / 256)
+
+                params = self.oplist[index - param_count:index]
+
+                call_method_op = self.oplist[index - param_count - 1]
+                call_method_name = call_method_op.args
+
+                for method in orig_method.module.methods:
+                    if method.name == call_method_name and method.return_type is not None:
+                        klass_type = method.return_type
+
+            if token.py_op == pyop.STORE_FAST and klass_type is not None:
+                ivars[token.args] = klass_type
+                klass_type = None
+
+        return ivars
+
     def preprocess_method_calls(self, orig_method):
         """
 
@@ -508,7 +530,6 @@ class Block():
             klass = None
 
             for index, token in enumerate(self.oplist):
-
 
                 if token.py_op == pyop.CALL_FUNCTION and not token.func_processed:
 
@@ -527,7 +548,6 @@ class Block():
                     call_method_type = call_method_op.py_op
                     call_method_name = call_method_op.args
 
-
                     if call_method_op.instance_type:
 
                         # the call_method_op has a referecnce to the instance being called
@@ -538,8 +558,6 @@ class Block():
                         token.args = len(params)
                         param_count = token.args
                         call_method_name = "%s.%s" % (call_method_op.instance_type.name, call_method_op.args)
-
-
 
                     # we need to check if this is a method
                     # that is local to this block's method
@@ -557,7 +575,6 @@ class Block():
                         ivar_iname = self.oplist[2].args
                         ivars[ivar_iname] = klass
 
-
                     # if this method is the target of a jump
                     # or if one of its parameters is the target of a jump
                     # we need to catch that and use that jump label
@@ -568,14 +585,11 @@ class Block():
                         else:
                             token.jump_label = call_method_op.jump_label
 
-
                     token.func_params = params
                     changed_items = [token]
 
                     start_index_change = index - param_count - 1
                     end_index_change = index
-
-
 
             if start_index_change is not None and end_index_change is not None:
                 tstart = self.oplist[0:start_index_change]
@@ -583,7 +597,6 @@ class Block():
                 self.oplist = tstart + changed_items + tend
 
         return ivars
-
 
     def preprocess_array_subs(self):
         """

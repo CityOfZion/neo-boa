@@ -18,6 +18,5 @@ def Main():
     h = block.Transactions
 
     Notify(h)
- #   a = 1
 
     return 4

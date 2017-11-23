@@ -372,7 +372,6 @@ class VMTokenizer():
 
         self.convert1(VMOp.PACK, py_token)
 
-
     def convert_load_const(self, pytoken):
         token = None
         if type(pytoken.args) is int:
@@ -480,7 +479,6 @@ class VMTokenizer():
         else:
             local_name = py_token.args
 
-
         # check to see if this local is a variable
         if local_name in self.method.local_stores:
 
@@ -501,7 +499,6 @@ class VMTokenizer():
 
             self.convert_method_call(py_token)
 
-
     def convert_load_attr(self, pytoken):
 
         self.convert_load_local(pytoken, name=pytoken.instance_name)
@@ -511,7 +508,6 @@ class VMTokenizer():
         self.convert_push_integer(index)
         self.convert1(VMOp.PICKITEM, pytoken)
 
-
     def convert_store_attr(self, pytoken):
 
         index = pytoken.instance_type.index_of_varname(pytoken.args)
@@ -519,7 +515,6 @@ class VMTokenizer():
         self.convert_push_integer(index)
         self.convert1(VMOp.ROT)
         self.convert1(VMOp.SETITEM, py_token=pytoken)
-
 
     def insert_unknown_type(self, item):
         """
@@ -663,9 +658,7 @@ class VMTokenizer():
             scripthash_token = pytoken.func_params.pop(0)
             pytoken.script_hash_token = scripthash_token.args
 
-        print("TOTAL ARGS: %s %s " % (pytoken.func_name, pytoken.func_params))
         for t in pytoken.func_params:
-            print("CONVERTING TOKEN TO VM: %s " % t)
             t.to_vm(self)
 
         param_len = len(pytoken.func_params)
@@ -711,16 +704,12 @@ class VMTokenizer():
             if fname == m.name:
                 full_name = m.full_name
 
-        print("METHOD TO VM: %s " % fname)
-
         # operational call like len(items) or abs(value)
         if self.is_op_call(fname):
-            print("CONVERTING OPCALL??? %s  " % fname)
             vmtoken = self.convert_op_call(fname, pytoken)
 
         # runtime.notify event
         elif self.is_notify_event(pytoken):
-            print("converting notify event")
             vmtoken = self.convert_notify_event(pytoken)
 
         # app call ( for calling other contracts on blockchain )
@@ -740,7 +729,6 @@ class VMTokenizer():
 
         # otherwise we assume the method is defined by the module
         else:
-            print("CONVERTING NORMAL METHOD CALL?")
             vmtoken = self.convert1(
                 VMOp.CALL, py_token=pytoken, data=bytearray(b'\x05\x00'))
 
@@ -867,9 +855,7 @@ class VMTokenizer():
         :return:
         """
         name = pytoken.func_name
-        print("CHecking method module actions for name %s " % name)
         for action in self.method.module.actions:
-            print("name: %s " % action.method_name)
             if action.method_name == name:
                 return True
         return False
@@ -958,7 +944,6 @@ class VMTokenizer():
 
         return vmtoken
 
-
     def is_class_init(self, fname):
         kls = self.method.lookup_type(fname)
         if kls:
@@ -974,11 +959,11 @@ class VMTokenizer():
         # push the number of fields in the class
         # and create a new struct for it
         self.insert_push_integer(klass.total_fields)
-        token = self.convert1(VMOp.NEWSTRUCT,py_token=pytoken)
+        token = self.convert1(VMOp.NEWSTRUCT, py_token=pytoken)
 
         self.convert1(VMOp.TOALTSTACK)
 
-        count=0
+        count = 0
         for definition in klass.class_vars:
 
             self.convert_load_const(definition.value)
@@ -993,8 +978,6 @@ class VMTokenizer():
 
             self.insert1(VMOp.ROLL)
             self.insert1(VMOp.SETITEM)
-
-            print("converting load constant: %s " % definition.value.args)
 
             count += 1
 

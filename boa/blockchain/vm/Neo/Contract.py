@@ -34,7 +34,7 @@ def GetStorageContext(contract):
     pass
 
 
-def Create(script,parameter_list,return_type,need_storage,version,author,email,description):
+def Create(script, parameter_list, return_type, need_storage, version, author, email, description):
     """
 
     :param script:
@@ -49,7 +49,7 @@ def Create(script,parameter_list,return_type,need_storage,version,author,email,d
     pass
 
 
-def Migrate(script,parameter_list,return_type,need_storage,version,author,email,description):
+def Migrate(script, parameter_list, return_type, need_storage, version, author, email, description):
     """
 
     :param script:

@@ -36,4 +36,3 @@ def Delete(context, key):
     :param key:
     """
     pass
-

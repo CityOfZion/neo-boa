@@ -263,7 +263,6 @@ class PyToken():
             elif op == pyop.BUILD_SLICE:
                 token = tokenizer.convert_build_slice(self)
 
-
             # objects
 
             elif op == pyop.LOAD_CLASS_ATTR:

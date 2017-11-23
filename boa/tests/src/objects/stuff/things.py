@@ -8,7 +8,7 @@ class Awesome():
     myname = 'NEO'
     mycount = 25
 
-    #and a method
+    # and a method
 
     def awesome_name(self):
         """
@@ -67,8 +67,7 @@ class MoreAwesome():
         """
         return self.awesome * a
 
-
-    def do_something_with_awesome(self, awe:Awesome):
+    def do_something_with_awesome(self, awe: Awesome):
         """
         Demonstrates that you can take another class instance as an argument
         and access a property of it
@@ -80,7 +79,6 @@ class MoreAwesome():
         """
         return awe.mycount + 3
 
-
     def make_awesome(self):
         """
         Demonstrates that you can instantiate a class inside another class
@@ -90,3 +88,10 @@ class MoreAwesome():
         awe = Awesome()
 
         return awe.mycount - 30
+
+    def instantiate_awesome(self, count_to_use) -> Awesome:
+
+        awe = Awesome()
+        awe.mycount = count_to_use
+
+        return awe
