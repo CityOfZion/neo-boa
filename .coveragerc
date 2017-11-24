@@ -4,4 +4,4 @@ source = boa
 [report]
 omit =
   venv*
-  boa/tests
+  boa/tests/*
