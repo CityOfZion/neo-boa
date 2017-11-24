@@ -95,3 +95,9 @@ class MoreAwesome():
         awe.mycount = count_to_use
 
         return awe
+
+    def accept_two_awesomes(self, awe1:Awesome, awe2:Awesome):
+
+        total = awe1.mycount
+        total += awe2.mycount
+        return total

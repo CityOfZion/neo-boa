@@ -208,13 +208,14 @@ class Block():
 
         while self.has_load_attr:
 
-            index_to_rep = -1
-            new_call = None
-
+            to_rep = {}
+            to_del = []
             for index, token in enumerate(self.oplist):
 
-                if token.py_op == pyop.LOAD_ATTR:
+                index_to_rep = -1
+                new_call = None
 
+                if token.py_op == pyop.LOAD_ATTR:
                     from boa.code.items import Klass
 
                     to_load_from = self.oplist[index - 1]
@@ -246,8 +247,6 @@ class Block():
                     else:
                         what_to_load = 'Get%s' % token.args
 
-#                    pdb.set_trace()
-#                    print("what to load: %s " % what_to_load)
 
                     if not do_nothing:
                         if is_func_call:
@@ -261,16 +260,24 @@ class Block():
                             index_to_rep = index
                             new_call = call_func
                         else:
-                            #                        print("IN LOAD CLASS ATTR CALL!!!")
                             new_call = PyToken(Opcode(pyop.LOAD_CLASS_ATTR), lineno=self.line, args=what_to_load)
                             new_call.instance_type = ivar_type
                             new_call.instance_name = varname
                             new_call.func_processed = True
                             index_to_rep = index
 
-            if index_to_rep > -1 and new_call is not None:
-                self.oplist[index_to_rep] = new_call
-                del self.oplist[index_to_rep - 1]
+
+                    if index_to_rep > 0:
+                        to_rep[index_to_rep] = new_call
+                        to_del.append( self.oplist[index_to_rep-1])
+
+
+
+            for key,val in to_rep.items():
+                self.oplist[key] = val
+
+            for item in to_del:
+                self.oplist.remove(item)
 
     def preprocess_load_class(self, method):
         print("PREPROCESS LOAD BUilD CLASS: %s %s " % (method, method.name))

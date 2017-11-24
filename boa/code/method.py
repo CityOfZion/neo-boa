@@ -243,8 +243,8 @@ class Method():
 
         self.convert_jumps()
 
-#        self.print()
-#        self.tokenizer.to_s()
+        self.print()
+        self.tokenizer.to_s()
 
     def print(self):
         """
