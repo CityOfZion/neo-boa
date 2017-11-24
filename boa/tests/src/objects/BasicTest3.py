@@ -22,8 +22,6 @@ def Main(a):
 
     atimes42 = m.multiply_by_awesome(2)
 
-
     Notify(atimes42)
-
 
     return result  # should be 15
