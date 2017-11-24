@@ -1,6 +1,5 @@
 from boa.code.builtins import range
 
-
 def Main():
     """
 
@@ -8,25 +7,16 @@ def Main():
     """
     count = 0
 
-    for i in range(0, 5):
-        count = count + i
-        count += awesome()
-        count += not_so_awesome()
+    r = range(0, 4)
+
+
+    for i in r:
+        count += 1
+        h = wah()
 
     return count
 
 
-def awesome():
-    """
+def wah():
 
-    :return:
-    """
-    return 2
-
-
-def not_so_awesome():
-    """
-
-    :return:
-    """
-    return -1
+    return 3

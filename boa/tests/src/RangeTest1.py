@@ -20,15 +20,15 @@ def Main():
     index = 0
     orig_start = start
 
+    # this causes an execution error
+    st = stuff(start, stop)
+
     while start < stop:
         val = index + orig_start
         out[index] = val
         index = index + 1
         start = orig_start + index
 
-        Notify(start)
-
-        # d = stuff(1, 2) # this doesn't work at the moment
 
     return out[4]
 

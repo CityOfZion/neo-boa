@@ -8,6 +8,7 @@ def Main():
     a = [1, 2, 3, 4, 5]
 
     # this does not work
+    # @TODO work on passing items of array index to methods
     # e = add(a[1], a[2], a[3], a[4], a[0])
 
     a2 = a[1]

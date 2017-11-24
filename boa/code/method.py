@@ -244,7 +244,10 @@ class Method():
         self.convert_jumps()
 
 #        self.print()
-#        self.tokenizer.to_s()
+        print("########################################")
+        print("[METHOD] %s " % self.full_name)
+        self.tokenizer.to_s()
+        print("########################################")
 
     def print(self):
         """
