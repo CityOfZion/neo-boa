@@ -7,6 +7,7 @@ byteplay3==3.5.0
 certifi==2017.7.27.1
 chardet==3.0.4
 CommonMark==0.5.4
+coverage==4.4.2
 curtsies==0.2.11
 docutils==0.14
 greenlet==0.4.12

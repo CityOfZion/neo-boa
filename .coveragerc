@@ -1,0 +1,6 @@
+[run]
+source = boa
+
+[report]
+omit =
+  venv*

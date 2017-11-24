@@ -10,7 +10,7 @@ def Main():
     """
     mmm = range(2, 14)
 
-    l = mmm[2]
+    l = mmm[2]  # type:int
 
     Notify(l)
 

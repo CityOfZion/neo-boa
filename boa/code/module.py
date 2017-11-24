@@ -306,7 +306,7 @@ class Module():
         processes a set of lines that contain a byteplay3 code object
 
         :param lineset: the lineset to process and add
-        :type lineset: list
+        :type lineset: Line
         """
 
         m = Method(lineset.code_object, self)

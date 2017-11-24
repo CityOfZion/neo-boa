@@ -21,12 +21,18 @@ def Main(block_index):
 
     block = GetBlock(block_index)
 
-    for tx in block.Transactions:
+    txlist = block.Transactions
 
-        type = GetType(tx)
-        hash = GetHash(tx)
+    # @TODO this does not work
+#    for tx in block.Transactions
+
+    for tx in txlist:
+
+        type = tx.Type
+        hash = tx.Hash
         Notify(type)
         is_invoke = False
+
         if type == INVOKE_TX_TYPE:
             is_invoke = True
 

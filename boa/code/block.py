@@ -247,7 +247,6 @@ class Block():
                     else:
                         what_to_load = 'Get%s' % token.args
 
-
                     if not do_nothing:
                         if is_func_call:
                             call_func = PyToken(
@@ -266,14 +265,11 @@ class Block():
                             new_call.func_processed = True
                             index_to_rep = index
 
-
                     if index_to_rep > 0:
                         to_rep[index_to_rep] = new_call
-                        to_del.append( self.oplist[index_to_rep-1])
+                        to_del.append(self.oplist[index_to_rep - 1])
 
-
-
-            for key,val in to_rep.items():
+            for key, val in to_rep.items():
                 self.oplist[key] = val
 
             for item in to_del:

@@ -917,14 +917,11 @@ class VMTokenizer():
 
         # the following converts app calls of the pattern
         # m = AppCall(script_hash, *args)
-        if pytoken.script_hash_addr is not None:
-
-            from boa.code.items import SmartContractAppCall
-
-            shash = SmartContractAppCall.ToScriptHashData(pytoken.script_hash_addr)
-
-            vmtoken = self.convert1(VMOp.APPCALL, py_token=pytoken, data=shash)
-            return vmtoken
+#        if pytoken.script_hash_addr is not None:
+#            from boa.code.items import SmartContractAppCall
+#            shash = SmartContractAppCall.ToScriptHashData(pytoken.script_hash_addr)
+#            vmtoken = self.convert1(VMOp.APPCALL, py_token=pytoken, data=shash)
+#            return vmtoken
 
         # this is used for app calls that are registered
         # using RegisterAppCall(script_hash, *args)

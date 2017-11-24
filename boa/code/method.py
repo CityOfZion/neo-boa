@@ -243,8 +243,8 @@ class Method():
 
         self.convert_jumps()
 
-        self.print()
-        self.tokenizer.to_s()
+#        self.print()
+#        self.tokenizer.to_s()
 
     def print(self):
         """
@@ -547,7 +547,6 @@ class Method():
         while a is None:
             m = inspect.getsourcelines(code)[0][indexcount].strip()
             if '@' in m:
-                print("wont use decorator m: %s " % m)
                 indexcount += 1
             else:
                 a = m

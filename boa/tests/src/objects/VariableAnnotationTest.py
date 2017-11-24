@@ -1,5 +1,3 @@
-# from boa.blockchain.vm.Neo.Runtime import Notify
-
 from .stuff.things import Awesome, MoreAwesome
 
 
@@ -8,8 +6,6 @@ def Main(a):
     b = 10  # type:int
 
     k = Awesome()  # type:Awesome
-
-    print("hello")
 
     m = what()  # type:MoreAwesome
 

@@ -1,6 +1,6 @@
 from boa.blockchain.vm.Neo.Runtime import Notify
 
-from .stuff.things import Awesome,MoreAwesome
+from .stuff.things import Awesome, MoreAwesome
 
 
 def Main(a):
@@ -11,7 +11,6 @@ def Main(a):
 
     m2 = Awesome()
     m2.mycount = 4 * a
-
 
     mm = MoreAwesome()
 

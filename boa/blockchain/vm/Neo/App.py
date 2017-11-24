@@ -1,5 +1,5 @@
 
-def RegisterAppCall(smart_contract_hash, *args):
+def RegisterAppCall(smart_contract_hash, *args, **kwargs):
     """
 
     :param smart_contract_hash:
@@ -8,7 +8,7 @@ def RegisterAppCall(smart_contract_hash, *args):
     pass
 
 
-def AppCall(smart_contract_hash, *args):
+def AppCall(smart_contract_hash, *args, **kwargs):
     """
 
     :param smart_contract_hash:
