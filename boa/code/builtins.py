@@ -11,8 +11,6 @@ class list(list):
         pass
 
 
-
-
 def concat(str1, str2):
     """
      range(str1, str2) -> str object

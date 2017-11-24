@@ -11,7 +11,7 @@ def Main():
     start = 4
     stop = 9  # int
 
-    out = [10,2, 3, 4, 6, 7]
+    out = [10, 2, 3, 4, 6, 7]
 
     length = stop - start
 
