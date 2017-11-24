@@ -427,7 +427,7 @@ class Module():
         Perform linkage of addresses between methods.
         """
 
-        for method in self.orderered_methods:
+        for method in self.methods:
             method.link_return_types()
             method.prepare()
 

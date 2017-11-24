@@ -11,7 +11,7 @@ def Main():
     start = 4
     stop = 9  # int
 
-#    out = [10,2, 3, 4, 6, 7]
+    out = [10,2, 3, 4, 6, 7]
 
     length = stop - start
 
@@ -21,14 +21,14 @@ def Main():
     orig_start = start
 
     # this causes an execution error
-    st = stuff(start, stop)
+#    st = stuff(start, stop)
 
     while start < stop:
         val = index + orig_start
         out[index] = val
         index = index + 1
         start = orig_start + index
-
+        print(start)
 
     return out[4]
 
