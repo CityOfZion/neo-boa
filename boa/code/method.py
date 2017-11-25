@@ -243,12 +243,6 @@ class Method():
 
         self.convert_jumps()
 
-#        self.print()
-        print("########################################")
-        print("[METHOD] %s " % self.full_name)
-        self.tokenizer.to_s()
-        print("########################################")
-
     def print(self):
         """
         This method prints the output of the method's ``byteplay3`` object 
@@ -376,6 +370,7 @@ class Method():
                 token = PyToken(op, current_line_no, i, arg)
 
                 if op == pyop.SETUP_LOOP:
+                    token.args = None
                     current_loop_token = token
 
                 if op == pyop.BREAK_LOOP and current_loop_token is not None:
@@ -411,8 +406,8 @@ class Method():
 
                 ret_token = PyToken(Opcode(pyop.BR_S),
                                     block.line, args=block_addr)
-                nop_token = PyToken(Opcode(pyop.NOP), block.line)
-                drop_token = PyToken(Opcode(pyop.DROP), block.line)
+#                nop_token = PyToken(Opcode(pyop.NOP), block.line)
+#                drop_token = PyToken(Opcode(pyop.DROP), block.line)
 
                 ret_token.jump_label = block.oplist[0].jump_label
                 block.oplist[0].jump_label = None
@@ -453,7 +448,6 @@ class Method():
             if block.is_iter:
                 block.preprocess_iter()
                 for localvar in block.iterable_local_vars:
-
                     if localvar in self.local_stores.keys():
                         pass
                     else:

@@ -456,6 +456,9 @@ class Module():
                 if target_method:
 
                     jump_len = target_method.method_address - vmtoken.addr
+#                    print("target method %s %s" % (target_method.full_name, jump_len))
+#                    if target_method.full_name == 'stuff':
+#                        jump_len -=2
                     vmtoken.data = jump_len.to_bytes(2, 'little', signed=True)
                 else:
 

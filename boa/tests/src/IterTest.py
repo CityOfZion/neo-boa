@@ -8,12 +8,12 @@ def Main():
     """
     count = 0
 
-#    r = range(0, 4)
+    r = range(0, 4)
 
     for i in range(0, 4):
         count += wah(i, count)
 #        h = wah()
-        print(count)
+#        print(count)
 
     return count
 
