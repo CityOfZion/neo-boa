@@ -20,6 +20,7 @@ from collections import OrderedDict
 
 import pdb
 
+
 class Item():
     """
 
@@ -48,7 +49,6 @@ class Definition(Item):
     is_method_call = False
     fn_call = None
 
-
     def __init__(self, item_list):
         super(Definition, self).__init__(item_list)
 
@@ -60,7 +60,7 @@ class Definition(Item):
         elif len(self.items) == 4:
             self.is_method_call = True
             self.attr = PyToken(self.items[-1], 1, args=self.items[-1][1])
-            self.value = PyToken(Opcode(pyop.LOAD_CONST),1, args=7)
+            self.value = PyToken(Opcode(pyop.LOAD_CONST), 1, args=7)
             self.convert_class_call_to_block()
 
         elif len(self.items) == 5:
@@ -71,8 +71,8 @@ class Definition(Item):
 
         else:
 
-#            self.is_method_call=True
-            self.attr = PyToken(self.items[-1],1, args=self.items[-1][1])
+            #            self.is_method_call=True
+            self.attr = PyToken(self.items[-1], 1, args=self.items[-1][1])
 #            print("SOMETHING ELSE!")
 #            pdb.set_trace()
 
@@ -345,7 +345,6 @@ class Klass(Item):
 
                 self.methods.append(m)
 
-
     def is_valid(self):
         # here is where we check if the class extends something reasonable
         """
@@ -374,6 +373,5 @@ class Klass(Item):
         if len(lineitem):
             self.lines.append(Line(lineitem))
 
-    
     def __str__(self):
         return self.name

@@ -242,7 +242,6 @@ class Block():
                             what_to_load = '%s.%s' % (ivar_type.name, token.args)
                             token.instance_type = ivar_type
 
-
                             # if this is a class variable lookup, do this
                             if token.args in ivar_type.class_var_names:
                                 is_func_call = False
@@ -255,11 +254,9 @@ class Block():
 
                     elif varname == 'self' and type(method.parent) is Klass:
                         ivar_type = method.parent
-                       # print("IVARTYPE: %s %s"% (str(ivar_type), token.args))
 
                         what_to_load = '%s.%s' % (str(ivar_type), token.args)
                         if token.args in ivar_type.class_var_names:
-                            #print("NOT A FUNC ALLL %s " % what_to_load)
                             is_func_call = False
                             what_to_load = token.args
                         else:
@@ -276,14 +273,10 @@ class Block():
                             call_func.func_processed = True
                             call_func.func_name = what_to_load
                             call_func.func_params = [self.oplist[index - 1]]
-                            #print("SETUP FUNC CALL: %s " % call_func.func_name)
-                            #if call_func.func_name == 'MoreAwesome.add_thirteen_to_this':
-                            #    pdb.set_trace()
                             index_to_rep = index
                             new_call = call_func
 
                         else:
-                            #print("will do load class attr %s " % what_to_load)
                             new_call = PyToken(Opcode(pyop.LOAD_CLASS_ATTR), lineno=self.line, args=what_to_load)
                             new_call.instance_type = ivar_type
                             new_call.instance_name = varname
@@ -298,14 +291,14 @@ class Block():
                 self.oplist[key] = val
 
             for item in to_del:
-#                print("WILL DELET: %s %s" % (item, vars(item)))
+                #                print("WILL DELET: %s %s" % (item, vars(item)))
                 if item in self.oplist:
                     self.oplist.remove(item)
                 else:
                     pdb.set_trace()
 
 #        print("oplist: %s " % [str(op) for op in self.oplist])
-        #pdb.set_trace()
+        # pdb.set_trace()
 
     def preprocess_load_class(self, method):
         print("PREPROCESS LOAD BUilD CLASS: %s %s " % (method, method.name))
@@ -558,7 +551,7 @@ class Block():
 
         ivars = {}
 
-        alreadythere=False
+        alreadythere = False
 
         while self.has_unprocessed_method_calls:
             start_index_change = None
@@ -592,23 +585,22 @@ class Block():
                         # as the only item in the func_params ( this is python's self object )
                         # we will create a new param array by adding that one to the beginning of the method params
 
-#                        print("PARAMS: %s "% params)
-#                        print("COLL METHEHOD: %s "% call_method_op)
-#                        print("call method name %s " % call_method_op.args)
-#                        print("call method op func params: %s "% call_method_op.func_params)
+                        #                        print("PARAMS: %s "% params)
+                        #                        print("COLL METHEHOD: %s "% call_method_op)
+                        #                        print("call method name %s " % call_method_op.args)
+                        #                        print("call method op func params: %s "% call_method_op.func_params)
 
-#                        if call_method_name == 'owner':
-#                            pdb.set_trace()
+                        #                        if call_method_name == 'owner':
+                        #                            pdb.set_trace()
 
                         params = call_method_op.func_params + params
 
                         token.args = len(params)
                         param_count = token.args
                         if call_method_op.instance_type.name in call_method_op.args:
-#                            print("ALREADY THEROEUSTHOEUSNTOHEUSNTHOEUTNHOEUSTHOEUSNTHOEUTH")
+                            #                            print("ALREADY THEROEUSTHOEUSNTOHEUSNTHOEUTNHOEUSTHOEUSNTHOEUTH")
                             call_method_name = call_method_op.args
                             alreadythere = True
-
 
                         else:
                             call_method_name = "%s.%s" % (call_method_op.instance_type.name, call_method_op.args)
@@ -626,7 +618,6 @@ class Block():
                     # check to see if this method call creates an instance of another object
                     if orig_method:
                         klass = orig_method.lookup_type(token.func_name)
-
 
                     if klass:
                         ivar_iname = self.oplist[2].args
@@ -654,7 +645,7 @@ class Block():
                 self.oplist = tstart + changed_items + tend
 
         if alreadythere:
-#            pdb.set_trace()
+            #            pdb.set_trace()
 
             if self.oplist[-1].py_op == pyop.STORE_FAST:
                 print("Trimming load self method")

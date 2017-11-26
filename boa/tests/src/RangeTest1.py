@@ -1,7 +1,6 @@
 
 def Main():
 
-
     start = 4
     stop = 24  # int
 

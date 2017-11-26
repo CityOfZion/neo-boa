@@ -9,8 +9,9 @@ from boa.blockchain.vm import VMOp
 import pdb
 import inspect
 
-NON_RETURN_SYS_CALLS = ['Notify','print','Log','Put', 'Register',
-                        'Delete','SetVotes','ContractDestroy','MerkleRoot','Hash','PrevHash','GetHeader',]
+NON_RETURN_SYS_CALLS = ['Notify', 'print', 'Log', 'Put', 'Register',
+                        'Delete', 'SetVotes', 'ContractDestroy', 'MerkleRoot', 'Hash', 'PrevHash', 'GetHeader', ]
+
 
 class PyToken():
 
@@ -53,10 +54,7 @@ class PyToken():
 
     @func_name.setter
     def func_name(self, value):
- #       print("SETTNIG FUNC NAME: %s " % value)
- #       print(inspect.stack()[1][3])
         self._func_name = value
-
 
     @property
     def op_name(self):

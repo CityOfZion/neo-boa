@@ -2,7 +2,6 @@
 
 class Header():
 
-
     def getmyhash(self):
         return GetHash(self)
 

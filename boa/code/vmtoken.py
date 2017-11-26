@@ -543,7 +543,6 @@ class VMTokenizer():
                             (type(item), item))
 
     def convert_set_element(self, arg, position):
-
         """
 
         :param arg:
@@ -647,8 +646,6 @@ class VMTokenizer():
         :param pytoken:
         :return:
         """
-
-        #print("Pytoken func name: %s " % pytoken.func_name)
 
         if pytoken.func_name == 'list':
             return self.convert_built_in_list(pytoken)
@@ -967,8 +964,8 @@ class VMTokenizer():
         for definition in klass.class_vars:
 
             if definition.is_method_call:
-#                self.convert_load_const(definition.value)
-#                pdb.set_trace()
+                #                self.convert_load_const(definition.value)
+                #                pdb.set_trace()
                 self.convert_method_call(definition.fn_call)
             else:
                 if definition.value:

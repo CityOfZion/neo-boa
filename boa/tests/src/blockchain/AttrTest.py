@@ -1,5 +1,6 @@
-from boa.blockchain.vm.Neo.Blockchain import GetHeader,GetBlock
+from boa.blockchain.vm.Neo.Blockchain import GetHeader, GetBlock
 from boa.blockchain.vm.Neo.Runtime import Notify
+
 
 def Main():
     """
@@ -10,11 +11,7 @@ def Main():
 
     m2 = header.Timestamp + header.Timestamp
 
-
-
     Notify(m2)
-
-
 
     bheight = 32
 

@@ -64,8 +64,6 @@ class Method():
 
     _return_type = None
 
-
-
     @property
     def name(self):
         """
@@ -228,7 +226,6 @@ class Method():
 #        self.tokenize()
 
 #        self.convert_jumps()
-
 
     def link_return_types(self):
 
@@ -489,7 +486,6 @@ class Method():
             tkn = t.to_vm(self.tokenizer, prevtoken)
             prevtoken = t
 
-
     def convert_jumps(self):
         """
         Convert jumps that occur from flow control items 
@@ -513,8 +509,6 @@ class Method():
                             difference = vm_token_target.addr - vm_token.addr
 
                             vm_token.data = difference.to_bytes(2, 'little', signed=True)
-
-
 
     def write(self):
         """
