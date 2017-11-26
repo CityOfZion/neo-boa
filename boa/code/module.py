@@ -420,6 +420,7 @@ class Module():
             if vm_token.data is not None and vm_token.vm_op != VMOp.NOP:
                 b_array = b_array + vm_token.data
 
+#        self.to_s()
         return b_array
 
     def link_methods(self):
@@ -441,7 +442,6 @@ class Module():
 
             for key, vmtoken in method.vm_tokens.items():
                 self.all_vm_tokens[address] = vmtoken
-
                 address += 1
 
                 if vmtoken.data is not None:
@@ -542,7 +542,7 @@ class Module():
 
                 lno = "{:<10}".format(
                     pt.line_no if do_print_line_no or pstart else '')
-                addr = "{:<4}".format(key)
+                addr = "{:<5}".format(key)
                 op = "{:<20}".format(str(pt.py_op))
                 arg = "{:<50}".format(
                     to_label if to_label is not None else pt.arg_s)

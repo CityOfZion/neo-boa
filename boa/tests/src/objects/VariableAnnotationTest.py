@@ -15,7 +15,7 @@ def Main(a):
 
     ba = bytearray(b'\x00\x01')  # type:bytearray
 
-    return b
+    return m.awesome
 
 
 def what():

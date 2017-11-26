@@ -7,9 +7,9 @@ class list(list):
     list(length=x) -> new list initialized with length of x
     """
 
-    def __init__(self, length=0):
-        pass
-
+#    def __init__(self, length=0):
+#        pass
+    pass
 
 def concat(str1, str2):
     """

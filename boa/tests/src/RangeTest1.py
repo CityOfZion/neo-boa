@@ -1,10 +1,9 @@
 
 def Main():
 
-    st = stuff()
 
     start = 4
-    stop = 6  # int
+    stop = 24  # int
 
     while start < stop:
         start += stuff()

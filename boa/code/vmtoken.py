@@ -130,7 +130,7 @@ class VMTokenizer():
 
                 lno = "{:<10}".format(
                     pt.line_no if do_print_line_no or pstart else '')
-                addr = "{:<4}".format(key)
+                addr = "{:<5}".format(key)
                 op = "{:<20}".format(str(pt.py_op))
                 arg = "{:<50}".format(
                     to_label if to_label is not None else pt.arg_s)
@@ -544,7 +544,6 @@ class VMTokenizer():
 
     def convert_set_element(self, arg, position):
 
-        #        print("converting set element %s %s" % (position, type(position)))
         """
 
         :param arg:
@@ -648,6 +647,9 @@ class VMTokenizer():
         :param pytoken:
         :return:
         """
+
+        #print("Pytoken func name: %s " % pytoken.func_name)
+
         if pytoken.func_name == 'list':
             return self.convert_built_in_list(pytoken)
         elif pytoken.func_name == 'bytearray':
@@ -734,6 +736,7 @@ class VMTokenizer():
 
             vmtoken.src_method = self.method
             vmtoken.target_method = pytoken.func_name
+#            pdb.set_trace()
 
         return vmtoken
 
@@ -875,7 +878,7 @@ class VMTokenizer():
 
         # push the event name
         event_name = event_action.event_name.encode('utf-8')
-        self.convert_push_data(event_name, py_token=pytoken)
+        self.convert_push_data(event_name, py_token=None)
 
         # push the num params
         self.convert_push_integer(len(event_action.event_args))
@@ -888,7 +891,7 @@ class VMTokenizer():
         length = len(syscall_name)
         ba = bytearray([length]) + bytearray(syscall_name)
         vmtoken = self.convert1(VMOp.SYSCALL, pytoken, data=ba)
-        self.insert1(VMOp.NOP)
+#        self.insert1(VMOp.NOP)
 
         return vmtoken
 
@@ -963,7 +966,16 @@ class VMTokenizer():
         count = 0
         for definition in klass.class_vars:
 
-            self.convert_load_const(definition.value)
+            if definition.is_method_call:
+#                self.convert_load_const(definition.value)
+#                pdb.set_trace()
+                self.convert_method_call(definition.fn_call)
+            else:
+                if definition.value:
+                    self.convert_load_const(definition.value)
+                else:
+                    pdb.set_trace()
+                    raise Exception("value for %s " % definition.attr)
 
             # get array
             self.insert1(VMOp.FROMALTSTACK)

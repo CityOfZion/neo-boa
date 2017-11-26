@@ -1,6 +1,7 @@
 from byteplay3 import Code, Opcode
 from boa.code.method import Method
 from boa.code.pytoken import PyToken
+
 from boa.code import pyop
 import importlib
 import binascii
@@ -17,6 +18,7 @@ from boa.blockchain.vm import VMOp
 
 from collections import OrderedDict
 
+import pdb
 
 class Item():
     """
@@ -40,11 +42,55 @@ class Definition(Item):
     value = None
     attr = None
 
+    operations = None
+    block = None
+
+    is_method_call = False
+    fn_call = None
+
+
     def __init__(self, item_list):
         super(Definition, self).__init__(item_list)
 
-        self.value = PyToken(self.items[1], 1, args=self.items[1][1])
-        self.attr = PyToken(self.items[2], 1, args=self.items[2][1])
+        # this is a simple definition like a = 3
+        if len(self.items) == 3:
+            self.value = PyToken(self.items[1], 1, args=self.items[1][1])
+            self.attr = PyToken(self.items[2], 1, args=self.items[2][1])
+        # a method based definition linke ctx = GetContext
+        elif len(self.items) == 4:
+            self.is_method_call = True
+            self.attr = PyToken(self.items[-1], 1, args=self.items[-1][1])
+            self.value = PyToken(Opcode(pyop.LOAD_CONST),1, args=7)
+            self.convert_class_call_to_block()
+
+        elif len(self.items) == 5:
+            if self.items[-1][0] == pyop.RETURN_VALUE:
+                self.items = self.items[:3]
+                self.value = PyToken(self.items[1], 1, args=self.items[1][1])
+                self.attr = PyToken(self.items[2], 1, args=self.items[2][1])
+
+        else:
+
+#            self.is_method_call=True
+            self.attr = PyToken(self.items[-1],1, args=self.items[-1][1])
+#            print("SOMETHING ELSE!")
+#            pdb.set_trace()
+
+    def convert_class_call_to_block(self):
+
+        from boa.code.block import Block
+
+        opitems = self.items[1:]
+        current_line_num = 1
+        blockitems = []
+        for i, (op, arg) in enumerate(opitems):
+
+            token = PyToken(op, current_line_num, i, arg)
+            blockitems.append(token)
+
+        self.block = Block(blockitems)
+        self.block.preprocess_method_calls(None)
+        self.fn_call = self.block.oplist[0]
 
 
 class Action(Item):
@@ -291,13 +337,14 @@ class Klass(Item):
             elif lineset.is_constant:
                 self.class_vars.append(Definition(lineset.items))
             elif lineset.is_module_method_call:
-                self.class_method_calls.append(lineset)
+                self.class_vars.append(Definition(lineset.items))
 
             elif lineset.is_method:
 
                 m = Method(lineset.code_object, self)
 
                 self.methods.append(m)
+
 
     def is_valid(self):
         # here is where we check if the class extends something reasonable
@@ -326,3 +373,7 @@ class Klass(Item):
 
         if len(lineitem):
             self.lines.append(Line(lineitem))
+
+    
+    def __str__(self):
+        return self.name

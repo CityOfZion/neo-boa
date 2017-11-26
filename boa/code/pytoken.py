@@ -6,6 +6,11 @@ from opcode import opname
 
 from boa.blockchain.vm import VMOp
 
+import pdb
+import inspect
+
+NON_RETURN_SYS_CALLS = ['Notify','print','Log','Put', 'Register',
+                        'Delete','SetVotes','ContractDestroy','MerkleRoot','Hash','PrevHash','GetHeader',]
 
 class PyToken():
 
@@ -34,13 +39,24 @@ class PyToken():
 
     func_params = None
 
-    func_name = None
+    _func_name = None
     func_type = None
 
     script_hash_token = None
 
     instance_type = None
     instance_name = None
+
+    @property
+    def func_name(self):
+        return self._func_name
+
+    @func_name.setter
+    def func_name(self, value):
+ #       print("SETTNIG FUNC NAME: %s " % value)
+ #       print(inspect.stack()[1][3])
+        self._func_name = value
+
 
     @property
     def op_name(self):
@@ -272,9 +288,21 @@ class PyToken():
                 token = tokenizer.convert_store_attr(self)
 
             elif op == pyop.CALL_FUNCTION:
-
                 token = tokenizer.convert_method_call(self)
 
+            elif op == pyop.POP_TOP:
+                print("DOING POP TOP?")
+                if prev_token.func_name not in NON_RETURN_SYS_CALLS:
+                    print("POPPING TOP %s " % prev_token.func_name)
+                    is_action = False
+                    for item in tokenizer.method.module.actions:
+                        print("actions %s " % item)
+                        if item.method_name == prev_token.func_name:
+                            print("IS SAME ACTION!")
+                            is_action = True
+
+                    if not is_action:
+                        token = tokenizer.convert1(VMOp.DROP, self)
 
 #            else:
 #                print("OP NOT CONVERTED %s " % op)

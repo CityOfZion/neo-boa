@@ -64,6 +64,8 @@ class Method():
 
     _return_type = None
 
+
+
     @property
     def name(self):
         """
@@ -227,6 +229,7 @@ class Method():
 
 #        self.convert_jumps()
 
+
     def link_return_types(self):
 
         for index, block in enumerate(self.blocks):
@@ -242,6 +245,9 @@ class Method():
         self.tokenize()
 
         self.convert_jumps()
+
+#        self.to_dis()
+#        self.tokenizer.to_s()
 
     def print(self):
         """
@@ -456,6 +462,9 @@ class Method():
                 iter_setup_block = block
                 self.dynamic_iterator_count += 1
 
+
+#            print("ADDED BLOCK %s " % [str(op) for op in block.oplist])
+
         alltokens = []
 
         for block in self.blocks:
@@ -477,8 +486,9 @@ class Method():
         self.tokenizer.update_method_begin_items()
         prevtoken = None
         for t in self.tokens:
-            t.to_vm(self.tokenizer, prevtoken)
+            tkn = t.to_vm(self.tokenizer, prevtoken)
             prevtoken = t
+
 
     def convert_jumps(self):
         """
@@ -503,6 +513,8 @@ class Method():
                             difference = vm_token_target.addr - vm_token.addr
 
                             vm_token.data = difference.to_bytes(2, 'little', signed=True)
+
+
 
     def write(self):
         """

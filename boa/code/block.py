@@ -2,6 +2,7 @@
 from byteplay3 import Opcode, Label
 from boa.code.pytoken import PyToken
 from boa.code import pyop
+from boa.code.vmtoken import NEO_SC_FRAMEWORK
 import pdb
 
 
@@ -193,12 +194,17 @@ class Block():
         for index, token in enumerate(self.oplist):
             if token.py_op == pyop.STORE_ATTR:
                 to_store_into = self.oplist[index - 1].args
-                try:
-                    ivar_type = method.instance_vars[to_store_into]
+
+                if to_store_into == 'self':
+                    ivar_type = method.parent
                     token.instance_type = ivar_type
-                    token.instance_name = to_store_into
-                except Exception as e:
-                    print("Couldnt load instance variable: %s %s " % (to_store_into, e))
+                else:
+                    try:
+                        ivar_type = method.instance_vars[to_store_into]
+                        token.instance_type = ivar_type
+                        token.instance_name = to_store_into
+                    except Exception as e:
+                        print("Couldnt load instance variable: %s %s " % (to_store_into, e))
 
     def preprocess_load_attr(self, method):
         """
@@ -210,6 +216,7 @@ class Block():
 
             to_rep = {}
             to_del = []
+            really_to_del = []
             for index, token in enumerate(self.oplist):
 
                 index_to_rep = -1
@@ -225,24 +232,38 @@ class Block():
                     do_nothing = False
                     if varname in method.instance_vars.keys():
                         ivar_type = method.instance_vars[varname]
-                        what_to_load = '%s.%s' % (ivar_type.name, token.args)
-                        token.instance_type = ivar_type
-                        # if this is a class variable lookup, do this
-                        if token.args in ivar_type.class_var_names:
-                            is_func_call = False
-                            what_to_load = token.args
 
-                        # otherwise, it is a method call on an object, we don't want to do anything
+                        test_sysmodule = '%s.Get%s' % (ivar_type.module.module_path, token.args)
+
+                        if NEO_SC_FRAMEWORK in test_sysmodule:
+                            what_to_load = 'Get%s' % token.args
+
                         else:
-                            token.func_params = [self.oplist[index - 1]]
-                            do_nothing = True
+                            what_to_load = '%s.%s' % (ivar_type.name, token.args)
+                            token.instance_type = ivar_type
+
+
+                            # if this is a class variable lookup, do this
+                            if token.args in ivar_type.class_var_names:
+                                is_func_call = False
+                                what_to_load = token.args
+
+                            # otherwise, it is a method call on an object, we don't want to do anything
+                            else:
+                                token.func_params = [self.oplist[index - 1]]
+                                do_nothing = True
 
                     elif varname == 'self' and type(method.parent) is Klass:
                         ivar_type = method.parent
-                        what_to_load = '%s.%s' % (ivar_type, token.args)
+                       # print("IVARTYPE: %s %s"% (str(ivar_type), token.args))
+
+                        what_to_load = '%s.%s' % (str(ivar_type), token.args)
                         if token.args in ivar_type.class_var_names:
+                            #print("NOT A FUNC ALLL %s " % what_to_load)
                             is_func_call = False
                             what_to_load = token.args
+                        else:
+                            print("will delete some stuff")
 
                     else:
                         what_to_load = 'Get%s' % token.args
@@ -255,10 +276,14 @@ class Block():
                             call_func.func_processed = True
                             call_func.func_name = what_to_load
                             call_func.func_params = [self.oplist[index - 1]]
-
+                            #print("SETUP FUNC CALL: %s " % call_func.func_name)
+                            #if call_func.func_name == 'MoreAwesome.add_thirteen_to_this':
+                            #    pdb.set_trace()
                             index_to_rep = index
                             new_call = call_func
+
                         else:
+                            #print("will do load class attr %s " % what_to_load)
                             new_call = PyToken(Opcode(pyop.LOAD_CLASS_ATTR), lineno=self.line, args=what_to_load)
                             new_call.instance_type = ivar_type
                             new_call.instance_name = varname
@@ -273,7 +298,14 @@ class Block():
                 self.oplist[key] = val
 
             for item in to_del:
-                self.oplist.remove(item)
+#                print("WILL DELET: %s %s" % (item, vars(item)))
+                if item in self.oplist:
+                    self.oplist.remove(item)
+                else:
+                    pdb.set_trace()
+
+#        print("oplist: %s " % [str(op) for op in self.oplist])
+        #pdb.set_trace()
 
     def preprocess_load_class(self, method):
         print("PREPROCESS LOAD BUilD CLASS: %s %s " % (method, method.name))
@@ -493,6 +525,7 @@ class Block():
     def lookup_return_types(self, orig_method):
         ivars = {}
         klass_type = None
+        return_type = None
         for index, token in enumerate(self.oplist):
             if token.py_op == pyop.CALL_FUNCTION:
                 param_count = token.args
@@ -502,7 +535,7 @@ class Block():
                 if param_count % 256 == 0:
                     param_count = 2 * int(param_count / 256)
 
-                params = self.oplist[index - param_count:index]
+#                params = self.oplist[index - param_count:index]
 
                 call_method_op = self.oplist[index - param_count - 1]
                 call_method_name = call_method_op.args
@@ -524,6 +557,8 @@ class Block():
         """
 
         ivars = {}
+
+        alreadythere=False
 
         while self.has_unprocessed_method_calls:
             start_index_change = None
@@ -556,23 +591,42 @@ class Block():
                         # the call_method_op has a referecnce to the instance being called
                         # as the only item in the func_params ( this is python's self object )
                         # we will create a new param array by adding that one to the beginning of the method params
+
+#                        print("PARAMS: %s "% params)
+#                        print("COLL METHEHOD: %s "% call_method_op)
+#                        print("call method name %s " % call_method_op.args)
+#                        print("call method op func params: %s "% call_method_op.func_params)
+
+#                        if call_method_name == 'owner':
+#                            pdb.set_trace()
+
                         params = call_method_op.func_params + params
 
                         token.args = len(params)
                         param_count = token.args
-                        call_method_name = "%s.%s" % (call_method_op.instance_type.name, call_method_op.args)
+                        if call_method_op.instance_type.name in call_method_op.args:
+#                            print("ALREADY THEROEUSTHOEUSNTOHEUSNTHOEUTNHOEUSTHOEUSNTHOEUTH")
+                            call_method_name = call_method_op.args
+                            alreadythere = True
+
+
+                        else:
+                            call_method_name = "%s.%s" % (call_method_op.instance_type.name, call_method_op.args)
 
                     # we need to check if this is a method
                     # that is local to this block's method
-                    for key, value in orig_method.local_methods.items():
-                        if key == call_method_name:
-                            call_method_name = value
+                    if orig_method:
+                        for key, value in orig_method.local_methods.items():
+                            if key == call_method_name:
+                                call_method_name = value
 
                     token.func_name = call_method_name
                     token.func_type = call_method_type
 
                     # check to see if this method call creates an instance of another object
-                    klass = orig_method.lookup_type(token.func_name)
+                    if orig_method:
+                        klass = orig_method.lookup_type(token.func_name)
+
 
                     if klass:
                         ivar_iname = self.oplist[2].args
@@ -598,6 +652,13 @@ class Block():
                 tstart = self.oplist[0:start_index_change]
                 tend = self.oplist[end_index_change + 1:]
                 self.oplist = tstart + changed_items + tend
+
+        if alreadythere:
+#            pdb.set_trace()
+
+            if self.oplist[-1].py_op == pyop.STORE_FAST:
+                print("Trimming load self method")
+                self.oplist = self.oplist[-2:]
 
         return ivars
 
