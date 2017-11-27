@@ -259,8 +259,6 @@ class Block():
                         if token.args in ivar_type.class_var_names:
                             is_func_call = False
                             what_to_load = token.args
-                        else:
-                            print("will delete some stuff")
 
                     else:
                         what_to_load = 'Get%s' % token.args

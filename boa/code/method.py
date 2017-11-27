@@ -243,9 +243,6 @@ class Method():
 
         self.convert_jumps()
 
-#        self.to_dis()
-#        self.tokenizer.to_s()
-
     def print(self):
         """
         This method prints the output of the method's ``byteplay3`` object 
@@ -402,6 +399,7 @@ class Method():
             # if it is a return block
             # we need to insert a jmp at the start of the block
             # for the vm
+
             if block.is_return:
 
                 # this jump needs to jump 3 bytes.  why? stay tuned to find out
@@ -409,8 +407,6 @@ class Method():
 
                 ret_token = PyToken(Opcode(pyop.BR_S),
                                     block.line, args=block_addr)
-#                nop_token = PyToken(Opcode(pyop.NOP), block.line)
-#                drop_token = PyToken(Opcode(pyop.DROP), block.line)
 
                 ret_token.jump_label = block.oplist[0].jump_label
                 block.oplist[0].jump_label = None

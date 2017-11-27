@@ -372,6 +372,12 @@ class VMTokenizer():
 
         self.convert1(VMOp.PACK, py_token)
 
+    def convert_pop_jmp_if(self, pytoken):
+        #                token = tokenizer.convert1(VMOp.JMPIF, self, data=bytearray(2))
+        token = self.convert1(VMOp.JMPIF, pytoken, data=bytearray(2))
+#        self.insert1(VMOp.DROP)
+        return token
+
     def convert_load_const(self, pytoken):
         token = None
         if type(pytoken.args) is int:
@@ -955,8 +961,9 @@ class VMTokenizer():
 
         # push the number of fields in the class
         # and create a new struct for it
-        self.insert_push_integer(klass.total_fields)
-        token = self.convert1(VMOp.NEWSTRUCT, py_token=pytoken)
+        token = self.convert_push_integer(klass.total_fields, py_token=pytoken)
+
+        self.convert1(VMOp.NEWSTRUCT)
 
         self.convert1(VMOp.TOALTSTACK)
 

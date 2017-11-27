@@ -10,7 +10,8 @@ import pdb
 import inspect
 
 NON_RETURN_SYS_CALLS = ['Notify', 'print', 'Log', 'Put', 'Register',
-                        'Delete', 'SetVotes', 'ContractDestroy', 'MerkleRoot', 'Hash', 'PrevHash', 'GetHeader', ]
+                        'Delete', 'SetVotes', 'ContractDestroy',
+                        'MerkleRoot', 'Hash', 'PrevHash', 'GetHeader', ]
 
 
 class PyToken():
@@ -152,8 +153,7 @@ class PyToken():
                     VMOp.JMPIFNOT, self, data=bytearray(2))
 
             elif op == pyop.POP_JUMP_IF_TRUE:
-                token = tokenizer.convert1(VMOp.JMPIF, self, data=bytearray(2))
-
+                token = tokenizer.convert_pop_jmp_if(self)
             # loops
             elif op == pyop.SETUP_LOOP:
                 token = tokenizer.convert1(VMOp.NOP, self)
@@ -289,14 +289,10 @@ class PyToken():
                 token = tokenizer.convert_method_call(self)
 
             elif op == pyop.POP_TOP:
-                print("DOING POP TOP?")
                 if prev_token.func_name not in NON_RETURN_SYS_CALLS:
-                    print("POPPING TOP %s " % prev_token.func_name)
                     is_action = False
                     for item in tokenizer.method.module.actions:
-                        print("actions %s " % item)
                         if item.method_name == prev_token.func_name:
-                            print("IS SAME ACTION!")
                             is_action = True
 
                     if not is_action:

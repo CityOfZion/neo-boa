@@ -538,7 +538,8 @@ class Module():
                             pass
 
                 if pt.py_op == pyop.CALL_FUNCTION:
-                    to_label = '%s %s ' % (pt.func_name, pt.func_params)
+                    old = to_label
+                    to_label = '%s %s %s' % (pt.func_name, pt.func_params, old)
 
                 lno = "{:<10}".format(
                     pt.line_no if do_print_line_no or pstart else '')
