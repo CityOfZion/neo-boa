@@ -596,7 +596,6 @@ class Block():
                         token.args = len(params)
                         param_count = token.args
                         if call_method_op.instance_type.name in call_method_op.args:
-                            #                            print("ALREADY THEROEUSTHOEUSNTOHEUSNTHOEUTNHOEUSTHOEUSNTHOEUTH")
                             call_method_name = call_method_op.args
                             alreadythere = True
 

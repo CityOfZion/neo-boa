@@ -1,22 +1,24 @@
 from boa.blockchain.vm.Neo.App import RegisterAppCall
 from boa.blockchain.vm.Neo.Runtime import Notify
 
-Fibo = RegisterAppCall('24196a584e2bd4c343148e553a7bca9738ae3b19', intval=0)
+# Fibo = RegisterAppCall('24196a584e2bd4c343148e553a7bca9738ae3b19', intval=0)
+
+AddContract = RegisterAppCall('d724c4191f83cee8d3c84e5d5bd91a054a9867d0', 'a', 'b')
 
 
-def Main():
+def Main(a):
     """
 
     :return:
     """
-    fibtest = 7
+    test = 7
 
-    res = Fibo(fibtest)
+    res = AddContract(test, a)
 
-    print("did fibo!")
+    print("did add")
 
     Notify(res)
 
-    output = res + 18
+    output = res + 1
 
     return output

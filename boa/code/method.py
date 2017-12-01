@@ -221,11 +221,7 @@ class Method():
 
         self.read_initial_tokens()
 
-#        self.process_block_groups()
-
-#        self.tokenize()
-
-#        self.convert_jumps()
+#        self.print()
 
     def link_return_types(self):
 

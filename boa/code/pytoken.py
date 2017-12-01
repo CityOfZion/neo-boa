@@ -46,6 +46,8 @@ class PyToken():
 
     script_hash_token = None
 
+    is_dynamic_appcall = False
+
     instance_type = None
     instance_name = None
 

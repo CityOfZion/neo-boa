@@ -8,7 +8,7 @@ def RegisterAppCall(smart_contract_hash, *args, **kwargs):
     pass
 
 
-def AppCall(smart_contract_hash, *args, **kwargs):
+def DynamicAppCall(smart_contract_hash, *args, **kwargs):
     """
 
     :param smart_contract_hash:

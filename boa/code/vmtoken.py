@@ -659,9 +659,10 @@ class VMTokenizer():
             return self.convert_push_data(bytes(pytoken.func_params[0].args), pytoken)
         elif pytoken.func_name == 'bytes':
             return self.convert_push_data(pytoken.func_params[0].args, pytoken)
-        elif pytoken.func_name == 'AppCall':
-            scripthash_token = pytoken.func_params.pop(0)
-            pytoken.script_hash_token = scripthash_token.args
+#        elif pytoken.func_name == 'DynamicAppCall':
+#            scripthash_token = pytoken.func_params[0]
+#            print("SCRIPT HASH TOKEN %s " % scripthash_token)
+#            pytoken.script_hash_token = scripthash_token
 
         for t in pytoken.func_params:
             t.to_vm(self)
@@ -906,7 +907,8 @@ class VMTokenizer():
         """
         name = pytoken.func_name
 
-        if name == 'AppCall':
+        if name == 'DynamicAppCall':
+            pytoken.is_dynamic_appcall = True
             return True
 
         for appcall in self.method.module.app_call_registrations:
@@ -921,13 +923,14 @@ class VMTokenizer():
         :return:
         """
 
-        # the following converts app calls of the pattern
-        # m = AppCall(script_hash, *args)
-#        if pytoken.script_hash_addr is not None:
-#            from boa.code.items import SmartContractAppCall
-#            shash = SmartContractAppCall.ToScriptHashData(pytoken.script_hash_addr)
-#            vmtoken = self.convert1(VMOp.APPCALL, py_token=pytoken, data=shash)
-#            return vmtoken
+        if pytoken.is_dynamic_appcall:
+
+            # push the contract hash
+            vmtoken = self.convert1(
+                VMOp.DYNAMICCALL, py_token=pytoken)
+
+            self.insert1(VMOp.NOP)
+            return vmtoken
 
         # this is used for app calls that are registered
         # using RegisterAppCall(script_hash, *args)
