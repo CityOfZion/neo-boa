@@ -50,7 +50,7 @@ class Transaction():
         return GetReferences(self)
 
 
-def GetHash(transaction):
+def GetTXHash(transaction):
     """
 
     :param transaction:

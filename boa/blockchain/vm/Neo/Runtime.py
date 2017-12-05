@@ -29,3 +29,12 @@ def Notify(arg):
     :param arg:
     """
     pass
+
+
+def GetCurrentBlock():
+    """
+
+    Returns: Block
+
+    """
+    pass
