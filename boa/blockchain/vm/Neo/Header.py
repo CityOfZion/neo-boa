@@ -5,7 +5,6 @@ class Header():
     def getmyhash(self):
         return GetHash(self)
 
-
     @property
     def Index(self):
         return GetIndex(self)
@@ -78,6 +77,7 @@ def GetIndex(header: Header) -> int:
     """
     pass
 
+
 def GetHash(header: Header) -> bytearray:
     """
 
@@ -139,4 +139,3 @@ def GetNextConsensus(header: Header) -> bytearray:
 
     """
     pass
-

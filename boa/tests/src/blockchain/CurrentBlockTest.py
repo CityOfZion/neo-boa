@@ -1,4 +1,4 @@
-from boa.blockchain.vm.Neo.Runtime import Notify, Log,GetCurrentBlock
+from boa.blockchain.vm.Neo.Runtime import Notify, Log, GetCurrentBlock
 from boa.blockchain.vm.Neo.Block import *
 from boa.blockchain.vm.Neo.Blockchain import GetHeader
 
@@ -17,9 +17,7 @@ def Main():
     index = block.Index
     print("hello")
 
-
     hash = block.Hash
-
 
     header = GetHeader(index)
 
