@@ -49,7 +49,6 @@ class Transaction():
         """
         return GetReferences(self)
 
-
     @property
     def UnspentCoins(self):
         return GetUnspentCoins(self)
