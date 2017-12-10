@@ -12,6 +12,8 @@ class TestCompileExamples(TestCase):
 
     object_items_to_test = []
 
+    bug_items_to_test = []
+
     @classmethod
     def setUpClass(cls):
 
@@ -38,6 +40,15 @@ class TestCompileExamples(TestCase):
 
         cls.object_items_to_test = [item for item in test_glob if '__init__' not in item]
         cls.object_items_to_test.sort()
+
+        module_path = 'boa/tests/src/bugs'
+        py_test = '%s/*.py' % module_path
+
+        test_glob = glob.glob(py_test)
+
+        cls.bug_items_to_test = [item for item in test_glob if '__init__' not in item]
+        cls.bug_items_to_test.sort()
+
 
     def test_a_single_compile(self):
 
@@ -70,6 +81,10 @@ class TestCompileExamples(TestCase):
     def test_object_items(self):
 
         for item in self.object_items_to_test:
+            self._testitem(item)
+
+    def test_bug_items(self):
+        for item in self.bug_items_to_test:
             self._testitem(item)
 
     def _testitem(self, item):
