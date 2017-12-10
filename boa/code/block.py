@@ -808,7 +808,6 @@ class Block():
 
         :param list_comp_item_name:
         """
-        print("OP 0 %s " % self.oplist[0].py_op)
         if self.oplist[0].py_op == pyop.STORE_FAST:
 
             argname = self.oplist[0].args
@@ -819,9 +818,7 @@ class Block():
             method_call = self.oplist[1]
 
             for op in method_call.func_params:
-                print("op in method call:: %s %s " % (op, op.args))
                 if op.args == argname:
-                    print("switch argname...")
                     op.args = list_comp_item_name
 
             self.oplist = self.oplist[0:-3]

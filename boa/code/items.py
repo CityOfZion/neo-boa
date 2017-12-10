@@ -110,14 +110,11 @@ class SmartContractAppCall(Item):
         """
         b_array = None
         if type(item) is str:
-            print("ITEM!! %s " % item)
             bstring = item.encode('utf-8')
             b_array = bytearray(binascii.unhexlify(bstring))
         elif type(item) is bytearray:
             pass
         elif type(item) is bytes:
-            print("bytes len %s " % len(item))
-
             b_array = bytearray(item)
         else:
             raise Exception("Invalid script hash")
