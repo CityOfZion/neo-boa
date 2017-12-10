@@ -24,7 +24,7 @@ Below is the current implementation in Python
 
 """
 
-from boa.blockchain.vm.Neo.Runtime import Log,GetTrigger,CheckWitness
+from boa.blockchain.vm.Neo.Runtime import Log, GetTrigger, CheckWitness
 from boa.blockchain.vm.Neo.Action import RegisterAction
 from boa.blockchain.vm.Neo.TriggerType import Application, Verification
 from boa.blockchain.vm.Neo.Storage import GetContext, Get, Put, Delete
@@ -151,7 +151,6 @@ def Main(operation, args):
                 amount = GetAllowance(t_owner, t_spender)
                 return amount
             return False
-
 
         result = 'unknown operation'
 
@@ -342,7 +341,6 @@ def GetAllowance(t_owner, t_spender):
     return amount
 
 
-
 def BalanceOf(account):
     """
     Method to return the current balance of an address
@@ -359,4 +357,3 @@ def BalanceOf(account):
     balance = Get(context, account)
 
     return balance
-

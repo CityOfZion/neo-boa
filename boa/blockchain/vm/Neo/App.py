@@ -6,4 +6,3 @@ def RegisterAppCall(smart_contract_hash, *args):
     :param args:
     """
     pass
-

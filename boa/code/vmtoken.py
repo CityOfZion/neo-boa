@@ -862,7 +862,6 @@ class VMTokenizer():
         :return:
         """
 
-
         # this is used for app calls that are registered
         # using RegisterAppCall(script_hash, *args)
         sc_appcall = None
