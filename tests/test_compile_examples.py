@@ -49,7 +49,6 @@ class TestCompileExamples(TestCase):
         cls.bug_items_to_test = [item for item in test_glob if '__init__' not in item]
         cls.bug_items_to_test.sort()
 
-
     def test_a_single_compile(self):
 
         # just test a single compilation to see how things are going
