@@ -1,6 +1,8 @@
 from boa.blockchain.vm.Neo.App import DynamicAppCall
 from boa.blockchain.vm.Neo.Runtime import Notify
 
+# Note this is a new api, not ready for mainnet yet
+
 
 def Main(a):
 

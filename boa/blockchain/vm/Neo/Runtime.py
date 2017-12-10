@@ -38,3 +38,11 @@ def GetCurrentBlock():
 
     """
     pass
+
+
+def GetTime():
+    """
+    returns timestamp of most recent block
+
+    """
+    pass

@@ -421,7 +421,6 @@ class Module():
                 b_array = b_array + vm_token.data
 
 #        self.to_s()
-        print("bytearray: %s " % b_array)
         return b_array
 
     def link_methods(self):

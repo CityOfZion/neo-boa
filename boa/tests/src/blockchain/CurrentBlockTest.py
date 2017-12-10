@@ -2,6 +2,9 @@ from boa.blockchain.vm.Neo.Runtime import Notify, Log, GetCurrentBlock
 from boa.blockchain.vm.Neo.Block import *
 from boa.blockchain.vm.Neo.Blockchain import GetHeader
 
+# Note this is a new api
+# Not for use yet on mainnet
+
 
 def Main():
 
