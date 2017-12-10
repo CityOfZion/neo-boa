@@ -3,11 +3,10 @@ from boa.blockchain.vm.Neo.Blockchain import GetTransaction
 from boa.blockchain.vm.Neo.Runtime import Notify
 from boa.blockchain.vm.Neo.Output import GetValue
 
+
 def Main(txhash):
 
-
     tx = GetTransaction(txhash)
-
 
     unspent = tx.UnspentCoins
 
@@ -16,7 +15,4 @@ def Main(txhash):
         val = uns.Value
         Notify(val)
 
-
     return tx.Hash
-
-
