@@ -659,10 +659,6 @@ class VMTokenizer():
             return self.convert_push_data(bytes(pytoken.func_params[0].args), pytoken)
         elif pytoken.func_name == 'bytes':
             return self.convert_push_data(pytoken.func_params[0].args, pytoken)
-#        elif pytoken.func_name == 'DynamicAppCall':
-#            scripthash_token = pytoken.func_params[0]
-#            print("SCRIPT HASH TOKEN %s " % scripthash_token)
-#            pytoken.script_hash_token = scripthash_token
 
         for t in pytoken.func_params:
             t.to_vm(self)

@@ -178,8 +178,6 @@ class SmartContractAppCall(Item):
         elif type(item) is bytearray:
             pass
         elif type(item) is bytes:
-            print("bytes len %s " % len(item))
-
             b_array = bytearray(item)
         else:
             raise Exception("Invalid script hash")
