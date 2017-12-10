@@ -6,6 +6,13 @@ from opcode import opname
 
 from boa.blockchain.vm import VMOp
 
+import pdb
+import inspect
+
+NON_RETURN_SYS_CALLS = ['Notify', 'print', 'Log', 'Put', 'Register',
+                        'Delete', 'SetVotes', 'ContractDestroy',
+                        'MerkleRoot', 'Hash', 'PrevHash', 'GetHeader', ]
+
 
 class PyToken():
 
@@ -34,8 +41,23 @@ class PyToken():
 
     func_params = None
 
-    func_name = None
+    _func_name = None
     func_type = None
+
+    script_hash_token = None
+
+    is_dynamic_appcall = False
+
+    instance_type = None
+    instance_name = None
+
+    @property
+    def func_name(self):
+        return self._func_name
+
+    @func_name.setter
+    def func_name(self, value):
+        self._func_name = value
 
     @property
     def op_name(self):
@@ -133,8 +155,7 @@ class PyToken():
                     VMOp.JMPIFNOT, self, data=bytearray(2))
 
             elif op == pyop.POP_JUMP_IF_TRUE:
-                token = tokenizer.convert1(VMOp.JMPIF, self, data=bytearray(2))
-
+                token = tokenizer.convert_pop_jmp_if(self)
             # loops
             elif op == pyop.SETUP_LOOP:
                 token = tokenizer.convert1(VMOp.NOP, self)
@@ -162,27 +183,7 @@ class PyToken():
 
             # loading constants ( ie 1, 2 etc)
             elif op == pyop.LOAD_CONST:
-
-                if type(self.args) is int:
-                    token = tokenizer.convert_push_integer(self.args, self)
-                elif type(self.args) is str:
-                    str_bytes = self.args.encode('utf-8')
-                    self.args = str_bytes
-                    token = tokenizer.convert_push_data(self.args, self)
-                elif type(self.args) is bytes:
-                    token = tokenizer.convert_push_data(self.args, self)
-                elif type(self.args) is bytearray:
-                    token = tokenizer.convert_push_data(bytes(self.args), self)
-                elif type(self.args) is bool:
-                    token = tokenizer.convert_push_integer(self.args)
-                elif type(self.args) == type(None):
-                    token = tokenizer.convert_push_data(bytearray(0))
-                elif type(self.args) == Code:
-                    pass
-                else:
-
-                    raise Exception("Could not load type %s for item %s " % (
-                        type(self.args), self.args))
+                token = tokenizer.convert_load_const(self)
 
             # storing / loading local variables
             elif op in [pyop.STORE_FAST, pyop.STORE_NAME]:
@@ -278,12 +279,26 @@ class PyToken():
             elif op == pyop.BUILD_SLICE:
                 token = tokenizer.convert_build_slice(self)
 
-            # strings
+            # objects
+
+            elif op == pyop.LOAD_CLASS_ATTR:
+                token = tokenizer.convert_load_attr(self)
+
+            elif op == pyop.STORE_ATTR:
+                token = tokenizer.convert_store_attr(self)
 
             elif op == pyop.CALL_FUNCTION:
-
                 token = tokenizer.convert_method_call(self)
 
+            elif op == pyop.POP_TOP:
+                if prev_token.func_name not in NON_RETURN_SYS_CALLS:
+                    is_action = False
+                    for item in tokenizer.method.module.actions:
+                        if item.method_name == prev_token.func_name:
+                            is_action = True
+
+                    if not is_action:
+                        token = tokenizer.convert1(VMOp.DROP, self)
 
 #            else:
 #                print("OP NOT CONVERTED %s " % op)

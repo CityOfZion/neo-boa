@@ -9,12 +9,14 @@ def Main():
 
     :return:
     """
-    block_height = 123234
+    block_height = 1234
     block = GetBlock(block_height)
 
     print("hello")
     Notify(block)
 
-    a = 1
+    h = block.Transactions
 
-    return block_height
+    Notify(h)
+
+    return 4

@@ -7,6 +7,8 @@ def Main(a, b):
     :rtype: int
     """
 
+    print("adding!")
     c = a + b
 
+    print("did add")
     return c

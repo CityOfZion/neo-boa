@@ -4,5 +4,6 @@ __pycache__
 .avm
 dist
 build
+neo_boa.egg-info
 *.egg-info
 /build

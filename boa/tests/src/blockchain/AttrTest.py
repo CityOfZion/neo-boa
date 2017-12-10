@@ -1,5 +1,4 @@
 from boa.blockchain.vm.Neo.Blockchain import GetHeader, GetBlock
-from boa.blockchain.vm.Neo.Block import GetTransaction
 from boa.blockchain.vm.Neo.Runtime import Notify
 
 
@@ -8,37 +7,26 @@ def Main():
 
     :return:
     """
-    height = 1242
-    header = GetHeader(height)
+    header = GetHeader(1234)
 
     m2 = header.Timestamp + header.Timestamp
 
-    root = header.MerkleRoot
+    Notify(m2)
 
-#    Notify(root)
-
-    hash = header.Hash
-
-    prev = header.PrevHash
-
-#    Notify(hash)
-
-#    Notify(prev)
-
-    bheight = 32566
+    bheight = 32
 
     block = GetBlock(bheight)
 
+    Notify(block)
+
     tx = block.Transactions[0]
 
-    Notify(tx)
+    Notify(tx.Hash)
 
-#    tx = GetTransaction(block, 0)
-#    tx = GetTransaction(block, 0)
 #    Notify(tx)
 #    tx = block.Transactions[0] #  this doesnt seem to work
-    txhash = tx.Hash
+#    txhash = tx.Hash
 
-    Notify(txhash)
+#    Notify(txhash)
 
     return 1

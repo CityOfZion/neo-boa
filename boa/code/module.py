@@ -95,6 +95,8 @@ class Module():
 
     module_variables = None  # list of module variables
 
+    module_method_calls = None  # list of module level method calls
+
     classes = None  # a list of classes
 
     methods = None  # a list to keep all methods in the module
@@ -205,7 +207,9 @@ class Module():
         :rtype: ``boa.code.method.Method``
         """
 
+#        print("METHODS FOR MODULE: %s " % self.path)
         for m in self.methods:
+            #            print("METHODS: %s %s" % (m.name, m.full_name))
             if m.full_name == method_name:
                 return m
             elif m.name == method_name:
@@ -240,6 +244,7 @@ class Module():
         self.lines = []
         self.imports = []
         self.module_variables = []
+        self.module_method_calls = []
         self.methods = []
         self.actions = []
         self.app_call_registrations = []
@@ -253,15 +258,17 @@ class Module():
             if lineset.is_import:
 
                 if not self.is_sys_module:
-                    imp = Import(lineset.items)
+                    imp = Import(lineset.items, self.path)
                     self.process_import(imp)
                 else:
                     print("will not import items from sys module")
 
             elif lineset.is_docstring:
                 pass
-            elif lineset.is_definition:
+            elif lineset.is_constant:
                 self.module_variables.append(Definition(lineset.items))
+#            elif lineset.is_module_method_call:
+#                self.module_method_calls.append(lineset)
             elif lineset.is_class:
                 self.classes.append(Klass(lineset.items, self))
             elif lineset.is_method:
@@ -272,7 +279,7 @@ class Module():
                 self.process_smart_contract_app_registration(lineset)
             else:
                 print('not sure what to do with line %s ' % lineset)
-                pdb.set_trace()
+                # pdb.set_trace()
 
     def process_import(self, import_item):
         """
@@ -290,12 +297,16 @@ class Module():
         for method in import_item.imported_module.methods:
             self.add_method(method)
 
+        for cls in import_item.imported_module.classes:
+            for method in cls.methods:
+                self.add_method(method)
+
     def process_method(self, lineset):
         """
         processes a set of lines that contain a byteplay3 code object
 
         :param lineset: the lineset to process and add
-        :type lineset: list
+        :type lineset: Line
         """
 
         m = Method(lineset.code_object, self)
@@ -409,6 +420,7 @@ class Module():
             if vm_token.data is not None and vm_token.vm_op != VMOp.NOP:
                 b_array = b_array + vm_token.data
 
+#        self.to_s()
         return b_array
 
     def link_methods(self):
@@ -416,16 +428,20 @@ class Module():
         Perform linkage of addresses between methods.
         """
 
+        for method in self.methods:
+            method.link_return_types()
+            method.prepare()
+
         self.all_vm_tokens = OrderedDict()
 
         address = 0
 
         for method in self.orderered_methods:
+
             method.method_address = address
 
             for key, vmtoken in method.vm_tokens.items():
                 self.all_vm_tokens[address] = vmtoken
-
                 address += 1
 
                 if vmtoken.data is not None:
@@ -438,10 +454,11 @@ class Module():
 
                 target_method = self.method_by_name(vmtoken.target_method)
                 if target_method:
-
                     jump_len = target_method.method_address - vmtoken.addr
                     vmtoken.data = jump_len.to_bytes(2, 'little', signed=True)
                 else:
+
+                    #                    pdb.set_trace()
                     raise Exception("Target method %s not found" % vmtoken.target_method)
 
     def to_s(self):
@@ -517,11 +534,12 @@ class Module():
                             pass
 
                 if pt.py_op == pyop.CALL_FUNCTION:
-                    to_label = '%s %s ' % (pt.func_name, pt.func_params)
+                    old = to_label
+                    to_label = '%s %s %s' % (pt.func_name, pt.func_params, old)
 
                 lno = "{:<10}".format(
                     pt.line_no if do_print_line_no or pstart else '')
-                addr = "{:<4}".format(key)
+                addr = "{:<5}".format(key)
                 op = "{:<20}".format(str(pt.py_op))
                 arg = "{:<50}".format(
                     to_label if to_label is not None else pt.arg_s)

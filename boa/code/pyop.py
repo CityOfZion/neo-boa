@@ -93,7 +93,6 @@ STORE_GLOBAL = 97     # ""
 DELETE_GLOBAL = 98    # ""
 LOAD_CONST = 100       # Index in const list
 
-# hasconst.append(100
 
 LOAD_NAME = 101       # Index in name list
 BUILD_TUPLE = 102      # Number of tuple items
@@ -177,3 +176,7 @@ XSWAP = 246
 ROLL = 247
 
 DROP_BODY = 248
+
+LOAD_CLASS_ATTR = 249
+
+DEBUG_OP = 250

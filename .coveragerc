@@ -1,0 +1,7 @@
+[run]
+source = boa
+
+[report]
+omit =
+  venv*
+  boa/tests/*

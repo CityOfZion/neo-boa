@@ -5,9 +5,14 @@ from boa.code.vmtoken import VMTokenizer
 from boa.code.block import Block
 from boa.code import pyop
 
+import inspect
+
 import dis
 
 import collections
+import pdb
+
+from byteplay3 import object_attributes, print_attr_values, printcodelist
 
 
 class Method():
@@ -53,6 +58,12 @@ class Method():
 
     __make_func_name = None
 
+    instance_vars = None
+
+    _args = None
+
+    _return_type = None
+
     @property
     def name(self):
         """
@@ -74,6 +85,12 @@ class Method():
         """
 
         if self.__make_func_name is None:
+
+            from boa.code.items import Klass
+
+            if type(self.parent) is Klass:
+                clsname = self.parent.name
+                return '%s.%s' % (clsname, self.name)
             if len(self.module.module_path):
                 return '%s.%s' % (self.module.module_path, self.name)
             return self.name
@@ -88,7 +105,23 @@ class Method():
         :rtype: list
         """
 
-        return self.bp.args
+        if not self._args:
+
+            self._build_args()
+
+        return self._args
+
+    @property
+    def return_type(self):
+        """
+        Gets the return type of this method if it has one
+
+        """
+        if not self._return_type:
+
+            self._build_args()
+
+        return self._return_type
 
     @property
     def code(self):
@@ -172,15 +205,33 @@ class Method():
 
     def __init__(self, code_object, parent, make_func_name=None):
 
+        #        assert code_object is not None
+
         self.bp = code_object
 
         self.parent = parent
+
+        self.instance_vars = {}
 
         self.__make_func_name = make_func_name
 
         self.read_module_variables()
 
+        self.read_module_method_calls()
+
         self.read_initial_tokens()
+
+#        self.print()
+
+    def link_return_types(self):
+
+        for index, block in enumerate(self.blocks):
+            if block.has_unprocessed_method_calls:
+                ivars = block.lookup_return_types(self)
+                for key, val in ivars.items():
+                    self.instance_vars[key] = val
+
+    def prepare(self):
 
         self.process_block_groups()
 
@@ -244,10 +295,19 @@ class Method():
         """
         Take all module ``global`` variables and gives this method access to them.
         """
-
         for definition in self.module.module_variables:
 
             items = definition.items
+
+            self.bp.code = items + self.bp.code
+
+    def read_module_method_calls(self):
+        """
+        Take all module ``global`` method call variables and gives this method access to them.
+        """
+        for module_method_call in self.module.module_method_calls:
+
+            items = module_method_call.items
 
             self.bp.code = items + self.bp.code
 
@@ -272,6 +332,7 @@ class Method():
 
         current_loop_token = None
 
+        total_lines = 0
         for i, (op, arg) in enumerate(self.code):
 
             # print("[%s] %s  ->  %s " % (i, op, arg))
@@ -279,6 +340,7 @@ class Method():
             if type(op) is SetLinenoType:
 
                 current_line_no = arg
+                total_lines += 1
 
                 if self.start_line_no is None:
                     self.start_line_no = current_line_no
@@ -294,14 +356,17 @@ class Method():
                 current_label = op
 
             else:
-
+                instance_type = None
                 if op in [pyop.STORE_FAST, pyop.STORE_NAME, pyop.STORE_GLOBAL] and arg not in self.local_stores.keys():
+
+                    self._check_for_type(arg, total_lines)
                     length = len(self.local_stores)
                     self.local_stores[arg] = length
 
                 token = PyToken(op, current_line_no, i, arg)
 
                 if op == pyop.SETUP_LOOP:
+                    token.args = None
                     current_loop_token = token
 
                 if op == pyop.BREAK_LOOP and current_loop_token is not None:
@@ -330,6 +395,7 @@ class Method():
             # if it is a return block
             # we need to insert a jmp at the start of the block
             # for the vm
+
             if block.is_return:
 
                 # this jump needs to jump 3 bytes.  why? stay tuned to find out
@@ -337,24 +403,17 @@ class Method():
 
                 ret_token = PyToken(Opcode(pyop.BR_S),
                                     block.line, args=block_addr)
+
                 ret_token.jump_label = block.oplist[0].jump_label
                 block.oplist[0].jump_label = None
                 block.oplist.insert(0, ret_token)
                 block.mark_as_end()
-#                length = len(self.local_stores)
-#                self.local_stores[block.local_return_name] = length
 
             if block.has_load_attr:
                 block.preprocess_load_attr(self)
 
-            if block.is_list_comprehension:
-                block.preprocess_list_comprehension(self)
-                for localvar in block.list_comp_iterable_local_vars:
-                    if localvar in self.local_stores.keys():
-                        pass
-                    else:
-                        length = len(self.local_stores)
-                        self.local_stores[localvar] = length
+            if block.has_store_attr:
+                block.preprocess_store_attr(self)
 
             if block.has_make_function:
                 block.preprocess_make_function(self)
@@ -367,7 +426,9 @@ class Method():
                 block.preprocess_array_subs()
 
             if block.has_unprocessed_method_calls:
-                block.preprocess_method_calls(self)
+                ivars = block.preprocess_method_calls(self)
+                for key, val in ivars.items():
+                    self.instance_vars[key] = val
 
             if block.has_slice:
                 block.preprocess_slice()
@@ -379,10 +440,9 @@ class Method():
                 block.process_iter_body(iter_setup_block)
                 iter_setup_block = None
 
-            if block.is_iter and not block.is_list_comprehension:
+            if block.is_iter:
                 block.preprocess_iter()
                 for localvar in block.iterable_local_vars:
-
                     if localvar in self.local_stores.keys():
                         pass
                     else:
@@ -391,14 +451,17 @@ class Method():
                 iter_setup_block = block
                 self.dynamic_iterator_count += 1
 
+
+#            print("ADDED BLOCK %s " % [str(op) for op in block.oplist])
+
         alltokens = []
 
         for block in self.blocks:
             if block.has_make_function:
-                if block.is_list_comprehension:
-                    alltokens = alltokens + block.oplist
+                pass
             else:
                 alltokens = alltokens + block.oplist
+
         self.tokens = alltokens
 
         for index, token in enumerate(self.tokens):
@@ -412,7 +475,7 @@ class Method():
         self.tokenizer.update_method_begin_items()
         prevtoken = None
         for t in self.tokens:
-            t.to_vm(self.tokenizer, prevtoken)
+            tkn = t.to_vm(self.tokenizer, prevtoken)
             prevtoken = t
 
     def convert_jumps(self):
@@ -449,3 +512,90 @@ class Method():
 
         out = self.tokenizer.to_b()
         return out
+
+    def lookup_type(self, typename):
+        klass = None
+
+        all_modules = [self.module] + self.module.loaded_modules
+
+        for module in all_modules:
+            for cls in module.classes:
+                if cls.name == typename:
+                    klass = cls
+
+        return klass
+
+    def _build_args(self):
+
+        self._args = self.bp.args
+
+        try:
+            code = self.bp.to_code()
+        except Exception as e:
+            # print("COUld not convert to code %s " % e)
+            return
+
+        indexcount = 0
+        a = None
+
+        # we need to iterate until we get past any @decorators
+        while a is None:
+            m = inspect.getsourcelines(code)[0][indexcount].strip()
+            if '@' in m:
+                indexcount += 1
+            else:
+                a = m
+
+        # try to read the params.  this will break on methods that are defined over multiple lines
+        try:
+            params = a[a.index("(") + 1:a.rindex(")")].split(',')
+        except Exception as e:
+            print("Error reading method argument types.  Please define methods on one line")
+            raise e
+
+        # look for an annotation of the return type
+        # if it is str or int or a built in, we don't save the rtype ( for now )
+        try:
+            rtype_str = a[a.index("->") + 2:a.rindex(":")].strip()
+            self._return_type = self.lookup_type(rtype_str)
+        except Exception as e:
+            pass
+
+        for p in params:
+            param = [item.strip() for item in p.split(':')]
+
+            if len(param) > 1:
+
+                instance_type_name = param[1]
+
+                klass = self.lookup_type(instance_type_name)
+                if klass:
+                    self.instance_vars[param[0]] = klass
+
+        self._args = self.bp.args
+
+    def _check_for_type(self, argname, index):
+
+        try:
+            code = self.bp.to_code()
+        except Exception as e:
+            # print("Could not lookup type %s " % e)
+            return
+
+        lines = inspect.getsourcelines(code)[0]
+
+        real_lines = []
+        for l in lines:
+            line = l.strip()
+            if len(line) > 0:
+                if line[0] not in ['#', '@']:
+                    real_lines.append(line)
+
+        item = real_lines[index]
+
+        # look for a type annotation
+        if ' # type:' in item:
+            type_annotation = item.split(' # type:')[-1].strip()
+            klass = self.lookup_type(type_annotation)
+            if klass:
+                self.instance_vars[argname] = klass

@@ -8,25 +8,16 @@ def Main():
     """
     count = 0
 
-    for i in range(0, 5):
-        count = count + i
-        count += awesome()
-        count += not_so_awesome()
+    r = range(0, 4)
+
+    for i in range(0, 4):
+        count += wah(i, count)
+#        h = wah()
+#        print(count)
 
     return count
 
 
-def awesome():
-    """
+def wah(i, count):
 
-    :return:
-    """
-    return 2
-
-
-def not_so_awesome():
-    """
-
-    :return:
-    """
-    return -1
+    return count + 1 * i

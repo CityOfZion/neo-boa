@@ -101,9 +101,10 @@ class Compiler():
             Compiler.load_and_save('path/to/your/file.py')
         """
 
+        print("LOADING AND SAVING! %s " % path)
+
         compiler = Compiler.load(path)
         data = compiler.write()
-
         if output_path is None:
             fullpath = os.path.realpath(path)
             path, filename = os.path.split(fullpath)

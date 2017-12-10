@@ -2,6 +2,7 @@
 from byteplay3 import Opcode, Label
 from boa.code.pytoken import PyToken
 from boa.code import pyop
+from boa.code.vmtoken import NEO_SC_FRAMEWORK
 import pdb
 
 
@@ -23,11 +24,6 @@ class Block():
     iterable_looplength = None
     iterable_item_name = None
 
-    list_comp_iterable_variable = None
-    list_comp_iterable_loopcounter = None
-    list_comp_iterable_looplength = None
-    list_comp_iterable_item_name = None
-
     slice_item_length = None
 
     has_dynamic_iterator = False
@@ -42,11 +38,6 @@ class Block():
         self.iterable_loopcounter = None
         self.iterable_looplength = None
         self.iterable_item_name = None
-
-        self.list_comp_iterable_variable = None
-        self.list_comp_iterable_loopcounter = None
-        self.list_comp_iterable_looplength = None
-        self.list_comp_iterable_item_name = None
 
         self.has_dynamic_iterator = False
 
@@ -77,13 +68,32 @@ class Block():
         return None
 
     @property
+    def has_store_fast(self):
+        for token in self.oplist:
+            if token.py_op == pyop.STORE_FAST:
+                return True
+        return False
+
+    @property
     def has_load_attr(self):
         """
 
         :return:
         """
         for token in self.oplist:
-            if token.py_op == pyop.LOAD_ATTR:
+            if token.py_op == pyop.LOAD_ATTR and token.instance_type is None:
+                return True
+        return False
+
+    @property
+    def has_store_attr(self):
+        """
+
+        Returns:
+            bool
+        """
+        for token in self.oplist:
+            if token.py_op == pyop.STORE_ATTR:
                 return True
         return False
 
@@ -147,28 +157,11 @@ class Block():
         ]
 
     @property
-    def list_comp_iterable_local_vars(self):
-        """
-
-        :return:
-        """
-        return [
-            self.list_comp_iterable_looplength,
-            self.list_comp_iterable_loopcounter,
-            self.list_comp_iterable_item_name,
-            self.list_comp_iterable_variable,
-        ]
-
-    @property
     def has_unprocessed_method_calls(self):
         """
 
         :return:
         """
-#        if self.has_slice:
-#            return False
-#        if self.is_list_comprehension:
-#            return False
         for token in self.oplist:
             if token.py_op == pyop.CALL_FUNCTION and not token.func_processed:
                 return True
@@ -196,48 +189,117 @@ class Block():
                 return True
         return False
 
-    @property
-    def is_list_comprehension(self):
-        """
+    def preprocess_store_attr(self, method):
 
-        :return:
-        """
-        if self.has_make_function:
-            for token in self.oplist:
-                if token.py_op == pyop.GET_ITER:
-                    return True
-        if self.list_comp_iterable_variable:
-            return True
-        return False
+        for index, token in enumerate(self.oplist):
+            if token.py_op == pyop.STORE_ATTR:
+                to_store_into = self.oplist[index - 1].args
+
+                if to_store_into == 'self':
+                    ivar_type = method.parent
+                    token.instance_type = ivar_type
+                else:
+                    try:
+                        ivar_type = method.instance_vars[to_store_into]
+                        token.instance_type = ivar_type
+                        token.instance_name = to_store_into
+                    except Exception as e:
+                        print("Couldnt load instance variable: %s %s " % (to_store_into, e))
 
     def preprocess_load_attr(self, method):
         """
 
         :param method:
         """
+
         while self.has_load_attr:
 
-            index_to_rep = -1
-            new_call = None
-
+            to_rep = {}
+            to_del = []
+            really_to_del = []
             for index, token in enumerate(self.oplist):
 
+                index_to_rep = -1
+                new_call = None
+
                 if token.py_op == pyop.LOAD_ATTR:
+                    from boa.code.items import Klass
 
-                    what_to_load = 'Get%s' % token.args
+                    to_load_from = self.oplist[index - 1]
+                    varname = to_load_from.args
+                    ivar_type = None
+                    is_func_call = True
+                    do_nothing = False
+                    if varname in method.instance_vars.keys():
+                        ivar_type = method.instance_vars[varname]
 
-                    call_func = PyToken(
-                        Opcode(pyop.CALL_FUNCTION), lineno=self.line, index=-1, args=what_to_load)
-                    call_func.func_processed = True
-                    call_func.func_name = what_to_load
-                    call_func.func_params = [self.oplist[index - 1]]
+                        test_sysmodule = '%s.Get%s' % (ivar_type.module.module_path, token.args)
 
-                    index_to_rep = index
-                    new_call = call_func
+                        if NEO_SC_FRAMEWORK in test_sysmodule:
+                            what_to_load = 'Get%s' % token.args
 
-            if index_to_rep > -1 and new_call is not None:
-                self.oplist[index_to_rep] = new_call
-                del self.oplist[index_to_rep - 1]
+                        else:
+                            what_to_load = '%s.%s' % (ivar_type.name, token.args)
+                            token.instance_type = ivar_type
+
+                            # if this is a class variable lookup, do this
+                            if token.args in ivar_type.class_var_names:
+                                is_func_call = False
+                                what_to_load = token.args
+
+                            # otherwise, it is a method call on an object, we don't want to do anything
+                            else:
+                                token.func_params = [self.oplist[index - 1]]
+                                do_nothing = True
+
+                    elif varname == 'self' and type(method.parent) is Klass:
+                        ivar_type = method.parent
+
+                        what_to_load = '%s.%s' % (str(ivar_type), token.args)
+                        if token.args in ivar_type.class_var_names:
+                            is_func_call = False
+                            what_to_load = token.args
+
+                    else:
+                        what_to_load = 'Get%s' % token.args
+
+                    if not do_nothing:
+                        if is_func_call:
+                            call_func = PyToken(
+                                Opcode(pyop.CALL_FUNCTION), lineno=self.line, index=-1, args=what_to_load)
+                            call_func.instance_type = ivar_type
+                            call_func.func_processed = True
+                            call_func.func_name = what_to_load
+                            call_func.func_params = [self.oplist[index - 1]]
+                            index_to_rep = index
+                            new_call = call_func
+
+                        else:
+                            new_call = PyToken(Opcode(pyop.LOAD_CLASS_ATTR), lineno=self.line, args=what_to_load)
+                            new_call.instance_type = ivar_type
+                            new_call.instance_name = varname
+                            new_call.func_processed = True
+                            index_to_rep = index
+
+                    if index_to_rep > 0:
+                        to_rep[index_to_rep] = new_call
+                        to_del.append(self.oplist[index_to_rep - 1])
+
+            for key, val in to_rep.items():
+                self.oplist[key] = val
+
+            for item in to_del:
+                #                print("WILL DELET: %s %s" % (item, vars(item)))
+                if item in self.oplist:
+                    self.oplist.remove(item)
+                else:
+                    pdb.set_trace()
+
+#        print("oplist: %s " % [str(op) for op in self.oplist])
+        # pdb.set_trace()
+
+    def preprocess_load_class(self, method):
+        print("PREPROCESS LOAD BUilD CLASS: %s %s " % (method, method.name))
 
     def preprocess_make_function(self, method):
         """
@@ -451,22 +513,57 @@ class Block():
 
         ] + self.oplist
 
+    def lookup_return_types(self, orig_method):
+        ivars = {}
+        klass_type = None
+        return_type = None
+        for index, token in enumerate(self.oplist):
+            if token.py_op == pyop.CALL_FUNCTION:
+                param_count = token.args
+
+                # why would param count be 256 when calling w/ kwargs?
+                # when keyword args are sent, the param count is 256 * num paramms?
+                if param_count % 256 == 0:
+                    param_count = 2 * int(param_count / 256)
+
+#                params = self.oplist[index - param_count:index]
+
+                call_method_op = self.oplist[index - param_count - 1]
+                call_method_name = call_method_op.args
+
+                for method in orig_method.module.methods:
+                    if method.name == call_method_name and method.return_type is not None:
+                        klass_type = method.return_type
+
+            if token.py_op == pyop.STORE_FAST and klass_type is not None:
+                ivars[token.args] = klass_type
+                klass_type = None
+
+        return ivars
+
     def preprocess_method_calls(self, orig_method):
         """
 
         :param orig_method:
         """
+
+        ivars = {}
+
+        alreadythere = False
+
         while self.has_unprocessed_method_calls:
             start_index_change = None
             end_index_change = None
             changed_items = None
 
+            klass = None
+
             for index, token in enumerate(self.oplist):
-                #                print("TOKEN::: %s %s " % (token.jump_label, token.args))
 
                 if token.py_op == pyop.CALL_FUNCTION and not token.func_processed:
 
                     token.func_processed = True
+
                     param_count = token.args
 
                     # why would param count be 256 when calling w/ kwargs?
@@ -477,18 +574,51 @@ class Block():
                     params = self.oplist[index - param_count:index]
 
                     call_method_op = self.oplist[index - param_count - 1]
-
                     call_method_type = call_method_op.py_op
                     call_method_name = call_method_op.args
 
+                    if call_method_op.instance_type:
+
+                        # the call_method_op has a referecnce to the instance being called
+                        # as the only item in the func_params ( this is python's self object )
+                        # we will create a new param array by adding that one to the beginning of the method params
+
+                        #                        print("PARAMS: %s "% params)
+                        #                        print("COLL METHEHOD: %s "% call_method_op)
+                        #                        print("call method name %s " % call_method_op.args)
+                        #                        print("call method op func params: %s "% call_method_op.func_params)
+
+                        #                        if call_method_name == 'owner':
+                        #                            pdb.set_trace()
+
+                        params = call_method_op.func_params + params
+
+                        token.args = len(params)
+                        param_count = token.args
+                        if call_method_op.instance_type.name in call_method_op.args:
+                            call_method_name = call_method_op.args
+                            alreadythere = True
+
+                        else:
+                            call_method_name = "%s.%s" % (call_method_op.instance_type.name, call_method_op.args)
+
                     # we need to check if this is a method
                     # that is local to this block's method
-                    for key, value in orig_method.local_methods.items():
-                        if key == call_method_name:
-                            call_method_name = value
+                    if orig_method:
+                        for key, value in orig_method.local_methods.items():
+                            if key == call_method_name:
+                                call_method_name = value
 
                     token.func_name = call_method_name
                     token.func_type = call_method_type
+
+                    # check to see if this method call creates an instance of another object
+                    if orig_method:
+                        klass = orig_method.lookup_type(token.func_name)
+
+                    if klass:
+                        ivar_iname = self.oplist[2].args
+                        ivars[ivar_iname] = klass
 
                     # if this method is the target of a jump
                     # or if one of its parameters is the target of a jump
@@ -501,7 +631,6 @@ class Block():
                             token.jump_label = call_method_op.jump_label
 
                     token.func_params = params
-
                     changed_items = [token]
 
                     start_index_change = index - param_count - 1
@@ -511,6 +640,15 @@ class Block():
                 tstart = self.oplist[0:start_index_change]
                 tend = self.oplist[end_index_change + 1:]
                 self.oplist = tstart + changed_items + tend
+
+        if alreadythere:
+            #            pdb.set_trace()
+
+            if self.oplist[-1].py_op == pyop.STORE_FAST:
+                print("Trimming load self method")
+                self.oplist = self.oplist[-2:]
+
+        return ivars
 
     def preprocess_array_subs(self):
         """
@@ -585,242 +723,3 @@ class Block():
                     PyToken(Opcode(pyop.DROP), self.line)]
 
         self.oplist = tstart + newitems + tend
-
-    def preprocess_list_comprehension(self, method):
-
-        # i apologize for the following
-
-        # grab the list comprehestion code object and make a method out of it
-        # we will use it later
-        """
-
-        :param method:
-        """
-        code_obj = self.oplist[0].args
-
-        # now get rid of the first 3 ops for now
-        self.oplist = self.oplist[3:]
-
-        # setup a loop for the list comp
-        setup_loop = PyToken(op=Opcode(pyop.SETUP_LOOP),
-                             lineno=self.line, index=-1)
-
-        # first we need to create a loop counter variable
-        self.list_comp_iterable_loopcounter = 'list_comp_loop_counter_%s' % Block.forloop_counter
-
-        # load the value 0
-        loopcounter_start_ld_const = PyToken(
-            op=Opcode(pyop.LOAD_CONST), lineno=self.line, index=-1, args=0)
-        # now store the loop counter
-        loopcounter_store_fast = PyToken(op=Opcode(pyop.STORE_FAST), lineno=self.line, index=-1,
-                                         args=self.list_comp_iterable_loopcounter)
-
-        # this loads the list that is going to be iterated over ( LOAD_FAST )
-        # this will be removed... its added into the call get length token function params
-        # unless this is a dynamic iteration, like for x in range(x,y)
-
-        iterable_load = self.oplist[0]
-
-        self.list_comp_iterable_item_name = iterable_load.args
-
-        # the following is in the case that we're doing something like for i in range(x,y)
-        dynamic_iterable_items = []
-        if iterable_load.py_op == pyop.CALL_FUNCTION:
-            self.has_dynamic_iterator = True
-            self.iterable_item_name = 'forloop_dynamic_range_%s' % Block.forloop_counter
-            dynamic_iterator_store_fast = PyToken(op=Opcode(pyop.STORE_FAST), lineno=self.line, index=-1,
-                                                  args=self.iterable_item_name)
-            # if we're calling a method in this for i in, like for i in range(x,y) then we need
-            # to call the function
-            dynamic_iterable_items = [
-                iterable_load, dynamic_iterator_store_fast]
-
-        # Now we need to get the length of that list, and store that as a local variable
-        call_get_length_token = PyToken(
-            op=Opcode(pyop.CALL_FUNCTION), lineno=self.line, args=1)
-        call_get_length_token.func_processed = True
-        call_get_length_token.func_params = [iterable_load]
-        call_get_length_token.func_name = 'len'
-
-        # now we need a variable name to store the length of the array
-        self.list_comp_iterable_looplength = 'list_comp_loop_length_%s' % Block.forloop_counter
-
-        # now store the variable which is the output of the len(items) call
-        looplength_store_op = PyToken(op=Opcode(pyop.STORE_FAST), lineno=self.line, index=-1,
-                                      args=self.list_comp_iterable_looplength)
-
-        get_iter = self.oplist[1]
-
-        for_iter_label = Label()
-        jmp_if_false_label = Label()
-
-        for_iter = PyToken(op=Opcode(pyop.FOR_ITER),
-                           lineno=self.line, index=-1)
-        for_iter.jump_label = for_iter_label
-
-        end_block = PyToken(op=Opcode(pyop.POP_BLOCK),
-                            lineno=self.line, index=-1)
-        end_block.jump_label = jmp_if_false_label
-
-        jmp_abs_back = PyToken(op=Opcode(pyop.JUMP_ABSOLUTE),
-                               lineno=self.line, index=-1, args=for_iter_label)
-
-        self.list_comp_iterable_variable = 'list_comp_local_i_%s' % Block.forloop_counter
-
-        ld_loopcounter = PyToken(op=Opcode(pyop.LOAD_FAST), lineno=self.line, index=-1,
-                                 args=self.list_comp_iterable_loopcounter)
-
-        ld_loop_length = PyToken(op=Opcode(pyop.LOAD_FAST), lineno=self.line, index=-1,
-                                 args=self.list_comp_iterable_looplength)
-
-        new__compare_op = PyToken(
-            op=Opcode(pyop.COMPARE_OP), lineno=self.line, index=-1, args='<')
-        new__popjump_op = PyToken(op=Opcode(pyop.POP_JUMP_IF_FALSE), lineno=self.line, index=-1,
-                                  args=jmp_if_false_label)
-
-        # ok now we do the loop block stuff here
-
-        #
-        # the following loads the iterated item into the block
-        #
-
-        # load the iterable collection
-        ld_load_iterable = PyToken(op=Opcode(pyop.LOAD_FAST), lineno=self.line, index=-1,
-                                   args=self.list_comp_iterable_item_name)
-
-        # load the counter var
-        ld_counter = PyToken(op=Opcode(pyop.LOAD_FAST), lineno=self.line, index=-1,
-                             args=self.list_comp_iterable_loopcounter)
-
-        # binary subscript of the iterable collection
-        ld_subscript = PyToken(
-            op=Opcode(pyop.BINARY_SUBSCR), lineno=self.line, index=-1)
-
-        # now store the iterated item
-        st_iterable = PyToken(op=Opcode(pyop.STORE_FAST), lineno=self.line, index=-1,
-                              args=self.list_comp_iterable_variable)
-
-        #
-        # the following load the forloop counter and increments it
-        #
-
-        # load the counter var
-        ld_counter_2 = PyToken(op=Opcode(pyop.LOAD_FAST), lineno=self.line, index=-1,
-                               args=self.list_comp_iterable_loopcounter)
-        # load the constant 1
-        increment_const = PyToken(
-            op=Opcode(pyop.LOAD_CONST), lineno=self.line, index=-1, args=1)
-        # add it to the counter
-        increment_add = PyToken(
-            op=Opcode(pyop.INPLACE_ADD), lineno=self.line, index=-1)
-        increment_add.func_processed = True
-        # and store it again
-        increment_store = PyToken(op=Opcode(pyop.STORE_FAST), lineno=self.line, index=-1,
-                                  args=self.list_comp_iterable_loopcounter)
-
-        # and now we call the function of the list-comprehension
-
-        list_comp_call_func = PyToken(
-            op=Opcode(pyop.CALL_FUNCTION), lineno=self.line, index=-1, args=1)
-        list_comp_call_func.func_name = self.local_func_name
-        list_comp_call_func.func_params = [self.list_comp_iterable_variable]
-
-        self.oplist = [
-            setup_loop,  # SETUP_LOOP
-
-            get_iter,  # GET_ITER, keep this in for now
-
-
-            # the following 4 ops set up the iterator
-
-            loopcounter_start_ld_const,  # LOAD_CONST 0
-            loopcounter_store_fast,  # STORE_FAST forloopcounter_X
-
-            # dynamic load loop stuff would go here
-
-
-
-            call_get_length_token,  # CALL_FUNCTION 1
-
-            looplength_store_op,  # STORE_FAST forloop_length_X
-
-
-            # these last 5 ops controls the operation of the loop
-
-            for_iter,  # tihs is the jump target for the end of the loop execution block
-
-            ld_loopcounter,  # load in the loop counter LOAD_FAST forloopcounter_X
-
-            ld_loop_length,  # load in the loop length LOAD_FAST forloop_length_X
-
-            new__compare_op,  # COMPARE_OP <, this will compare foorloop_counter_X < forloop_length_X
-
-            new__popjump_op,  # POP_JUMP_IF_FALSE jumps to the loop exit when counter == length
-
-            # the following are the loop body items
-            ld_load_iterable,
-
-            ld_counter,
-
-            ld_subscript,
-
-            st_iterable,
-
-            ld_counter_2,
-
-            increment_const,
-
-            increment_add,  # this is a hack... when the list_comp_call_func is processed, it
-            # takes out a few things from the block
-            # so we add it in twice (blerg...) so it gets put back in
-            increment_store,
-
-            # put call method of the list comp here...
-
-
-            # now pop back to for_iter
-            jmp_abs_back,
-
-            end_block,
-        ]
-
-#        from boa.code.method import Method
-#        internal_method = Method(code_object=code_obj,
-#                                 parent=method.parent,
-#                                 make_func_name=self.local_func_name,
-#                                 is_list_comp_internal=True,
-#                                 list_comp_iterable_name=self.list_comp_iterable_variable)
-
-
-#        internal_ops = internal_method.blocks[0].oplist
-#        print("internal ops %s " % internal_ops)
-#        print(internal_method.tokenizer.to_s())
-#        self.oplist = self.oplist[:-2] + internal_ops + self.oplist[-2:]
-#        if len(dynamic_iterable_items):
-#            self.oplist.insert(4, dynamic_iterable_items[0])
-#            self.oplist.insert(5, dynamic_iterable_items[1])
-
-        Block.forloop_counter += 1
-
-    def process_list_comp_internal(self, list_comp_item_name):
-        # get rid of first op
-        """
-
-        :param list_comp_item_name:
-        """
-        if self.oplist[0].py_op == pyop.STORE_FAST:
-
-            argname = self.oplist[0].args
-
-            self.oplist[0] = PyToken(
-                op=Opcode(pyop.LOAD_FAST), lineno=self.line, index=0, args=list_comp_item_name)
-
-            method_call = self.oplist[1]
-
-            for op in method_call.func_params:
-                if op.args == argname:
-                    op.args = list_comp_item_name
-
-            self.oplist = self.oplist[0:-3]
-
-#        pdb.set_trace()
