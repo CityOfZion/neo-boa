@@ -128,8 +128,6 @@ NEWARRAY = b'\xC5'  # 用作引用類型
 NEWSTRUCT = b'\xC6'  # 用作值類型
 
 
-DYNAMICCALL = b'\xFA'
-
 DEBUGOP = b'\xFB'
 
 # the following is a convienience method

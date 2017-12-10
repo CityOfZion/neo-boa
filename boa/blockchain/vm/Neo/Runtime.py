@@ -29,3 +29,20 @@ def Notify(arg):
     :param arg:
     """
     pass
+
+
+def GetCurrentBlock():
+    """
+
+    Returns: Block
+
+    """
+    pass
+
+
+def GetTime():
+    """
+    returns timestamp of most recent block
+
+    """
+    pass

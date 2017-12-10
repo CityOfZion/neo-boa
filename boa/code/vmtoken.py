@@ -927,7 +927,7 @@ class VMTokenizer():
 
             # push the contract hash
             vmtoken = self.convert1(
-                VMOp.DYNAMICCALL, py_token=pytoken)
+                VMOp.APPCALL, py_token=pytoken, data=bytearray(20))
 
             self.insert1(VMOp.NOP)
             return vmtoken

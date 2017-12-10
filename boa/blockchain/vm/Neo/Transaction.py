@@ -49,6 +49,10 @@ class Transaction():
         """
         return GetReferences(self)
 
+    @property
+    def UnspentCoins(self):
+        return GetUnspentCoins(self)
+
 
 def GetHash(transaction):
     """
@@ -94,5 +98,17 @@ def GetReferences(transaction):
     """
 
     :param transaction:
+    """
+    pass
+
+
+def GetUnspentCoins(transaction):
+    """
+
+    Args:
+        transaction:
+
+    Returns:
+
     """
     pass

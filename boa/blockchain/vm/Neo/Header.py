@@ -6,6 +6,10 @@ class Header():
         return GetHash(self)
 
     @property
+    def Index(self):
+        return GetIndex(self)
+
+    @property
     def Hash(self):
         """
 
@@ -60,6 +64,18 @@ class Header():
         :return:
         """
         return GetNextConsensus(self)
+
+
+def GetIndex(header: Header) -> int:
+    """
+    Returns the height/index of a header
+    Args:
+        header:
+
+    Returns: int
+
+    """
+    pass
 
 
 def GetHash(header: Header) -> bytearray:
