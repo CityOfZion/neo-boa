@@ -456,6 +456,7 @@ class Method():
 
         alltokens = []
 
+
         for block in self.blocks:
             if block.has_make_function:
                 pass

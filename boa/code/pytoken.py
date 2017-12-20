@@ -9,7 +9,7 @@ from boa.blockchain.vm import VMOp
 import pdb
 import inspect
 
-NON_RETURN_SYS_CALLS = ['Notify', 'print', 'Log', 'Put', 'Register',
+NON_RETURN_SYS_CALLS = ['Notify', 'print', 'Log', 'Put', 'Register', 'reverse',
                         'Delete', 'SetVotes', 'ContractDestroy',
                         'MerkleRoot', 'Hash', 'PrevHash', 'GetHeader', ]
 

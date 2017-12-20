@@ -261,7 +261,11 @@ class Block():
                             what_to_load = token.args
 
                     else:
-                        what_to_load = 'Get%s' % token.args
+                        if token.args != 'reverse':
+                            what_to_load = 'Get%s' % token.args
+                        else:
+                            what_to_load = 'reverse'
+
 
                     if not do_nothing:
                         if is_func_call:
@@ -273,7 +277,6 @@ class Block():
                             call_func.func_params = [self.oplist[index - 1]]
                             index_to_rep = index
                             new_call = call_func
-
                         else:
                             new_call = PyToken(Opcode(pyop.LOAD_CLASS_ATTR), lineno=self.line, args=what_to_load)
                             new_call.instance_type = ivar_type
@@ -295,11 +298,12 @@ class Block():
                 else:
                     pdb.set_trace()
 
-#        print("oplist: %s " % [str(op) for op in self.oplist])
-        # pdb.set_trace()
+        #print("oplist: %s " % [str(op) for op in self.oplist])
+        #pdb.set_trace()
 
     def preprocess_load_class(self, method):
-        print("PREPROCESS LOAD BUilD CLASS: %s %s " % (method, method.name))
+#        print("PREPROCESS LOAD BUilD CLASS: %s %s " % (method, method.name))
+        pass
 
     def preprocess_make_function(self, method):
         """
@@ -550,18 +554,17 @@ class Block():
         ivars = {}
 
         alreadythere = False
+        delete_this_token = None
 
         while self.has_unprocessed_method_calls:
             start_index_change = None
             end_index_change = None
             changed_items = None
-
             klass = None
 
             for index, token in enumerate(self.oplist):
 
                 if token.py_op == pyop.CALL_FUNCTION and not token.func_processed:
-
                     token.func_processed = True
 
                     param_count = token.args
@@ -576,6 +579,10 @@ class Block():
                     call_method_op = self.oplist[index - param_count - 1]
                     call_method_type = call_method_op.py_op
                     call_method_name = call_method_op.args
+
+                    if call_method_name == 'reverse':
+                        delete_this_token = token
+                        continue
 
                     if call_method_op.instance_type:
 
@@ -645,8 +652,10 @@ class Block():
             #            pdb.set_trace()
 
             if self.oplist[-1].py_op == pyop.STORE_FAST:
-                print("Trimming load self method")
                 self.oplist = self.oplist[-2:]
+
+        if delete_this_token:
+            self.oplist.remove(delete_this_token)
 
         return ivars
 

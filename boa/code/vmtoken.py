@@ -653,6 +653,7 @@ class VMTokenizer():
         :return:
         """
 
+
         if pytoken.func_name == 'list':
             return self.convert_built_in_list(pytoken)
         elif pytoken.func_name == 'bytearray':
@@ -706,6 +707,7 @@ class VMTokenizer():
             if fname == m.name:
                 full_name = m.full_name
 
+
         # operational call like len(items) or abs(value)
         if self.is_op_call(fname):
             vmtoken = self.convert_op_call(fname, pytoken)
@@ -746,7 +748,7 @@ class VMTokenizer():
         :param op:
         :return:
         """
-        if op in ['len', 'abs', 'min', 'max', 'concat', 'take', 'substr',
+        if op in ['len', 'abs', 'min', 'max', 'concat', 'take', 'substr','reverse',
                   'sha1', 'sha256', 'hash160', 'hash256',
                   'verify_signature', 'verify_signatures']:
             return True
@@ -785,6 +787,9 @@ class VMTokenizer():
             return self.convert1(VMOp.CHECKSIG, pytoken)
         elif op == 'verify_signatures':
             return self.convert1(VMOp.CHECKMULTISIG, pytoken)
+        elif op == 'reverse':
+            return self.convert1(VMOp.REVERSE, pytoken)
+
         return None
 
     def is_sys_call(self, op):
@@ -820,7 +825,7 @@ class VMTokenizer():
         :return:
         """
         if op in ['zip', 'type', 'tuple', 'super', 'str', 'slice',
-                  'set', 'reversed', 'property', 'memoryview',
+                  'set', 'reversed','property', 'memoryview',
                   'map', 'list', 'frozenset', 'float', 'filter',
                   'enumerate', 'dict', 'divmod', 'complex', 'bytes', 'bytearray', 'bool',
                   'int', 'vars', 'sum', 'sorted', 'round', 'setattr', 'getattr',
@@ -847,6 +852,7 @@ class VMTokenizer():
             vmtoken = self.convert1(VMOp.SYSCALL, pytoken, data=ba)
             self.insert1(VMOp.NOP)
             return vmtoken
+
 
         raise NotImplementedError(
             "[Compilation error] Built in %s is not implemented" % op)
