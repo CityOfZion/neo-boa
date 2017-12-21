@@ -1,5 +1,6 @@
 from boa.blockchain.vm.Neo.Runtime import Notify
 
+
 def Main():
 
     # lets have fun
@@ -10,14 +11,12 @@ def Main():
 
     :return:
     """
-    m = [1,2,4,'blah']
+    m = [1, 2, 4, 'blah']
 
     m.reverse()
 
-
-
     Notify(m)
 
-#    answer = j[0]
+    m.reverse()
 
     return m[0]

@@ -653,7 +653,6 @@ class VMTokenizer():
         :return:
         """
 
-
         if pytoken.func_name == 'list':
             return self.convert_built_in_list(pytoken)
         elif pytoken.func_name == 'bytearray':
@@ -707,7 +706,6 @@ class VMTokenizer():
             if fname == m.name:
                 full_name = m.full_name
 
-
         # operational call like len(items) or abs(value)
         if self.is_op_call(fname):
             vmtoken = self.convert_op_call(fname, pytoken)
@@ -748,7 +746,8 @@ class VMTokenizer():
         :param op:
         :return:
         """
-        if op in ['len', 'abs', 'min', 'max', 'concat', 'take', 'substr','reverse',
+        if op in ['len', 'abs', 'min', 'max', 'concat', 'take', 'substr',
+                  'reverse', 'append',
                   'sha1', 'sha256', 'hash160', 'hash256',
                   'verify_signature', 'verify_signatures']:
             return True
@@ -789,6 +788,9 @@ class VMTokenizer():
             return self.convert1(VMOp.CHECKMULTISIG, pytoken)
         elif op == 'reverse':
             return self.convert1(VMOp.REVERSE, pytoken)
+        elif op == 'append':
+            #            pdb.set_trace()
+            return self.convert1(VMOp.APPEND, pytoken)
 
         return None
 
@@ -825,7 +827,7 @@ class VMTokenizer():
         :return:
         """
         if op in ['zip', 'type', 'tuple', 'super', 'str', 'slice',
-                  'set', 'reversed','property', 'memoryview',
+                  'set', 'reversed', 'property', 'memoryview',
                   'map', 'list', 'frozenset', 'float', 'filter',
                   'enumerate', 'dict', 'divmod', 'complex', 'bytes', 'bytearray', 'bool',
                   'int', 'vars', 'sum', 'sorted', 'round', 'setattr', 'getattr',
@@ -853,6 +855,9 @@ class VMTokenizer():
             self.insert1(VMOp.NOP)
             return vmtoken
 
+        elif op == 'reversed':
+            raise NotImplementedError(
+                "[Compilation error] Built in %s is not implemented. Use array.reverse() instead." % op)
 
         raise NotImplementedError(
             "[Compilation error] Built in %s is not implemented" % op)
