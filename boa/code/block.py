@@ -190,13 +190,6 @@ class Block():
                 return True
         return False
 
-    @property
-    def has_array_append(self):
-        for token in self.oplist:
-            if token.py_op == pyop.LOAD_ATTR and token.instance_type is None and token.args == 'append':
-                return True
-        return False
-
     def preprocess_store_attr(self, method):
 
         for index, token in enumerate(self.oplist):
@@ -269,7 +262,7 @@ class Block():
                             what_to_load = token.args
 
                     else:
-                        what_to_load = token.args
+                        what_to_load = 'Get%s' % token.args
 
                     if not do_nothing:
                         if is_func_call:
