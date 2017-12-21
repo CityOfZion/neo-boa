@@ -82,7 +82,8 @@ class Block():
         """
         for token in self.oplist:
             if token.py_op == pyop.LOAD_ATTR and token.instance_type is None:
-                return True
+                if token.args not in ['reverse', 'append', ]:
+                    return True
         return False
 
     @property
@@ -216,7 +217,6 @@ class Block():
 
             to_rep = {}
             to_del = []
-            really_to_del = []
             for index, token in enumerate(self.oplist):
 
                 index_to_rep = -1
@@ -230,6 +230,7 @@ class Block():
                     ivar_type = None
                     is_func_call = True
                     do_nothing = False
+
                     if varname in method.instance_vars.keys():
                         ivar_type = method.instance_vars[varname]
 
@@ -289,17 +290,18 @@ class Block():
                 self.oplist[key] = val
 
             for item in to_del:
-                #                print("WILL DELET: %s %s" % (item, vars(item)))
+                # print("WILL DELET: %s %s %s" % (item, vars(item), item.args))
                 if item in self.oplist:
                     self.oplist.remove(item)
                 else:
                     pdb.set_trace()
 
-#        print("oplist: %s " % [str(op) for op in self.oplist])
+        # print("oplist: %s " % [str(op) for op in self.oplist])
         # pdb.set_trace()
 
     def preprocess_load_class(self, method):
-        print("PREPROCESS LOAD BUilD CLASS: %s %s " % (method, method.name))
+        # print("PREPROCESS LOAD BUilD CLASS: %s %s " % (method, method.name))
+        pass
 
     def preprocess_make_function(self, method):
         """
@@ -328,6 +330,7 @@ class Block():
 
         for index, token in enumerate(self.oplist):
             if token.py_op == pyop.BUILD_SLICE:
+
                 # first, we want to take out the BINARY_SUBSC op, since we wont need it
                 index_to_remove = index + 1
 
@@ -555,13 +558,11 @@ class Block():
             start_index_change = None
             end_index_change = None
             changed_items = None
-
             klass = None
 
             for index, token in enumerate(self.oplist):
 
                 if token.py_op == pyop.CALL_FUNCTION and not token.func_processed:
-
                     token.func_processed = True
 
                     param_count = token.args
@@ -642,10 +643,7 @@ class Block():
                 self.oplist = tstart + changed_items + tend
 
         if alreadythere:
-            #            pdb.set_trace()
-
             if self.oplist[-1].py_op == pyop.STORE_FAST:
-                print("Trimming load self method")
                 self.oplist = self.oplist[-2:]
 
         return ivars

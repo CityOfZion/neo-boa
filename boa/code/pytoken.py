@@ -10,6 +10,7 @@ import pdb
 import inspect
 
 NON_RETURN_SYS_CALLS = ['Notify', 'print', 'Log', 'Put', 'Register',
+                        'reverse', 'append',
                         'Delete', 'SetVotes', 'ContractDestroy',
                         'MerkleRoot', 'Hash', 'PrevHash', 'GetHeader', ]
 

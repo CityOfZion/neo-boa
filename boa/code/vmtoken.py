@@ -747,6 +747,7 @@ class VMTokenizer():
         :return:
         """
         if op in ['len', 'abs', 'min', 'max', 'concat', 'take', 'substr',
+                  'reverse', 'append',
                   'sha1', 'sha256', 'hash160', 'hash256',
                   'verify_signature', 'verify_signatures']:
             return True
@@ -785,6 +786,12 @@ class VMTokenizer():
             return self.convert1(VMOp.CHECKSIG, pytoken)
         elif op == 'verify_signatures':
             return self.convert1(VMOp.CHECKMULTISIG, pytoken)
+        elif op == 'reverse':
+            return self.convert1(VMOp.REVERSE, pytoken)
+        elif op == 'append':
+            #            pdb.set_trace()
+            return self.convert1(VMOp.APPEND, pytoken)
+
         return None
 
     def is_sys_call(self, op):
@@ -847,6 +854,10 @@ class VMTokenizer():
             vmtoken = self.convert1(VMOp.SYSCALL, pytoken, data=ba)
             self.insert1(VMOp.NOP)
             return vmtoken
+
+        elif op == 'reversed':
+            raise NotImplementedError(
+                "[Compilation error] Built in %s is not implemented. Use array.reverse() instead." % op)
 
         raise NotImplementedError(
             "[Compilation error] Built in %s is not implemented" % op)
