@@ -217,6 +217,8 @@ class Block():
 
             to_rep = {}
             to_del = []
+            is_sys_attr_lookup = False
+
             for index, token in enumerate(self.oplist):
 
                 index_to_rep = -1
@@ -238,7 +240,7 @@ class Block():
 
                         if NEO_SC_FRAMEWORK in test_sysmodule:
                             what_to_load = 'Get%s' % token.args
-
+                            is_sys_attr_lookup = True
                         else:
                             what_to_load = '%s.%s' % (ivar_type.name, token.args)
                             token.instance_type = ivar_type
@@ -263,6 +265,7 @@ class Block():
 
                     else:
                         what_to_load = 'Get%s' % token.args
+                        is_sys_attr_lookup = True
 
                     if not do_nothing:
                         if is_func_call:
@@ -272,6 +275,7 @@ class Block():
                             call_func.func_processed = True
                             call_func.func_name = what_to_load
                             call_func.func_params = [self.oplist[index - 1]]
+
                             index_to_rep = index
                             new_call = call_func
 
@@ -283,6 +287,12 @@ class Block():
                             index_to_rep = index
 
                     if index_to_rep > 0:
+
+                        td = self.oplist[index_to_rep - 1]
+#                        print("TO DELETE: %s %s %s " % (td.py_op, td.jump_label, td.args))
+                        if td.jump_label is not None and not is_sys_attr_lookup:
+                            new_call.jump_label = td.jump_label
+
                         to_rep[index_to_rep] = new_call
                         to_del.append(self.oplist[index_to_rep - 1])
 

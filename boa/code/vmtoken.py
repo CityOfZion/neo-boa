@@ -512,7 +512,7 @@ class VMTokenizer():
         index = pytoken.instance_type.index_of_varname(pytoken.args)
 
         self.convert_push_integer(index)
-        self.convert1(VMOp.PICKITEM, pytoken)
+        self.convert1(VMOp.PICKITEM, None)
 
     def convert_store_attr(self, pytoken):
 

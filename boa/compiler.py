@@ -79,7 +79,7 @@ class Compiler():
 
         module = self.default
         out_bytes = bytes(module.write())
-
+#        module.to_s()
         return out_bytes
 
     @staticmethod
@@ -100,8 +100,6 @@ class Compiler():
 
             Compiler.load_and_save('path/to/your/file.py')
         """
-
-        print("LOADING AND SAVING! %s " % path)
 
         compiler = Compiler.load(path)
         data = compiler.write()
