@@ -457,9 +457,7 @@ class VMTokenizer():
 
         :param py_token:
         """
-        self.convert1(VMOp.FROMALTSTACK, py_token=py_token)
-        self.convert1(VMOp.DUP)
-        self.convert1(VMOp.TOALTSTACK)
+        self.convert1(VMOp.DUPFROMALTSTACK, py_token=py_token)
 
         local_name = py_token.args
 
@@ -491,9 +489,7 @@ class VMTokenizer():
             position = self.method.local_stores[local_name]
 
             # get array
-            self.convert1(VMOp.FROMALTSTACK, py_token=py_token)
-            self.convert1(VMOp.DUP)
-            self.convert1(VMOp.TOALTSTACK)
+            self.convert1(VMOp.DUPFROMALTSTACK, py_token=py_token)
 
             # get i
             self.convert_push_integer(position)
@@ -583,9 +579,7 @@ class VMTokenizer():
         self.method.local_stores[arg] = length
 
         # get array
-        self.insert1(VMOp.FROMALTSTACK)
-        self.insert1(VMOp.DUP)
-        self.insert1(VMOp.TOALTSTACK)
+        self.insert1(VMOp.DUPFROMALTSTACK)
 
         self.insert_push_integer(position)
         self.insert_push_integer(2)
@@ -992,9 +986,7 @@ class VMTokenizer():
                     raise Exception("value for %s " % definition.attr)
 
             # get array
-            self.insert1(VMOp.FROMALTSTACK)
-            self.insert1(VMOp.DUP)
-            self.insert1(VMOp.TOALTSTACK)
+            self.insert1(VMOp.DUPFROMALTSTACK)
 
             self.insert_push_integer(count)
             self.insert_push_integer(2)
