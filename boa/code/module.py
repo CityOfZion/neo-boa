@@ -539,8 +539,17 @@ class Module():
 
                 lno = "{:<10}".format(
                     pt.line_no if do_print_line_no or pstart else '')
-                addr = "{:<5}".format(key)
+                addr = "{:<4}".format(key)
                 op = "{:<20}".format(str(pt.py_op))
+                try:
+                    # Check if it is an integer (this is likely a custom boa op)
+                    int(str(pt.py_op))
+                    opname = pyop.ToName(pt.py_op)
+                    if opname is not None:
+                        op = "{:<20}".format(opname)
+                except ValueError:
+                    pass
+
                 arg = "{:<50}".format(
                     to_label if to_label is not None else pt.arg_s)
                 data = "[data] {:<20}".format(ds)
