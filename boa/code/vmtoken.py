@@ -692,7 +692,7 @@ class VMTokenizer():
                 self.insert1(VMOp.XSWAP)
                 self.insert1(VMOp.DROP)
 
-        self.insert1(VMOp.NOP)
+        # self.insert1(VMOp.NOP)
 
         fname = pytoken.func_name
         full_name = None
@@ -811,7 +811,7 @@ class VMTokenizer():
         ba = bytearray([length]) + bytearray(syscall_name)
         pytoken.is_sys_call = False
         vmtoken = self.convert1(VMOp.SYSCALL, pytoken, data=ba)
-        self.insert1(VMOp.NOP)
+        # self.insert1(VMOp.NOP)
         return vmtoken
 
     def is_built_in(self, op):
@@ -846,7 +846,7 @@ class VMTokenizer():
             length = len(syscall_name)
             ba = bytearray([length]) + bytearray(syscall_name)
             vmtoken = self.convert1(VMOp.SYSCALL, pytoken, data=ba)
-            self.insert1(VMOp.NOP)
+            # self.insert1(VMOp.NOP)
             return vmtoken
 
         elif op == 'reversed':
@@ -930,7 +930,7 @@ class VMTokenizer():
             vmtoken = self.convert1(
                 VMOp.APPCALL, py_token=pytoken, data=bytearray(20))
 
-            self.insert1(VMOp.NOP)
+            # self.insert1(VMOp.NOP)
             return vmtoken
 
         # this is used for app calls that are registered
@@ -947,7 +947,7 @@ class VMTokenizer():
         vmtoken = self.convert1(
             VMOp.APPCALL, py_token=pytoken, data=sc_appcall.script_hash_addr)
 
-        self.insert1(VMOp.NOP)
+        # self.insert1(VMOp.NOP)
 
         return vmtoken
 
