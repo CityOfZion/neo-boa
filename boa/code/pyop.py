@@ -195,7 +195,6 @@ def ToName(op):
     :param op:
     :return:
     """
-    print(op)
     for item in items:
         n = getattr(module, item)
         if op == n:

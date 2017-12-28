@@ -491,6 +491,9 @@ class Module():
                       61  242                                  [data]
                       62  RETURN_VALUE                         [data]
         """
+        # Initialize if needed
+        if self.all_vm_tokens is None:
+            self.link_methods()
 
         lineno = 0
         pstart = True
@@ -539,7 +542,7 @@ class Module():
 
                 lno = "{:<10}".format(
                     pt.line_no if do_print_line_no or pstart else '')
-                addr = "{:<4}".format(key)
+                addr = "{:<5}".format(key)
                 op = "{:<20}".format(str(pt.py_op))
                 try:
                     # Check if it is an integer (this is likely a custom boa op)
