@@ -1,4 +1,5 @@
-
+import importlib
+import sys
 # the following are python opcodes taken from the `opcode` module
 # these have been constantized for easier access
 # these are the opcodes used by python
@@ -180,3 +181,22 @@ DROP_BODY = 248
 LOAD_CLASS_ATTR = 249
 
 DEBUG_OP = 250
+
+# the following is a convienience method
+# for a human readable version of the ops
+
+module = importlib.import_module('boa.code.pyop')
+items = dir(sys.modules[__name__])
+
+
+def ToName(op):
+    """
+
+    :param op:
+    :return:
+    """
+    for item in items:
+        n = getattr(module, item)
+        if op == n:
+            return item
+        return None
