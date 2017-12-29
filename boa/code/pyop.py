@@ -199,4 +199,4 @@ def ToName(op):
         n = getattr(module, item)
         if op == n:
             return item
-        return None
+    return None
