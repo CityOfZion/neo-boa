@@ -151,14 +151,6 @@ def ToName(op):
         n = getattr(module, item)
 
         try:
-            nn = int(binascii.hexlify(n))
-
-            if op == nn:
-                return item
-        except Exception as e:
-            pass
-
-        try:
             nn2 = int.from_bytes(n, 'little')
             if op == nn2:
                 return item
