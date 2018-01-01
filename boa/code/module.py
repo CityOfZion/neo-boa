@@ -537,21 +537,26 @@ class Module():
                             pass
 
                 if pt.py_op == pyop.CALL_FUNCTION:
-                    old = to_label
-                    to_label = '%s %s %s' % (pt.func_name, pt.func_params, old)
+                    if to_label is None:
+                        old = ""
+                    else:
+                        old = to_label
+                    param_string = "("
+                    for param in pt.func_params:
+                        param_string += str(param.args) + ", "
+                    param_string = param_string.rstrip(", ") + ")"
+                    to_label = '%s %s %s' % (pt.func_name, param_string, old)
 
                 lno = "{:<10}".format(
                     pt.line_no if do_print_line_no or pstart else '')
                 addr = "{:<5}".format(key)
                 op = "{:<20}".format(str(pt.py_op))
-                try:
-                    # Check if it is an integer (this is likely a custom boa op)
-                    int(str(pt.py_op))
-                    opname = pyop.ToName(pt.py_op)
+
+                # If this is a number, it is likely a custom python opcode, get the name
+                if str(pt.py_op).isnumeric():
+                    opname = pyop.ToName(int(str(pt.py_op)))
                     if opname is not None:
                         op = "{:<20}".format(opname)
-                except ValueError:
-                    pass
 
                 arg = "{:<50}".format(
                     to_label if to_label is not None else pt.arg_s)
