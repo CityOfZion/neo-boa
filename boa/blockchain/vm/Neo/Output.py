@@ -1,5 +1,5 @@
 
-class TransactionOutput():
+class TransactionOutput:
 
     @property
     def AssetId(self):

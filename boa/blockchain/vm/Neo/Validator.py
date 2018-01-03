@@ -1,5 +1,5 @@
 
-class Validator():
+class Validator:
     pass
 
 

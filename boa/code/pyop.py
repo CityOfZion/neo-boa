@@ -189,7 +189,7 @@ module = importlib.import_module('boa.code.pyop')
 items = dir(sys.modules[__name__])
 
 
-def ToName(op):
+def to_name(op):
     """
 
     :param op:

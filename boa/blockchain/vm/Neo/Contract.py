@@ -1,5 +1,5 @@
 
-class Contract():
+class Contract:
 
     @property
     def Script(self):

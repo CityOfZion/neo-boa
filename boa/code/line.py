@@ -3,7 +3,7 @@ from byteplay3 import *
 from boa.code import pyop
 
 
-class Line():
+class Line(object):
 
     """
 
@@ -30,9 +30,9 @@ class Line():
 
         :return:
         """
-
-        return (len(self.items) == 3 or len(self.items) == 5) and self.items[1][0] == pyop.LOAD_CONST and self.items[2][0] == pyop.STORE_NAME
-#        return False
+        is_correct_length = len(self.items) == 3 or len(self.items) == 5
+        is_storing_constant = self.items[1][0] == pyop.LOAD_CONST and self.items[2][0] == pyop.STORE_NAME
+        return is_correct_length and is_storing_constant
 
     @property
     def is_module_method_call(self):

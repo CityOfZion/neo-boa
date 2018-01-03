@@ -1,5 +1,5 @@
 
-class Account():
+class Account:
 
     @property
     def ScriptHash(self):

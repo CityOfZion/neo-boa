@@ -1,5 +1,5 @@
 
-class SmartContract():
+class SmartContract:
 
     def Sha1(data):
         """
