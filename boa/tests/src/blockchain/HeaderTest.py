@@ -1,5 +1,5 @@
 from boa.blockchain.vm.Neo.Blockchain import GetHeader
-from boa.blockchain.vm.Neo.Header import GetMerkleRoot, GetTimestamp, GetHash, GetVersion
+from boa.blockchain.vm.Neo.Header import GetMerkleRoot, GetTimestamp, GetHash, GetVersion, GetNextConsensus
 
 from boa.blockchain.vm.Neo.Runtime import Notify, Log
 

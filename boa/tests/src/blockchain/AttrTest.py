@@ -1,5 +1,7 @@
 from boa.blockchain.vm.Neo.Blockchain import GetHeader, GetBlock
 from boa.blockchain.vm.Neo.Runtime import Notify
+from boa.blockchain.vm.Neo.Header import GetTimestamp
+from boa.blockchain.vm.Neo.Block import GetTransactions
 
 
 def Main():
