@@ -2,7 +2,7 @@ from boa.blockchain.vm.Neo.Transaction import *
 from boa.blockchain.vm.Neo.Header import GetIndex, GetHash, GetPrevHash, GetTimestamp, GetVersion, GetNextConsensus, GetMerkleRoot, GetConsensusData
 
 
-class Block():
+class Block:
 
     @property
     def TransactionCount(self):

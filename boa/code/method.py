@@ -10,12 +10,9 @@ import inspect
 import dis
 
 import collections
-import pdb
-
-from byteplay3 import object_attributes, print_attr_values, printcodelist
 
 
-class Method():
+class Method(object):
     """
     The method is the main unit of functionality.  Any method can take 0 to many arguments and return 1 value
 
@@ -32,8 +29,9 @@ class Method():
 
     The VMTokenizer is responsible for turning PyToken objects into VMToken objects.
 
-    When the method has been tokenized, each token then has an address within the method.  Once these addresses are complete,
-    the ``convert_jumps`` method is called to tell each flow control operation where (which address) it will need to jump to.
+    When the method has been tokenized, each token then has an address within the method.  Once these addresses are
+    complete, the ``convert_jumps`` method is called to tell each flow control operation where (which address) it will
+    need to jump.
     """
 
     bp = None
@@ -356,7 +354,6 @@ class Method():
                 current_label = op
 
             else:
-                instance_type = None
                 if op in [pyop.STORE_FAST, pyop.STORE_NAME, pyop.STORE_GLOBAL] and arg not in self.local_stores.keys():
 
                     self._check_for_type(arg, total_lines)

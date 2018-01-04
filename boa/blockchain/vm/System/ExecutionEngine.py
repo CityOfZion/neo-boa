@@ -1,5 +1,5 @@
 
-class ExecutionEngine():
+class ExecutionEngine:
     """
     Not used.
 

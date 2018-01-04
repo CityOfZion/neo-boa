@@ -1,5 +1,5 @@
 
-class TransactionAttribute():
+class TransactionAttribute:
 
     @property
     def Usage(self):

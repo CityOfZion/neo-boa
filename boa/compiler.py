@@ -2,7 +2,7 @@ import os
 from boa.code.module import Module
 
 
-class Compiler():
+class Compiler(object):
     """
     The main compiler interface class.
 
@@ -54,7 +54,7 @@ class Compiler():
 
         try:
             return self.modules[0]
-        except Exception as e:
+        except Exception:
             pass
 
     @staticmethod
