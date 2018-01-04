@@ -6,7 +6,7 @@ def Main():
 
     :return:
     """
-    m = [1, 2, 4, 'blah']
+    m = [1, 2, 2]
 
     m.append(7)
 
