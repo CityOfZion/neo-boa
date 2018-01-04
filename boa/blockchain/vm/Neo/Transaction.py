@@ -1,5 +1,5 @@
 
-class Transaction():
+class Transaction:
 
     @property
     def Hash(self):

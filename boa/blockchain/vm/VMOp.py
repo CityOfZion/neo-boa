@@ -138,7 +138,7 @@ module = importlib.import_module('boa.blockchain.vm.VMOp')
 items = dir(sys.modules[__name__])
 
 
-def ToName(op):
+def to_name(op):
     """
 
     :param op:
@@ -151,10 +151,10 @@ def ToName(op):
         n = getattr(module, item)
 
         try:
-            nn2 = int.from_bytes(n, 'little')
-            if op == nn2:
+            nn = int.from_bytes(n, 'little')
+            if op == nn:
                 return item
-        except Exception as e:
+        except Exception:
             pass
 
     return None

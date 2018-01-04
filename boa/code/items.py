@@ -1,27 +1,19 @@
-from byteplay3 import Code, Opcode
-from boa.code.method import Method
+from byteplay3 import Opcode
 from boa.code.pytoken import PyToken
 
-from boa.code import pyop
 import importlib
 import binascii
 import sys
 import os
 
-from byteplay3 import Code, SetLinenoType, Label
+from byteplay3 import Code, SetLinenoType
 from boa.code import pyop
 
 from boa.code.line import Line
 from boa.code.method import Method
 
-from boa.blockchain.vm import VMOp
 
-from collections import OrderedDict
-
-import pdb
-
-
-class Item():
+class Item(object):
     """
 
     """
@@ -163,10 +155,10 @@ class SmartContractAppCall(Item):
         :return:
         """
 
-        return SmartContractAppCall.ToScriptHashData(self.script_hash)
+        return SmartContractAppCall.to_script_hash_data(self.script_hash)
 
     @staticmethod
-    def ToScriptHashData(item):
+    def to_script_hash_data(item):
         """
 
         :return:

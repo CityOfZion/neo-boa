@@ -2,7 +2,7 @@ from boa.blockchain.vm.Neo.Runtime import Notify
 from boa.blockchain.vm.Neo.Storage import GetContext, Get, Put, Delete
 
 
-class StorageAPI():
+class StorageAPI(object):
 
     ctx = GetContext()
 

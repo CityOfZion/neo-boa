@@ -9,10 +9,8 @@ from boa.blockchain.vm import VMOp
 
 from collections import OrderedDict
 
-import pdb
 
-
-class Module():
+class Module(object):
     """
     A Module is the top level component which contains code objects.
     When, for example, compiling ``path/to/my/file.py``, the items contained in ``file.py`` are the module.
@@ -554,7 +552,7 @@ class Module():
 
                 # If this is a number, it is likely a custom python opcode, get the name
                 if str(pt.py_op).isnumeric():
-                    opname = pyop.ToName(int(str(pt.py_op)))
+                    opname = pyop.to_name(int(str(pt.py_op)))
                     if opname is not None:
                         op = "{:<20}".format(opname)
 
