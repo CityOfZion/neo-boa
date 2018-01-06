@@ -21,6 +21,7 @@ from boa.code.builtins import concat, list, range, take, substr
 # -- Global variables
 KEY = 'test_array'
 
+
 def Main(operation, args):
     """
 
@@ -47,6 +48,7 @@ def Main(operation, args):
         Notify('unknown operation')
         return False
 
+
 def do_init():
     """
     Initialize the storage by setting an empty list.
@@ -59,6 +61,7 @@ def do_init():
     Put(context, KEY, init_list_bytes)
     return True
 
+
 def do_delete():
     """
     Delete the storage and reset back to its default state.
@@ -69,6 +72,7 @@ def do_delete():
     context = GetContext()
     Delete(context, KEY)
     return True
+
 
 def do_fetch():
     """
@@ -81,6 +85,7 @@ def do_fetch():
     list_bytes = Get(context, KEY)
     return deserialize_bytearray(list_bytes)
 
+
 def do_count():
     """
     Fetch length of the stored list.
@@ -92,6 +97,7 @@ def do_count():
     list_bytes = Get(context, KEY)
     item_list = deserialize_bytearray(list_bytes)
     return len(item_list)
+
 
 def do_append_1():
     """
@@ -110,6 +116,7 @@ def do_append_1():
     list_bytes = serialize_array(item_list)
     Put(context, KEY, list_bytes)
     return True
+
 
 def do_append_10():
     """
@@ -133,7 +140,6 @@ def do_append_10():
     Put(context, KEY, list_bytes)
     return True
 
-# -- Utility methods
 
 def deserialize_bytearray(data):
 
@@ -167,6 +173,7 @@ def deserialize_bytearray(data):
 
     return new_collection
 
+
 def serialize_array(items):
 
     # serialize the length of the list
@@ -189,6 +196,7 @@ def serialize_array(items):
 
     # return the stuff
     return output
+
 
 def serialize_var_length_item(item):
 
