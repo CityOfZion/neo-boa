@@ -129,7 +129,7 @@ NEWSTRUCT = b'\xC6'  # 用作值類型
 APPEND = b'\xC8'
 REVERSE = b'\xC9'
 
-DEBUGOP = b'\xFB'
+DEBUG = b'\xCA'
 
 # the following is a convienience method
 # for a human readable version of the ops

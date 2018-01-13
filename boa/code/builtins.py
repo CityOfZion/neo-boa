@@ -117,3 +117,12 @@ def verify_signatures(signatures, pubkeys):
     :param pubkeys:
     """
     pass
+
+
+def fix_appcall():
+
+    pass
+
+def pdb():
+
+    pass

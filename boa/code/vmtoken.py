@@ -164,7 +164,7 @@ class VMTokenizer(object):
 
         total_items = self.method.total_lines \
             + len(self.method.args) \
-            + self.method.dynamic_iterator_count
+            + self.method.dynamic_iterator_count + 8
 
         self.total_param_and_body_count_token = self.insert_push_integer(
             total_items)
@@ -449,9 +449,8 @@ class VMTokenizer(object):
 
         :param py_token:
         """
-        self.convert1(VMOp.FROMALTSTACK, py_token=py_token)
-        self.convert1(VMOp.DUP)
-        self.convert1(VMOp.TOALTSTACK)
+        self.convert1(VMOp.DUPFROMALTSTACK, py_token=py_token)
+
 
         local_name = py_token.args
 
@@ -483,9 +482,8 @@ class VMTokenizer(object):
             position = self.method.local_stores[local_name]
 
             # get array
-            self.convert1(VMOp.FROMALTSTACK, py_token=py_token)
-            self.convert1(VMOp.DUP)
-            self.convert1(VMOp.TOALTSTACK)
+            self.convert1(VMOp.DUPFROMALTSTACK, py_token=py_token)
+
 
             # get i
             self.convert_push_integer(position)
@@ -575,9 +573,8 @@ class VMTokenizer(object):
         self.method.local_stores[arg] = length
 
         # get array
-        self.insert1(VMOp.FROMALTSTACK)
-        self.insert1(VMOp.DUP)
-        self.insert1(VMOp.TOALTSTACK)
+        self.convert1(VMOp.DUPFROMALTSTACK)
+
 
         self.insert_push_integer(position)
         self.insert_push_integer(2)
@@ -739,7 +736,7 @@ class VMTokenizer(object):
         :return:
         """
         if op in ['len', 'abs', 'min', 'max', 'concat', 'take', 'substr',
-                  'reverse', 'append',
+                  'reverse', 'append', 'pdb', 'fix_appcall',
                   'sha1', 'sha256', 'hash160', 'hash256',
                   'verify_signature', 'verify_signatures']:
             return True
@@ -783,7 +780,15 @@ class VMTokenizer(object):
         elif op == 'append':
             #            pdb.set_trace()
             return self.convert1(VMOp.APPEND, pytoken)
-
+        elif op == 'pdb':
+            return self.convert1(VMOp.DEBUG)
+        elif op == 'fix_appcall':
+            self.convert1(VMOp.DUPFROMALTSTACK, py_token=pytoken)
+#            self.convert1(VMOp.FROMALTSTACK, py_token=pytoken)
+#            self.convert1(VMOp.DROP, py_token=pytoken)
+            self.convert_push_integer(0)
+            self.convert1(VMOp.ROT)
+            self.convert1(VMOp.SETITEM, py_token=pytoken)
         return None
 
     @staticmethod
@@ -947,7 +952,9 @@ class VMTokenizer(object):
         vmtoken = self.convert1(
             VMOp.APPCALL, py_token=pytoken, data=sc_appcall.script_hash_addr)
 
-        self.insert1(VMOp.NOP)
+#        self.convert1(VMOp.TOALTSTACK)
+#        self.convert1(VMOp.TOALTSTACK)
+
 
         return vmtoken
 
@@ -986,9 +993,7 @@ class VMTokenizer(object):
                     raise Exception("value for %s " % definition.attr)
 
             # get array
-            self.insert1(VMOp.FROMALTSTACK)
-            self.insert1(VMOp.DUP)
-            self.insert1(VMOp.TOALTSTACK)
+            self.insert1(VMOp.DUPFROMALTSTACK)
 
             self.insert_push_integer(count)
             self.insert_push_integer(2)

@@ -9,12 +9,12 @@ def Main():
 
     c = 22
 
-    while a < 9:
+    while a < 7:
 
         a = a + 1
 
-        if a == 7:
-            break
+#        if a == 7:
+#            break
 
         while b < 4:
 
