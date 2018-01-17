@@ -739,7 +739,7 @@ class VMTokenizer(object):
         :return:
         """
         if op in ['len', 'abs', 'min', 'max', 'concat', 'take', 'substr',
-                  'reverse', 'append','remove',
+                  'reverse', 'append', 'remove',
                   'sha1', 'sha256', 'hash160', 'hash256',
                   'verify_signature', 'verify_signatures']:
             return True

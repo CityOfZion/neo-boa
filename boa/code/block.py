@@ -82,7 +82,7 @@ class Block(object):
         """
         for token in self.oplist:
             if token.py_op == pyop.LOAD_ATTR and token.instance_type is None:
-                if token.args not in ['reverse', 'append', 'remove',]:
+                if token.args not in ['reverse', 'append', 'remove', ]:
                     return True
         return False
 

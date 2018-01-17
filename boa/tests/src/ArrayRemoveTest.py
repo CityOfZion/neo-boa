@@ -10,5 +10,4 @@ def Main():
 
     m.remove(1)
 
-
     return m

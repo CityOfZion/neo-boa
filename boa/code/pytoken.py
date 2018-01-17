@@ -7,7 +7,7 @@ from opcode import opname
 from boa.blockchain.vm import VMOp
 
 NON_RETURN_SYS_CALLS = ['Notify', 'print', 'Log', 'Put', 'Register',
-                        'reverse', 'append','remove',
+                        'reverse', 'append', 'remove',
                         'Delete', 'SetVotes', 'ContractDestroy',
                         'MerkleRoot', 'Hash', 'PrevHash', 'GetHeader', ]
 
