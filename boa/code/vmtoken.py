@@ -739,7 +739,7 @@ class VMTokenizer(object):
         :return:
         """
         if op in ['len', 'abs', 'min', 'max', 'concat', 'take', 'substr',
-                  'reverse', 'append',
+                  'reverse', 'append','remove',
                   'sha1', 'sha256', 'hash160', 'hash256',
                   'verify_signature', 'verify_signatures']:
             return True
@@ -781,9 +781,9 @@ class VMTokenizer(object):
         elif op == 'reverse':
             return self.convert1(VMOp.REVERSE, pytoken)
         elif op == 'append':
-            #            pdb.set_trace()
             return self.convert1(VMOp.APPEND, pytoken)
-
+        elif op == 'remove':
+            return self.convert1(VMOp.REMOVE, pytoken)
         return None
 
     @staticmethod
