@@ -1,6 +1,6 @@
 
 
-class Header():
+class Header:
 
     def getmyhash(self):
         return GetHash(self)
@@ -66,7 +66,7 @@ class Header():
         return GetNextConsensus(self)
 
 
-def GetIndex(header: Header) -> int:
+def GetIndex(header):
     """
     Returns the height/index of a header
     Args:
@@ -78,7 +78,7 @@ def GetIndex(header: Header) -> int:
     pass
 
 
-def GetHash(header: Header) -> bytearray:
+def GetHash(header):
     """
 
     gets the hash of the header
@@ -87,7 +87,7 @@ def GetHash(header: Header) -> bytearray:
     pass
 
 
-def GetVersion(header: Header) -> int:
+def GetVersion(header):
     """
 
     gets the version of the header
@@ -96,7 +96,7 @@ def GetVersion(header: Header) -> int:
     pass
 
 
-def GetPrevHash(header: Header) -> bytearray:
+def GetPrevHash(header):
     """
 
     gets the hash of the previous header in the blockchain
@@ -105,7 +105,7 @@ def GetPrevHash(header: Header) -> bytearray:
     pass
 
 
-def GetMerkleRoot(header: Header) -> bytearray:
+def GetMerkleRoot(header):
     """
 
     gets the merkle root of the transactions contained in the block
@@ -114,7 +114,7 @@ def GetMerkleRoot(header: Header) -> bytearray:
     pass
 
 
-def GetTimestamp(header: Header) -> int:
+def GetTimestamp(header):
     """
 
     gets the timestamp of when the header was created
@@ -123,7 +123,7 @@ def GetTimestamp(header: Header) -> int:
     pass
 
 
-def GetConsensusData(header: Header) -> bytearray:
+def GetConsensusData(header):
     """
 
     gets the address of the consensus
@@ -132,7 +132,7 @@ def GetConsensusData(header: Header) -> bytearray:
     pass
 
 
-def GetNextConsensus(header: Header) -> bytearray:
+def GetNextConsensus(header):
     """
 
     gets the address where the next consensus will occur

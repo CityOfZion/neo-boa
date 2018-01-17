@@ -1,8 +1,7 @@
-from boa.blockchain.vm.Neo.Transaction import *
 from boa.blockchain.vm.Neo.Header import GetIndex, GetHash, GetPrevHash, GetTimestamp, GetVersion, GetNextConsensus, GetMerkleRoot, GetConsensusData
 
 
-class Block():
+class Block:
 
     @property
     def TransactionCount(self):
@@ -22,6 +21,11 @@ class Block():
 
     @property
     def Index(self):
+        """
+
+        Returns:
+
+        """
         return GetIndex(self)
 
     @property
@@ -81,7 +85,7 @@ class Block():
         return GetNextConsensus(self)
 
 
-def GetTransactionCount(block: Block) -> int:
+def GetTransactionCount(block):
     """
 
     returns the number of transactions in a block
@@ -91,7 +95,7 @@ def GetTransactionCount(block: Block) -> int:
     pass
 
 
-def GetTransactions(block: Block) -> list:
+def GetTransactions(block):
     """
     returns a list of transactions contained in a block
 
@@ -100,7 +104,7 @@ def GetTransactions(block: Block) -> list:
     pass
 
 
-def GetTransaction(block: Block, index: int) -> Transaction:
+def GetTransaction(block, index):
     """
 
     :param block: the block to get the transaction from

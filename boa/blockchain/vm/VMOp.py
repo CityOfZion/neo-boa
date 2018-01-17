@@ -128,6 +128,8 @@ NEWARRAY = b'\xC5'  # 用作引用類型
 NEWSTRUCT = b'\xC6'  # 用作值類型
 APPEND = b'\xC8'
 REVERSE = b'\xC9'
+REMOVE = b'\xCA'
+
 
 DEBUGOP = b'\xFB'
 
@@ -138,7 +140,7 @@ module = importlib.import_module('boa.blockchain.vm.VMOp')
 items = dir(sys.modules[__name__])
 
 
-def ToName(op):
+def to_name(op):
     """
 
     :param op:
@@ -151,18 +153,10 @@ def ToName(op):
         n = getattr(module, item)
 
         try:
-            nn = int(binascii.hexlify(n))
-
+            nn = int.from_bytes(n, 'little')
             if op == nn:
                 return item
-        except Exception as e:
-            pass
-
-        try:
-            nn2 = int.from_bytes(n, 'little')
-            if op == nn2:
-                return item
-        except Exception as e:
+        except Exception:
             pass
 
     return None

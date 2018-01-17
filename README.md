@@ -49,7 +49,7 @@ The compiler supports a subset of the Python language ( in the same way that a _
 #### Get Help or give help
 
 - Open a new [issue](https://github.com/CityOfZion/neo-boa/issues/new) if you encounter a problem.
-- Or ping **@localhuman** on the [NEO Slack](https://join.slack.com/t/neoblockchainteam/shared_invite/MjE3ODMxNDUzMDE1LTE1MDA4OTY3NDQtNTMwM2MyMTc2NA).
+- Or ping **@localhuman** on the [NEO official community chatroom](https://discord.gg/R8v48YA).
 - Pull requests welcome. New features, writing tests and documentation are all needed.
 
 
@@ -124,7 +124,7 @@ Tests are important.
 
 ## License
 
-- Open-source [MIT](https://github.com/CityOfZion/neo-python/blob/master/LICENSE.md).
+- Open-source [MIT](LICENSE.md).
 - Main author is [@localhuman](https://github.com/localhuman).
 
 

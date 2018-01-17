@@ -27,7 +27,7 @@ from boa.blockchain.vm.Neo.Runtime import GetTrigger, CheckWitness
 from boa.blockchain.vm.Neo.TriggerType import Application, Verification
 from boa.blockchain.vm.Neo.Output import GetScriptHash, GetValue, GetAssetId
 from boa.blockchain.vm.Neo.Storage import GetContext, Get, Put, Delete
-
+from boa.blockchain.vm.Neo.Header import GetTimestamp, GetNextConsensus
 
 # -------------------------------------------
 # TOKEN SETTINGS

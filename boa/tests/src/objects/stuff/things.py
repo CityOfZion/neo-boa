@@ -1,5 +1,5 @@
 
-class Awesome():
+class Awesome(object):
     """
     A very basic object
     """
@@ -20,7 +20,7 @@ class Awesome():
         return self.myname
 
 
-class MoreAwesome():
+class MoreAwesome(object):
     """
     A little more complicated object
     """

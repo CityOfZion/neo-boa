@@ -1,18 +1,14 @@
+import pdb
+from collections import OrderedDict
 from boa.code import pyop
-
 from byteplay3 import Label
-
 from boa.blockchain.vm import VMOp
 from boa.blockchain.vm.BigInteger import BigInteger
 
-from collections import OrderedDict
-
 NEO_SC_FRAMEWORK = 'boa.blockchain.vm.'
 
-import pdb
 
-
-class VMToken():
+class VMToken(object):
     """
 
     """
@@ -61,7 +57,7 @@ class VMToken():
         self.is_annotation = False
 
 
-class VMTokenizer():
+class VMTokenizer(object):
     """
 
     """
@@ -122,7 +118,7 @@ class VMTokenizer():
                     if type(ds) is not int and len(ds) < 1:
                         try:
                             ds = value.data.decode('utf-8')
-                        except Exception as e:
+                        except Exception:
                             pass
 
                 if pt.py_op == pyop.CALL_FUNCTION:
@@ -255,7 +251,7 @@ class VMTokenizer():
             return self.update1(vmtoken, VMOp.PUSH0)
         elif i == -1:
             return self.insert1(vmtoken, VMOp.PUSHM1)
-        elif i > 0 and i <= 16:
+        elif 0 < i <= 16:
             out = 0x50 + i
             return self.update1(vmtoken, out)
 
@@ -324,7 +320,7 @@ class VMTokenizer():
             return self.insert1(VMOp.PUSH0)
         elif i == -1:
             return self.insert1(VMOp.PUSHM1)
-        elif i > 0 and i <= 16:
+        elif 0 < i <= 16:
             out = 0x50 + i
             return self.insert1(out)
 
@@ -355,14 +351,12 @@ class VMTokenizer():
 
         return vmtoken
 
-    def convert_new_array(self, vm_op, py_token=None, data=None):
+    def convert_new_array(self, py_token=None):
 
         # push the length of the array
         """
 
-        :param vm_op:
         :param py_token:
-        :param data:
         """
         if type(py_token.args) is int:
 
@@ -379,7 +373,6 @@ class VMTokenizer():
         return token
 
     def convert_load_const(self, pytoken):
-        token = None
         if type(pytoken.args) is int:
             token = self.convert_push_integer(pytoken.args, pytoken)
         elif type(pytoken.args) is str:
@@ -392,12 +385,11 @@ class VMTokenizer():
             token = self.convert_push_data(bytes(pytoken.args), pytoken)
         elif type(pytoken.args) is bool:
             token = self.convert_push_integer(pytoken.args)
-        elif type(pytoken.args) == type(None):
+        elif isinstance(pytoken.args, type(None)):
             token = self.convert_push_data(bytearray(0))
 #        elif type(pytoken.args) == Code:
 #            pass
         else:
-
             raise Exception("Could not load type %s for item %s " % (
                 type(pytoken.args), pytoken.args))
         return token
@@ -440,7 +432,7 @@ class VMTokenizer():
             return self.convert1(VMOp.PUSH0, py_token=py_token)
         elif i == -1:
             return self.convert1(VMOp.PUSHM1, py_token=py_token)
-        elif i > 0 and i <= 16:
+        elif 0 < i <= 16:
             out = 0x50 + i
             return self.convert1(out, py_token=py_token)
 
@@ -542,7 +534,7 @@ class VMTokenizer():
 
         elif type(item) is bool:
             self.insert_push_data(item)
-        elif type(item) == type(None):
+        elif isinstance(item, type(None)):
             self.insert_push_data(bytearray(0))
         else:
             raise Exception("Could not load type %s for item %s " %
@@ -598,7 +590,6 @@ class VMTokenizer():
 
         :param pytoken:
         """
-        new_array_len = 0
         lenfound = False
         for index, token in enumerate(pytoken.func_params):
 
@@ -740,14 +731,15 @@ class VMTokenizer():
 
         return vmtoken
 
-    def is_op_call(self, op):
+    @staticmethod
+    def is_op_call(op):
         """
 
         :param op:
         :return:
         """
         if op in ['len', 'abs', 'min', 'max', 'concat', 'take', 'substr',
-                  'reverse', 'append',
+                  'reverse', 'append', 'remove',
                   'sha1', 'sha256', 'hash160', 'hash256',
                   'verify_signature', 'verify_signatures']:
             return True
@@ -789,12 +781,13 @@ class VMTokenizer():
         elif op == 'reverse':
             return self.convert1(VMOp.REVERSE, pytoken)
         elif op == 'append':
-            #            pdb.set_trace()
             return self.convert1(VMOp.APPEND, pytoken)
-
+        elif op == 'remove':
+            return self.convert1(VMOp.REMOVE, pytoken)
         return None
 
-    def is_sys_call(self, op):
+    @staticmethod
+    def is_sys_call(op):
         """
 
         :param op:
@@ -820,7 +813,8 @@ class VMTokenizer():
         self.insert1(VMOp.NOP)
         return vmtoken
 
-    def is_built_in(self, op):
+    @staticmethod
+    def is_built_in(op):
         """
 
         :param op:

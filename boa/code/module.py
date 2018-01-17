@@ -9,10 +9,8 @@ from boa.blockchain.vm import VMOp
 
 from collections import OrderedDict
 
-import pdb
 
-
-class Module():
+class Module(object):
     """
     A Module is the top level component which contains code objects.
     When, for example, compiling ``path/to/my/file.py``, the items contained in ``file.py`` are the module.
@@ -491,6 +489,9 @@ class Module():
                       61  242                                  [data]
                       62  RETURN_VALUE                         [data]
         """
+        # Initialize if needed
+        if self.all_vm_tokens is None:
+            self.link_methods()
 
         lineno = 0
         pstart = True
@@ -534,13 +535,27 @@ class Module():
                             pass
 
                 if pt.py_op == pyop.CALL_FUNCTION:
-                    old = to_label
-                    to_label = '%s %s %s' % (pt.func_name, pt.func_params, old)
+                    if to_label is None:
+                        old = ""
+                    else:
+                        old = to_label
+                    param_string = "("
+                    for param in pt.func_params:
+                        param_string += str(param.args) + ", "
+                    param_string = param_string.rstrip(", ") + ")"
+                    to_label = '%s %s %s' % (pt.func_name, param_string, old)
 
                 lno = "{:<10}".format(
                     pt.line_no if do_print_line_no or pstart else '')
                 addr = "{:<5}".format(key)
                 op = "{:<20}".format(str(pt.py_op))
+
+                # If this is a number, it is likely a custom python opcode, get the name
+                if str(pt.py_op).isnumeric():
+                    opname = pyop.to_name(int(str(pt.py_op)))
+                    if opname is not None:
+                        op = "{:<20}".format(opname)
+
                 arg = "{:<50}".format(
                     to_label if to_label is not None else pt.arg_s)
                 data = "[data] {:<20}".format(ds)

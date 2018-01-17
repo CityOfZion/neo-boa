@@ -1,5 +1,6 @@
 from boa.blockchain.vm.Neo.Blockchain import GetBlock
-from boa.blockchain.vm.Neo.Runtime import Notify, Log
+from boa.blockchain.vm.Neo.Runtime import Notify
+from boa.blockchain.vm.Neo.Block import GetTransactions
 
 
 def Main():
