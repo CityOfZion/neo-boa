@@ -9,6 +9,10 @@ from boa.blockchain.vm import VMOp
 
 from collections import OrderedDict
 
+import json
+import os
+import hashlib
+
 
 class Module(object):
     """
@@ -562,3 +566,50 @@ class Module(object):
                 print("%s%s%s%s%s%s" % (lno, from_label, addr, op, arg, data))
 
             pstart = False
+
+    def export_debug(self, output_path):
+        """
+        this method is used to generate a debug map for NEO debugger
+        """
+        # Initialize if needed
+        if self.all_vm_tokens is None:
+            self.link_methods()
+
+        lineno = 0
+        pstart = True
+
+        hash = hashlib.md5(open(output_path, 'rb').read()).hexdigest()
+        avm_name = os.path.splitext(os.path.basename(output_path))[0]
+        file_name = output_path.replace('.avm', '.py')
+
+        data = {}
+        data['avm'] = {'name': avm_name, 'hash': hash} 
+        data['compiler'] = {'name': 'neo-boa', 'version': '0.1'}  # TODO: fix version number
+
+        files = []
+        files.append({'id': '1', 'url': file_name})  # TODO support more than one .py file
+        data['files'] = files
+
+        map = []
+        start_ofs = -1
+        for i, (key, value) in enumerate(self.all_vm_tokens.items()):
+            if value.pytoken:
+                pt = value.pytoken
+
+                if pt.line_no != lineno:
+                    if start_ofs >= 0:
+                        map.append({'start': start_ofs, 'end': key - 1, 'file': 1, 'line': lineno})
+                    start_ofs = key
+                    lineno = pt.line_no
+
+                last_ofs = key
+            pstart = False
+
+        if last_ofs >= 0:
+            map.append({'start': start_ofs, 'end': last_ofs, 'file': 1, 'line': lineno})
+
+        data['map'] = map
+        json_data = json.dumps(data, indent=4)
+        mapfilename = output_path.replace('.avm', '.debug.json')
+        with open(mapfilename, 'w+') as out_file:
+            out_file.write(json_data)

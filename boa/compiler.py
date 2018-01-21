@@ -111,6 +111,9 @@ class Compiler(object):
 
         Compiler.write_file(data, output_path)
 
+        module = compiler.default
+        module.export_debug(output_path)
+
         return data
 
     @staticmethod
