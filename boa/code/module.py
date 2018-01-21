@@ -590,24 +590,22 @@ class Module(object):
         data['files'] = files
         
         map = []
-        current_line = -1
         start_ofs = -1
         for i, (key, value) in enumerate(self.all_vm_tokens.items()):
             if value.pytoken:
                 pt = value.pytoken
 
                 if pt.line_no != lineno:
-                    lineno = pt.line_no
                     if start_ofs >= 0 :
-                        map.append({'start': start_ofs, 'end': key-1, 'file': 1, 'line': current_line})                
+                        map.append({'start': start_ofs, 'end': key-1, 'file': 1, 'line': lineno})
                     start_ofs = key
-                    current_line = pt.line_no
+                    lineno = pt.line_no
                     
                 last_ofs = key
             pstart = False
             
         if last_ofs>=0:
-            map.append({'start': start_ofs, 'end': last_ofs, 'file': 1, 'line': current_line})
+            map.append({'start': start_ofs, 'end': last_ofs, 'file': 1, 'line': lineno})
             
         data['map'] = map
         json_data = json.dumps(data, indent=4)
