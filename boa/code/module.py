@@ -13,6 +13,7 @@ import json
 import os
 import hashlib
 
+
 class Module(object):
     """
     A Module is the top level component which contains code objects.
@@ -583,12 +584,12 @@ class Module(object):
 
         data = {}
         data['avm'] = {'name': avm_name, 'hash': hash} 
-        data['compiler'] = {'name': 'neo-boa', 'version': '0.1'} # TODO: fix version number
+        data['compiler'] = {'name': 'neo-boa', 'version': '0.1'}  # TODO: fix version number
 
         files = []
-        files.append({'id': '1', 'url': file_name}) # TODO support more than one .py file
+        files.append({'id': '1', 'url': file_name})  # TODO support more than one .py file
         data['files'] = files
-        
+
         map = []
         start_ofs = -1
         for i, (key, value) in enumerate(self.all_vm_tokens.items()):
@@ -596,17 +597,17 @@ class Module(object):
                 pt = value.pytoken
 
                 if pt.line_no != lineno:
-                    if start_ofs >= 0 :
-                        map.append({'start': start_ofs, 'end': key-1, 'file': 1, 'line': lineno})
+                    if start_ofs >= 0:
+                        map.append({'start': start_ofs, 'end': key - 1, 'file': 1, 'line': lineno})
                     start_ofs = key
                     lineno = pt.line_no
-                    
+
                 last_ofs = key
             pstart = False
-            
-        if last_ofs>=0:
+
+        if last_ofs >= 0:
             map.append({'start': start_ofs, 'end': last_ofs, 'file': 1, 'line': lineno})
-            
+
         data['map'] = map
         json_data = json.dumps(data, indent=4)
         mapfilename = output_path.replace('.avm', '.debug.json')
