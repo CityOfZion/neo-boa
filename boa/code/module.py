@@ -576,12 +576,12 @@ class Module(object):
 
         lineno = 0
         pstart = True
-		       
+
         hash = hashlib.md5(open(output_path, 'rb').read()).hexdigest()
         avm_name = os.path.splitext(os.path.basename(output_path))[0]
         file_name = output_path.replace('.avm', '.py')
-		
-        data = {}		
+
+        data = {}
         data['avm'] = {'name': avm_name, 'hash': hash} 
         data['compiler'] = {'name': 'neo-boa', 'version': '0.1'} # TODO: fix version number
 

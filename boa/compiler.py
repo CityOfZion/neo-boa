@@ -110,7 +110,7 @@ class Compiler(object):
             output_path = '%s/%s' % (path, newfilename)
 
         Compiler.write_file(data, output_path)
-		
+
         module = compiler.default
         module.export_debug(output_path)
 
