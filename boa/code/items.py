@@ -73,10 +73,9 @@ class Definition(Item):
 
         from boa.code.block import Block
 
-        opitems = self.items[1:]
         current_line_num = 1
         blockitems = []
-        for i, instr in enumerate(opitems):
+        for i, instr in enumerate(self.items):
 
             token = PyToken(instr.opcode, current_line_num, i, instr.arg)
             blockitems.append(token)
@@ -129,7 +128,9 @@ class SmartContractAppCall(Item):
 
         arguments = []
 
-        for i, (key, value) in enumerate(self.items.items):
+        for i, instr in enumerate(self.items.items):
+            key = instr.opcode
+            value = instr.arg
             if key == pyop.LOAD_CONST:
                 arguments.append(value)
             elif key == pyop.STORE_NAME:
