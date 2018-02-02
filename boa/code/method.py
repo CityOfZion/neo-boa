@@ -1,5 +1,5 @@
-from byteplay3 import SetLinenoType, Label, Opcode
-
+import bytecode
+from bytecode.instr import UNSET
 from boa.code.pytoken import PyToken
 from boa.code.vmtoken import VMTokenizer
 from boa.code.block import Block
@@ -11,6 +11,9 @@ import dis
 
 import collections
 
+CO_NEWLOCALS              = 0x0002      # only cleared for module/exec code
+CO_VARARGS                = 0x0004      # signature contains *arg
+CO_VARKEYWORDS            = 0x0008      # signature contains **kwargs
 
 class Method(object):
     """
@@ -34,7 +37,7 @@ class Method(object):
     need to jump.
     """
 
-    bp = None
+    bc = None
 
     parent = None
 
@@ -71,7 +74,7 @@ class Method(object):
         :rtype: str
         """
 
-        return self.bp.name
+        return self.code_object.co_name
 
     @property
     def full_name(self):
@@ -130,7 +133,7 @@ class Method(object):
         :rtype: ``byteplay3.Code``
         """
 
-        return self.bp.code
+        return self.bc
 
     @property
     def vm_tokens(self):
@@ -152,7 +155,7 @@ class Method(object):
         :rtype: int
         """
 
-        return self.bp.firstlineno
+        return self.bc.firstlineno
 
     @property
     def total_lines(self):
@@ -163,12 +166,11 @@ class Method(object):
         :rtype: int
         """
 
-        count = 0
-        for index, (op, arg) in enumerate(self.code):
-            if type(op) is SetLinenoType:
-                count += 1
-
-        return count
+        lines = []
+        for instr in self.code:
+            if type(instr) is bytecode.instr.Instr:
+                lines.append(instr.lineno)
+        return len(set(lines))
 
     @property
     def total_module_variables(self):
@@ -205,7 +207,9 @@ class Method(object):
 
         #        assert code_object is not None
 
-        self.bp = code_object
+        self.code_object = code_object
+
+        self.bc = bytecode.Bytecode.from_code(code_object)
 
         self.parent = parent
 
@@ -286,7 +290,7 @@ class Method(object):
                      33 RETURN_VALUE
         """
 
-        out = self.bp.to_code()
+        out = self.bc.to_code()
         dis.dis(out)
 
     def read_module_variables(self):
@@ -297,7 +301,7 @@ class Method(object):
 
             items = definition.items
 
-            self.bp.code = items + self.bp.code
+            self.bc = items + self.bc
 
     def read_module_method_calls(self):
         """
@@ -307,7 +311,7 @@ class Method(object):
 
             items = module_method_call.items
 
-            self.bp.code = items + self.bp.code
+            self.bc = items + self.bc
 
     def read_initial_tokens(self):
         """
@@ -331,29 +335,32 @@ class Method(object):
         current_loop_token = None
 
         total_lines = 0
-        for i, (op, arg) in enumerate(self.code):
+        lastline = None
+        for i, instr in enumerate(self.code):
+            if type(instr) is bytecode.Label:
+                current_label = instr
+                continue
 
-            # print("[%s] %s  ->  %s " % (i, op, arg))
+            op = instr.opcode
+            arg = instr.arg
+            if arg is UNSET:
+                arg = None
+            current_line_no = instr.lineno
 
-            if type(op) is SetLinenoType:
 
-                current_line_no = arg
+            if instr.lineno != lastline:
                 total_lines += 1
+                lastline = instr.lineno
 
                 if self.start_line_no is None:
                     self.start_line_no = current_line_no
 
                 if block_group is not None:
-
                     self.blocks.append(Block(block_group))
 
                 block_group = []
 
-            elif type(op) is Label:
-
-                current_label = op
-
-            else:
+            if 1==1:
                 if op in [pyop.STORE_FAST, pyop.STORE_NAME, pyop.STORE_GLOBAL] and arg not in self.local_stores.keys():
 
                     self._check_for_type(arg, total_lines)
@@ -379,6 +386,7 @@ class Method(object):
         if len(block_group):
             self.blocks.append(Block(block_group))
 
+
     def process_block_groups(self):
         """
         Takes the current blocks ( similar to lines in a method ) and
@@ -398,7 +406,7 @@ class Method(object):
                 # this jump needs to jump 3 bytes.  why? stay tuned to find out
                 block_addr = b'\x03\x00'
 
-                ret_token = PyToken(Opcode(pyop.BR_S),
+                ret_token = PyToken(pyop.BR_S,
                                     block.line, args=block_addr)
 
                 ret_token.jump_label = block.oplist[0].jump_label
@@ -449,7 +457,7 @@ class Method(object):
                 self.dynamic_iterator_count += 1
 
 
-#            print("ADDED BLOCK %s " % [str(op) for op in block.oplist])
+            # print("ADDED BLOCK %s " % [str(op) for op in block.oplist])
 
         alltokens = []
 
@@ -475,6 +483,9 @@ class Method(object):
             tkn = t.to_vm(self.tokenizer, prevtoken)
             prevtoken = t
 
+        print(self.tokenizer.to_s())
+        print('------------')
+
     def convert_jumps(self):
         """
         Convert jumps that occur from flow control items 
@@ -483,7 +494,7 @@ class Method(object):
 
         for key, vm_token in self.tokenizer.vm_tokens.items():
 
-            if vm_token.pytoken and type(vm_token.pytoken.args) is Label:
+            if vm_token.pytoken and type(vm_token.pytoken.args) is bytecode.Label:
 
                 label = vm_token.pytoken.args
 
@@ -523,11 +534,15 @@ class Method(object):
         return klass
 
     def _build_args(self):
+        varargs = bool(self.code_object.co_flags & CO_VARARGS)
+        varkwargs = bool(self.code_object.co_flags & CO_VARKEYWORDS)
+        newlocals = bool(self.code_object.co_flags & CO_NEWLOCALS)
+        nargs = self.code_object.co_argcount + self.code_object.co_kwonlyargcount + varargs + varkwargs
 
-        self._args = self.bp.args
+        self._args = self.code_object.co_varnames[:nargs]
 
         try:
-            code = self.bp.to_code()
+            code = self.bc.to_code()
         except Exception as e:
             # print("COUld not convert to code %s " % e)
             return
@@ -569,12 +584,12 @@ class Method(object):
                 if klass:
                     self.instance_vars[param[0]] = klass
 
-        self._args = self.bp.args
+        self._args = self.code_object.co_varnames[:nargs]
 
     def _check_for_type(self, argname, index):
 
         try:
-            code = self.bp.to_code()
+            code = self.bc.to_code()
         except Exception as e:
             # print("Could not lookup type %s " % e)
             return

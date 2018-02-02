@@ -1,7 +1,7 @@
 import pdb
 from collections import OrderedDict
 from boa.code import pyop
-from byteplay3 import Label
+from bytecode import Label
 from boa.blockchain.vm import VMOp
 from boa.blockchain.vm.BigInteger import BigInteger
 
