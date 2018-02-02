@@ -310,7 +310,7 @@ class Klass(Item):
 
         for i, instr in enumerate(self.items):
 
-            # if the item is a byteplay3 code object, it is a method
+            # if the item is a code object, it is a method
             if instr.arg.__class__.__name__ == 'code':
                 self.bc = Bytecode.from_code(instr.arg)
 

@@ -30,7 +30,7 @@ class Module(object):
     which will in turn give you access to any other loaded modules contained in the default module.
 
 
-    Each module ( as well as each method object ) contains a reference to a ``byteplay3`` object, named ``bc``.
+    Each module ( as well as each method object ) contains a reference to a ``Bytecode`` object, named ``bc``.
     This object contains the instruction set as it would be viewed in the Python interpreter.
 
     You can call ``print(module.bc)`` on any object with a ``bc`` attribute, and it will output the Python interpreter code.
@@ -39,16 +39,13 @@ class Module(object):
     >>> from boa.compiler import Compiler
     >>> module = Compiler.load('./boa/tests/src/AddTest1.py').default
     >>> print(module.bc)
-    2     1 LOAD_CONST           <byteplay3.Code object at 0x10cc3d6a0>
-          2 LOAD_CONST           'Main'
-          3 MAKE_FUNCTION        0
-          4 STORE_NAME           Main
-          5 LOAD_CONST           None
-          6 RETURN_VALUE
+    [<LOAD_CONST arg=<code object Main at 0x7f97aa635660, file "./boa/tests/src/AddTest1.py", line 2> lineno=2>,
+    <LOAD_CONST arg='Main' lineno=2>, <MAKE_FUNCTION arg=0 lineno=2>, <STORE_NAME arg='Main' lineno=2>,
+    <LOAD_CONST arg=None lineno=2>, <RETURN_VALUE lineno=2>]
 
 
     Once an executable has been processed and tokenized, it will then have a set of vm tokens that are similar
-    to the ``byteplay3`` tokens, but different in important ways. These are contained in the module's ``all_vm_tokens`` attribute
+    to the ``Bytecode`` tokens, but different in important ways. These are contained in the module's ``all_vm_tokens`` attribute
 
     You may call ``module.to_s()`` to view the program as it has been tokenized for the NEO Virtual Machine.
 
@@ -84,7 +81,7 @@ class Module(object):
                   116 RETURN_VALUE                         [data]
     """
 
-    bc = None  # this is to store the byteplay reference
+    bc = None  # this is to store the Bytecode reference
 
     path = None  # the path where this file is
 
@@ -302,7 +299,7 @@ class Module(object):
 
     def process_method(self, lineset):
         """
-        processes a set of lines that contain a byteplay3 code object
+        processes a set of lines that contain a Bytecode object
 
         :param lineset: the lineset to process and add
         :type lineset: Line

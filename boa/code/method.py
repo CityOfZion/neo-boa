@@ -127,10 +127,10 @@ class Method(object):
     @property
     def code(self):
         """
-        Return the ``byteplay3`` code object.
+        Return the ``bytecode`` code object.
 
-        :return: the ``byteplay3`` code object of this method
-        :rtype: ``byteplay3.Code``
+        :return: the ``Bytecode`` object of this method
+        :rtype: ``bytecode.Bytecode``
         """
 
         return self.bc
@@ -243,7 +243,7 @@ class Method(object):
 
     def print(self):
         """
-        This method prints the output of the method's ``byteplay3`` object 
+        This method prints the output of the method's ``Bytecode`` object 
         as it would be seen by a python interpreter.
         Compare this with the ``boa.code.method.Method.to_dis()`` output 
         and you will see subtle differences.
@@ -251,18 +251,10 @@ class Method(object):
         sample output:
 
         >>> method.print()
-              2            STORE_FAST           j
-              12         1 LOAD_CONST           9
-              14         4 LOAD_CONST           <byteplay3.Code object at 0x10cb5ec88>
-                         5 LOAD_CONST           'Main.<locals>.q'
-                         6 MAKE_FUNCTION        0
-                         7 STORE_FAST           q
-              22         9 LOAD_FAST            q
-                        10 LOAD_FAST            j
-                        11 CALL_FUNCTION        1
-                        12 STORE_FAST           m
-              24        14 LOAD_FAST            m
-                        15 RETURN_VALUE
+        [<LOAD_FAST arg='a' lineno=11>, <LOAD_FAST arg='b' lineno=11>, <BINARY_ADD
+        lineno=11>, <LOAD_FAST arg='c' lineno=11>, <LOAD_FAST arg='d'
+        lineno=11>, <BINARY_MULTIPLY lineno=11>, <BINARY_SUBTRACT lineno=11>,
+        <RETURN_VALUE lineno=11>]
         """
 
         print(self.code)
@@ -315,7 +307,7 @@ class Method(object):
 
     def read_initial_tokens(self):
         """
-        Take the initial set of tokens from the ``byteplay3`` code object and turn them into blocks.
+        Take the initial set of tokens from the ``Bytecode`` code object and turn them into blocks.
         """
 
         self.blocks = []
@@ -482,9 +474,6 @@ class Method(object):
         for t in self.tokens:
             tkn = t.to_vm(self.tokenizer, prevtoken)
             prevtoken = t
-
-        print(self.tokenizer.to_s())
-        print('------------')
 
     def convert_jumps(self):
         """
