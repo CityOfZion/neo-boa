@@ -374,10 +374,10 @@ class Block(object):
 
         # load the value 0
         loopcounter_start_ld_const = PyToken(op=pyop.LOAD_CONST,
-            lineno=loopsetup.line_no, index=-1, args=0)
+                                             lineno=loopsetup.line_no, index=-1, args=0)
         # now store the loop counter
         loopcounter_store_fast = PyToken(op=pyop.STORE_FAST,
-            lineno=loopsetup.line_no, index=-1, args=self.iterable_loopcounter)
+                                         lineno=loopsetup.line_no, index=-1, args=self.iterable_loopcounter)
 
         # this loads the list that is going to be iterated over ( LOAD_FAST )
         # this will be removed... its added into the call get length token function params
@@ -413,7 +413,7 @@ class Block(object):
 
         # now store the variable which is the output of the len(items) call
         looplength_store_op = PyToken(op=pyop.STORE_FAST,
-            lineno=loopsetup.line_no, index=-1, args=self.iterable_looplength)
+                                      lineno=loopsetup.line_no, index=-1, args=self.iterable_looplength)
 
         get_iter = self.oplist[2]
         for_iter = self.oplist[3]
@@ -424,15 +424,15 @@ class Block(object):
         self.iterable_variable = store_iterable_name.args
 
         ld_loopcounter = PyToken(op=pyop.LOAD_FAST,
-            lineno=loopsetup.line_no, index=-1, args=self.iterable_loopcounter)
+                                 lineno=loopsetup.line_no, index=-1, args=self.iterable_loopcounter)
 
         ld_loop_length = PyToken(op=pyop.LOAD_FAST,
-            lineno=loopsetup.line_no, index=-1, args=self.iterable_looplength)
+                                 lineno=loopsetup.line_no, index=-1, args=self.iterable_looplength)
 
         new__compare_op = PyToken(op=pyop.COMPARE_OP,
-            lineno=loopsetup.line_no, index=-1, args=Compare.LT)
+                                  lineno=loopsetup.line_no, index=-1, args=Compare.LT)
         new__popjump_op = PyToken(op=pyop.POP_JUMP_IF_FALSE,
-            lineno=loopsetup.line_no, index=-1, args=for_iter.args)
+                                  lineno=loopsetup.line_no, index=-1, args=for_iter.args)
 
         for_iter.args = None
 
@@ -486,18 +486,18 @@ class Block(object):
 
         # load the iterable collection
         ld_load_iterable = PyToken(op=pyop.LOAD_FAST,
-            lineno=first_op.line_no, index=-1, args=setup_block.iterable_item_name)
+                                   lineno=first_op.line_no, index=-1, args=setup_block.iterable_item_name)
 
         # load the counter var
         ld_counter = PyToken(op=pyop.LOAD_FAST,
-            lineno=first_op.line_no, index=-1, args=setup_block.iterable_loopcounter)
+                             lineno=first_op.line_no, index=-1, args=setup_block.iterable_loopcounter)
 
         # binary subscript of the iterable collection
         ld_subscript = PyToken(op=pyop.BINARY_SUBSCR, lineno=first_op.line_no, index=-1)
 
         # now store the iterated item
         st_iterable = PyToken(op=pyop.STORE_FAST,
-            lineno=first_op.line_no, index=-1, args=setup_block.iterable_variable)
+                              lineno=first_op.line_no, index=-1, args=setup_block.iterable_variable)
 
         #
         # the following load the forloop counter and increments it
@@ -505,15 +505,15 @@ class Block(object):
 
         # load the counter var
         ld_counter_2 = PyToken(op=pyop.LOAD_FAST,
-            lineno=first_op.line_no, index=-1, args=setup_block.iterable_loopcounter)
+                               lineno=first_op.line_no, index=-1, args=setup_block.iterable_loopcounter)
         # load the constant 1
         increment_const = PyToken(op=pyop.LOAD_CONST,
-            lineno=first_op.line_no, index=-1, args=1)
+                                  lineno=first_op.line_no, index=-1, args=1)
         # add it to the counter
         increment_add = PyToken(op=pyop.INPLACE_ADD, lineno=first_op.line_no, index=-1)
         # and store it again
         increment_store = PyToken(op=pyop.STORE_FAST,
-            lineno=first_op.line_no, index=-1, args=setup_block.iterable_loopcounter)
+                                  lineno=first_op.line_no, index=-1, args=setup_block.iterable_loopcounter)
 
         self.oplist = [
             ld_load_iterable, ld_counter, ld_subscript, st_iterable,
@@ -680,7 +680,7 @@ class Block(object):
 
                     # create the setitem op
                     settoken = PyToken(pyop.SETITEM,
-                        token.line_no, args=index_to_sub_at, array_item=item_to_sub)
+                                       token.line_no, args=index_to_sub_at, array_item=item_to_sub)
                     changed_items.append(settoken)
 
             if start_index_change is not None and end_index_change is not None:

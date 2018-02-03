@@ -11,9 +11,10 @@ import dis
 
 import collections
 
-CO_NEWLOCALS              = 0x0002      # only cleared for module/exec code
-CO_VARARGS                = 0x0004      # signature contains *arg
-CO_VARKEYWORDS            = 0x0008      # signature contains **kwargs
+CO_NEWLOCALS = 0x0002    # only cleared for module/exec code
+CO_VARARGS = 0x0004      # signature contains *arg
+CO_VARKEYWORDS = 0x0008  # signature contains **kwargs
+
 
 class Method(object):
     """
@@ -335,10 +336,10 @@ class Method(object):
 
             op = instr.opcode
             arg = instr.arg
+
             if arg is UNSET:
                 arg = None
             current_line_no = instr.lineno
-
 
             if instr.lineno != lastline:
                 total_lines += 1
@@ -352,32 +353,30 @@ class Method(object):
 
                 block_group = []
 
-            if 1==1:
-                if op in [pyop.STORE_FAST, pyop.STORE_NAME, pyop.STORE_GLOBAL] and arg not in self.local_stores.keys():
+            if op in [pyop.STORE_FAST, pyop.STORE_NAME, pyop.STORE_GLOBAL] and arg not in self.local_stores.keys():
 
-                    self._check_for_type(arg, total_lines)
-                    length = len(self.local_stores)
-                    self.local_stores[arg] = length
+                self._check_for_type(arg, total_lines)
+                length = len(self.local_stores)
+                self.local_stores[arg] = length
 
-                token = PyToken(op, current_line_no, i, arg)
+            token = PyToken(op, current_line_no, i, arg)
 
-                if op == pyop.SETUP_LOOP:
-                    token.args = None
-                    current_loop_token = token
+            if op == pyop.SETUP_LOOP:
+                token.args = None
+                current_loop_token = token
 
-                if op == pyop.BREAK_LOOP and current_loop_token is not None:
-                    token.args = current_loop_token.args
-                    current_loop_token = None
+            if op == pyop.BREAK_LOOP and current_loop_token is not None:
+                token.args = current_loop_token.args
+                current_loop_token = None
 
-                if current_label is not None:
-                    token.jump_label = current_label
-                    current_label = None
+            if current_label is not None:
+                token.jump_label = current_label
+                current_label = None
 
-                block_group.append(token)
+            block_group.append(token)
 
         if len(block_group):
             self.blocks.append(Block(block_group))
-
 
     def process_block_groups(self):
         """
@@ -447,7 +446,6 @@ class Method(object):
                         self.local_stores[localvar] = length
                 iter_setup_block = block
                 self.dynamic_iterator_count += 1
-
 
             # print("ADDED BLOCK %s " % [str(op) for op in block.oplist])
 

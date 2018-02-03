@@ -322,7 +322,6 @@ class Klass(Item):
             if instr.opcode == pyop.STORE_NAME:
                 self.name = instr.arg
 
-
         self.split_lines()
 
         for lineset in self.lines:
