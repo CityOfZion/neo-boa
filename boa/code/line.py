@@ -1,5 +1,3 @@
-from byteplay3 import *
-
 from boa.code import pyop
 
 
@@ -19,8 +17,8 @@ class Line(object):
 
         :return:
         """
-        for i, (op, arg) in enumerate(self.items):
-            if op in [pyop.IMPORT_NAME, pyop.IMPORT_FROM, pyop.IMPORT_STAR]:
+        for i, instr in enumerate(self.items):
+            if instr.opcode in [pyop.IMPORT_NAME, pyop.IMPORT_FROM, pyop.IMPORT_STAR]:
                 return True
         return False
 
@@ -30,15 +28,15 @@ class Line(object):
 
         :return:
         """
-        is_correct_length = len(self.items) == 3 or len(self.items) == 5
-        is_storing_constant = self.items[1][0] == pyop.LOAD_CONST and self.items[2][0] == pyop.STORE_NAME
+        is_correct_length = len(self.items) == 2 or len(self.items) == 4
+        is_storing_constant = self.items[0].opcode == pyop.LOAD_CONST and self.items[1].opcode == pyop.STORE_NAME
         return is_correct_length and is_storing_constant
 
     @property
     def is_module_method_call(self):
 
         if not self.is_class:
-            return self.items[-2][0] == pyop.CALL_FUNCTION and self.items[-1][0] == pyop.STORE_NAME
+            return self.items[-2].opcode == pyop.CALL_FUNCTION and self.items[-1].opcode == pyop.STORE_NAME
         return False
 
     @property
@@ -51,7 +49,7 @@ class Line(object):
 
         """
         for item in self.items:
-            if item[0] == pyop.STORE_NAME and item[1] == '__doc__':
+            if item.opcode == pyop.STORE_NAME and item.arg == '__doc__':
                 return True
         return False
 
@@ -61,8 +59,8 @@ class Line(object):
 
         :return:
         """
-        for i, (op, arg) in enumerate(self.items):
-            if op == pyop.MAKE_FUNCTION:
+        for i, instr in enumerate(self.items):
+            if instr.opcode == pyop.MAKE_FUNCTION:
                 return True
         return False
 
@@ -72,8 +70,8 @@ class Line(object):
 
         :return:
         """
-        for i, (op, arg) in enumerate(self.items):
-            if op == pyop.LOAD_BUILD_CLASS:
+        for i, instr in enumerate(self.items):
+            if instr.opcode == pyop.LOAD_BUILD_CLASS:
                 return True
         return False
 
@@ -83,9 +81,9 @@ class Line(object):
 
         :return:
         """
-        for i, (op, arg) in enumerate(self.items):
-            if type(arg) is Code:
-                return arg
+        for i, instr in enumerate(self.items):
+            if instr.arg.__class__.__name__ == 'code':
+                return instr.arg
         return None
 
     @property
@@ -94,8 +92,8 @@ class Line(object):
 
         :return:
         """
-        for i, (op, arg) in enumerate(self.items):
-            if arg == 'RegisterAction':
+        for i, instr in enumerate(self.items):
+            if instr.arg == 'RegisterAction':
                 return True
 
     @property
@@ -104,6 +102,6 @@ class Line(object):
 
         :return:
         """
-        for i, (op, arg) in enumerate(self.items):
-            if arg == 'RegisterAppCall':
+        for i, instr in enumerate(self.items):
+            if instr.arg == 'RegisterAppCall':
                 return True

@@ -6,4 +6,5 @@ dist
 build
 neo_boa.egg-info
 *.egg-info
+*.pyc
 /build

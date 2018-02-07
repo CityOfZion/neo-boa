@@ -1,4 +1,3 @@
-
 from boa.blockchain.vm.Neo.Action import RegisterAction
 
 

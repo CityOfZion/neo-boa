@@ -1,4 +1,5 @@
-from byteplay3 import Code, SetLinenoType, Label
+from bytecode import Label
+import bytecode
 from boa.code import pyop
 
 from boa.code.line import Line
@@ -29,25 +30,22 @@ class Module(object):
     which will in turn give you access to any other loaded modules contained in the default module.
 
 
-    Each module ( as well as each method object ) contains a reference to a ``byteplay3`` object, named ``bp``.
+    Each module ( as well as each method object ) contains a reference to a ``Bytecode`` object, named ``bc``.
     This object contains the instruction set as it would be viewed in the Python interpreter.
 
-    You can call ``print(module.bp.code)`` on any object with a ``bp`` attribute, and it will output the Python interpreter code.
+    You can call ``print(module.bc)`` on any object with a ``bc`` attribute, and it will output the Python interpreter code.
 
 
     >>> from boa.compiler import Compiler
     >>> module = Compiler.load('./boa/tests/src/AddTest1.py').default
-    >>> print(module.bp.code)
-    2     1 LOAD_CONST           <byteplay3.Code object at 0x10cc3d6a0>
-          2 LOAD_CONST           'Main'
-          3 MAKE_FUNCTION        0
-          4 STORE_NAME           Main
-          5 LOAD_CONST           None
-          6 RETURN_VALUE
+    >>> print(module.bc)
+    [<LOAD_CONST arg=<code object Main at 0x7f97aa635660, file "./boa/tests/src/AddTest1.py", line 2> lineno=2>,
+    <LOAD_CONST arg='Main' lineno=2>, <MAKE_FUNCTION arg=0 lineno=2>, <STORE_NAME arg='Main' lineno=2>,
+    <LOAD_CONST arg=None lineno=2>, <RETURN_VALUE lineno=2>]
 
 
     Once an executable has been processed and tokenized, it will then have a set of vm tokens that are similar
-    to the ``byteplay3`` tokens, but different in important ways. These are contained in the module's ``all_vm_tokens`` attribute
+    to the ``Bytecode`` tokens, but different in important ways. These are contained in the module's ``all_vm_tokens`` attribute
 
     You may call ``module.to_s()`` to view the program as it has been tokenized for the NEO Virtual Machine.
 
@@ -83,7 +81,7 @@ class Module(object):
                   116 RETURN_VALUE                         [data]
     """
 
-    bp = None  # this is to store the byteplay reference
+    bc = None  # this is to store the Bytecode reference
 
     path = None  # the path where this file is
 
@@ -228,7 +226,7 @@ class Module(object):
 
         suite = compile(source.read(), path, 'exec')
 
-        self.bp = Code.from_code(suite)
+        self.bc = bytecode.Bytecode.from_code(suite)
 
         source.close()
 
@@ -236,7 +234,7 @@ class Module(object):
 
     def build(self):
         """
-        Split the ``bp.code`` object into lines, and assembles the lines into different items.
+        Split the ``bc`` object into lines, and assembles the lines into different items.
         """
 
         self.lines = []
@@ -301,7 +299,7 @@ class Module(object):
 
     def process_method(self, lineset):
         """
-        processes a set of lines that contain a byteplay3 code object
+        processes a set of lines that contain a Bytecode object
 
         :param lineset: the lineset to process and add
         :type lineset: Line
@@ -373,20 +371,18 @@ class Module(object):
         Split the list of lines in the module into a set of objects that can be interpreted.
         """
 
-        lineitem = None
-
-        for i, (op, arg) in enumerate(self.bp.code):
-
-            if isinstance(op, SetLinenoType):
-                if lineitem is not None:
-                    self.lines.append(Line(lineitem))
-
+        lineitem = []
+        lastline = None
+        for i, instr in enumerate(self.bc):
+            if lastline is None:
+                lastline = instr.lineno
+            if instr.lineno != lastline:
+                self.lines.append(Line(lineitem))
+                lastline = instr.lineno
                 lineitem = []
 
-            lineitem.append((op, arg))
-
-        if len(lineitem):
-            self.lines.append(Line(lineitem))
+            lineitem.append(instr)
+        self.lines.append(Line(lineitem))
 
     def write(self):
         """

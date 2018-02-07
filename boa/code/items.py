@@ -1,4 +1,3 @@
-from byteplay3 import Opcode
 from boa.code.pytoken import PyToken
 
 import importlib
@@ -6,7 +5,9 @@ import binascii
 import sys
 import os
 
-from byteplay3 import Code, SetLinenoType
+from bytecode import SetLineno
+from bytecode import Bytecode
+from bytecode import Instr
 from boa.code import pyop
 
 from boa.code.line import Line
@@ -45,26 +46,26 @@ class Definition(Item):
         super(Definition, self).__init__(item_list)
 
         # this is a simple definition like a = 3
-        if len(self.items) == 3:
-            self.value = PyToken(self.items[1], 1, args=self.items[1][1])
-            self.attr = PyToken(self.items[2], 1, args=self.items[2][1])
+        if len(self.items) == 2:
+            self.value = PyToken(self.items[0], 1, args=self.items[0].arg)
+            self.attr = PyToken(self.items[1], 1, args=self.items[1].arg)
         # a method based definition linke ctx = GetContext
-        elif len(self.items) == 4:
+        elif len(self.items) == 3:
             self.is_method_call = True
-            self.attr = PyToken(self.items[-1], 1, args=self.items[-1][1])
-            self.value = PyToken(Opcode(pyop.LOAD_CONST), 1, args=7)
+            self.attr = PyToken(self.items[-1], 1, args=self.items[-1].arg)
+            self.value = PyToken(pyop.LOAD_CONST, 1, args=7)
             self.convert_class_call_to_block()
 
-        elif len(self.items) == 5:
+        elif len(self.items) == 4:
             if self.items[-1][0] == pyop.RETURN_VALUE:
                 self.items = self.items[:3]
-                self.value = PyToken(self.items[1], 1, args=self.items[1][1])
-                self.attr = PyToken(self.items[2], 1, args=self.items[2][1])
+                self.value = PyToken(self.items[1], 1, args=self.items[1].arg)
+                self.attr = PyToken(self.items[2], 1, args=self.items[2].arg)
 
         else:
 
             #            self.is_method_call=True
-            self.attr = PyToken(self.items[-1], 1, args=self.items[-1][1])
+            self.attr = PyToken(self.items[-1], 1, args=self.items[-1].arg)
 #            print("SOMETHING ELSE!")
 #            pdb.set_trace()
 
@@ -72,12 +73,11 @@ class Definition(Item):
 
         from boa.code.block import Block
 
-        opitems = self.items[1:]
         current_line_num = 1
         blockitems = []
-        for i, (op, arg) in enumerate(opitems):
+        for i, instr in enumerate(self.items):
 
-            token = PyToken(op, current_line_num, i, arg)
+            token = PyToken(instr.opcode, current_line_num, i, instr.arg)
             blockitems.append(token)
 
         self.block = Block(blockitems)
@@ -100,7 +100,9 @@ class Action(Item):
 
         arguments = []
 
-        for i, (key, value) in enumerate(self.items.items):
+        for i, instr in enumerate(self.items.items):
+            key = instr.opcode
+            value = instr.arg
             if key == pyop.LOAD_CONST:
                 arguments.append(value)
             elif key == pyop.STORE_NAME:
@@ -126,7 +128,9 @@ class SmartContractAppCall(Item):
 
         arguments = []
 
-        for i, (key, value) in enumerate(self.items.items):
+        for i, instr in enumerate(self.items.items):
+            key = instr.opcode
+            value = instr.arg
             if key == pyop.LOAD_CONST:
                 arguments.append(value)
             elif key == pyop.STORE_NAME:
@@ -205,14 +209,14 @@ class Import(Item):
 
         sys.path.append(self.file_path)
 
-        for i, (op, arg) in enumerate(self.items):
-            if op == pyop.IMPORT_NAME:
-                self.module_path = arg
-            elif op == pyop.STORE_NAME:
-                self.module_items_to_import.append(arg)
+        for i, instr in enumerate(self.items):
+            if instr.opcode == pyop.IMPORT_NAME:
+                self.module_path = instr.arg
+            elif instr.opcode == pyop.STORE_NAME:
+                self.module_items_to_import.append(instr.arg)
 #                print("SETTING MODALu nAme: %s " % self.module_name)
 
-            elif op == pyop.IMPORT_STAR:
+            elif instr.opcode == pyop.IMPORT_STAR:
                 self.module_items_to_import = ['STAR']
 
         self.is_system_module = False
@@ -262,7 +266,7 @@ class Klass(Item):
 
     methods = None
 
-    bp = None
+    bc = None
 
     module = None
 
@@ -304,19 +308,19 @@ class Klass(Item):
 
         """
 
-        for i, (op, arg) in enumerate(self.items):
+        for i, instr in enumerate(self.items):
 
-            # if the item is a byteplay3 code object, it is a method
-            if type(arg) is Code:
-                self.bp = arg
+            # if the item is a code object, it is a method
+            if instr.arg.__class__.__name__ == 'code':
+                self.bc = Bytecode.from_code(instr.arg)
 
             # load name is called  to gather the class parent
-            if op == pyop.LOAD_NAME:
-                self.parent_name = arg
+            if instr.opcode == pyop.LOAD_NAME:
+                self.parent_name = instr.arg
 
             # this occurs to store the name of the class
-            if op == pyop.STORE_NAME:
-                self.name = arg
+            if instr.opcode == pyop.STORE_NAME:
+                self.name = instr.arg
 
         self.split_lines()
 
@@ -348,20 +352,18 @@ class Klass(Item):
         Split the list of lines in the module into a set of objects that can be interpreted.
         """
 
-        lineitem = None
-
-        for i, (op, arg) in enumerate(self.bp.code):
-
-            if isinstance(op, SetLinenoType):
-                if lineitem is not None:
-                    self.lines.append(Line(lineitem))
-
+        lineitem = []
+        lastline = None
+        for i, instr in enumerate(self.bc):
+            if lastline is None:
+                lastline = instr.lineno
+            if instr.lineno != lastline:
+                self.lines.append(Line(lineitem))
+                lastline = instr.lineno
                 lineitem = []
 
-            lineitem.append((op, arg))
-
-        if len(lineitem):
-            self.lines.append(Line(lineitem))
+            lineitem.append(instr)
+        self.lines.append(Line(lineitem))
 
     def __str__(self):
         return self.name

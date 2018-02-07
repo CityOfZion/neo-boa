@@ -1,8 +1,9 @@
 from boa.code import pyop
 
-from byteplay3 import Label, isopcode, haslocal
+from bytecode.instr import Compare
+import bytecode
 
-from opcode import opname
+import opcode
 
 from boa.blockchain.vm import VMOp
 
@@ -64,18 +65,18 @@ class PyToken(object):
         :return:
         """
         if type(self.py_op) is int:
-            return opname[self.py_op]
-        elif type(self.py_op) is Label:
+            return opcode.opname[self.py_op]
+        elif type(self.py_op) is bytecode.Label:
             return 'Label %s ' % self.py_op
         return self.py_op
 
     @property
     def is_op(self):
         """
-
-        :return:
+        Return whether obj is an opcode - not SetLineno or Label
         """
-        return isopcode(self.py_op)
+
+        return not isinstance(self.py_op, bytecode.SetLineno) and not isinstance(self.py_op, bytecode.Label)
 
     @property
     def is_local(self):
@@ -83,7 +84,7 @@ class PyToken(object):
 
         :return:
         """
-        return haslocal(self.py_op)
+        return self.py_op in opcode.haslocal
 
     @property
     def arg_s(self):
@@ -109,7 +110,7 @@ class PyToken(object):
 
     def __str__(self):
         if self.args:
-            if type(self.args) is Label:
+            if type(self.args) is bytecode.Label:
                 arg = str(self.args)
             else:
                 arg = self.args
@@ -245,20 +246,19 @@ class PyToken(object):
             # compare
 
             elif op == pyop.COMPARE_OP:
-
-                if self.args == '>':
+                if self.args == Compare.GT:
                     token = tokenizer.convert1(VMOp.GT, self)
-                elif self.args == '>=':
+                elif self.args == Compare.GE:
                     token = tokenizer.convert1(VMOp.GTE, self)
-                elif self.args == '<':
+                elif self.args == Compare.LT:
                     token = tokenizer.convert1(VMOp.LT, self)
-                elif self.args == '<=':
+                elif self.args == Compare.LE:
                     token = tokenizer.convert1(VMOp.LTE, self)
-                elif self.args == '==':
+                elif self.args == Compare.EQ:
                     token = tokenizer.convert1(VMOp.NUMEQUAL, self)
-                elif self.args == 'is':
+                elif self.args == Compare.IS:
                     token = tokenizer.convert1(VMOp.EQUAL, self)
-                elif self.args == '!=':
+                elif self.args == Compare.NE:
                     token = tokenizer.convert1(VMOp.NUMNOTEQUAL, self)
 
             # arrays
