@@ -11,7 +11,7 @@ from boa.blockchain.vm.Neo.Output import GetScriptHash, GetValue, GetAssetId
 from boa.blockchain.vm.Neo.Input import GetHash, GetIndex
 from boa.blockchain.vm.Neo.Storage import GetContext, Get, Put, Delete
 
-from boa.code.builtins import range, concat, list, print_var
+from boa.code.builtins import range, concat, list
 
 OWNER = b'\xaf\x12\xa8h{\x14\x94\x8b\xc4\xa0\x08\x12\x8aU\nci[\xc1\xa5'
 
