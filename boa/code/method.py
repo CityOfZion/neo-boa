@@ -396,14 +396,15 @@ class Method(object):
             if block.is_return:
 
                 # this jump needs to jump 3 bytes.  why? stay tuned to find out
-                block_addr = b'\x03\x00'
 
-                ret_token = PyToken(Opcode(pyop.BR_S),
-                                    block.line, args=block_addr)
+#                block_addr = b'\x03\x00'
 
-                ret_token.jump_label = block.oplist[0].jump_label
-                block.oplist[0].jump_label = None
-                block.oplist.insert(0, ret_token)
+#                ret_token = PyToken(Opcode(pyop.BR_S),
+#                                    block.line, args=block_addr)
+
+#                ret_token.jump_label = block.oplist[0].jump_label
+#                block.oplist[0].jump_label = None
+#                block.oplist.insert(0, ret_token)
                 block.mark_as_end()
 
             if block.has_load_attr:

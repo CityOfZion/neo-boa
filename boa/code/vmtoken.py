@@ -164,7 +164,7 @@ class VMTokenizer(object):
 
         total_items = self.method.total_lines \
             + len(self.method.args) \
-            + self.method.dynamic_iterator_count
+            + self.method.dynamic_iterator_count + 8
 
         self.total_param_and_body_count_token = self.insert_push_integer(
             total_items)
@@ -449,9 +449,7 @@ class VMTokenizer(object):
 
         :param py_token:
         """
-        self.convert1(VMOp.FROMALTSTACK, py_token=py_token)
-        self.convert1(VMOp.DUP)
-        self.convert1(VMOp.TOALTSTACK)
+        self.convert1(VMOp.DUPFROMALTSTACK, py_token=py_token)
 
         local_name = py_token.args
 
@@ -483,9 +481,7 @@ class VMTokenizer(object):
             position = self.method.local_stores[local_name]
 
             # get array
-            self.convert1(VMOp.FROMALTSTACK, py_token=py_token)
-            self.convert1(VMOp.DUP)
-            self.convert1(VMOp.TOALTSTACK)
+            self.convert1(VMOp.DUPFROMALTSTACK, py_token=py_token)
 
             # get i
             self.convert_push_integer(position)
@@ -575,9 +571,7 @@ class VMTokenizer(object):
         self.method.local_stores[arg] = length
 
         # get array
-        self.insert1(VMOp.FROMALTSTACK)
-        self.insert1(VMOp.DUP)
-        self.insert1(VMOp.TOALTSTACK)
+        self.convert1(VMOp.DUPFROMALTSTACK)
 
         self.insert_push_integer(position)
         self.insert_push_integer(2)
@@ -689,7 +683,7 @@ class VMTokenizer(object):
                 self.insert1(VMOp.XSWAP)
                 self.insert1(VMOp.DROP)
 
-        self.insert1(VMOp.NOP)
+        # self.insert1(VMOp.NOP)
 
         fname = pytoken.func_name
         full_name = None
@@ -810,7 +804,7 @@ class VMTokenizer(object):
         ba = bytearray([length]) + bytearray(syscall_name)
         pytoken.is_sys_call = False
         vmtoken = self.convert1(VMOp.SYSCALL, pytoken, data=ba)
-        self.insert1(VMOp.NOP)
+        # self.insert1(VMOp.NOP)
         return vmtoken
 
     @staticmethod
@@ -846,7 +840,7 @@ class VMTokenizer(object):
             length = len(syscall_name)
             ba = bytearray([length]) + bytearray(syscall_name)
             vmtoken = self.convert1(VMOp.SYSCALL, pytoken, data=ba)
-            self.insert1(VMOp.NOP)
+            # self.insert1(VMOp.NOP)
             return vmtoken
 
         elif op == 'reversed':
@@ -930,7 +924,7 @@ class VMTokenizer(object):
             vmtoken = self.convert1(
                 VMOp.APPCALL, py_token=pytoken, data=bytearray(20))
 
-            self.insert1(VMOp.NOP)
+            # self.insert1(VMOp.NOP)
             return vmtoken
 
         # this is used for app calls that are registered
@@ -946,8 +940,6 @@ class VMTokenizer(object):
         # push the contract hash
         vmtoken = self.convert1(
             VMOp.APPCALL, py_token=pytoken, data=sc_appcall.script_hash_addr)
-
-        self.insert1(VMOp.NOP)
 
         return vmtoken
 
@@ -986,9 +978,7 @@ class VMTokenizer(object):
                     raise Exception("value for %s " % definition.attr)
 
             # get array
-            self.insert1(VMOp.FROMALTSTACK)
-            self.insert1(VMOp.DUP)
-            self.insert1(VMOp.TOALTSTACK)
+            self.insert1(VMOp.DUPFROMALTSTACK)
 
             self.insert_push_integer(count)
             self.insert_push_integer(2)

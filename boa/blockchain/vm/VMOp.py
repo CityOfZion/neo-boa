@@ -131,7 +131,7 @@ REVERSE = b'\xC9'
 REMOVE = b'\xCA'
 
 
-DEBUGOP = b'\xFB'
+DEBUG = b'\xCA'
 
 # the following is a convienience method
 # for a human readable version of the ops

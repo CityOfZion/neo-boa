@@ -130,10 +130,10 @@ class PyToken(object):
 
             op = self.py_op
 
-            if op == pyop.NOP:
-                token = tokenizer.convert1(VMOp.NOP, self)
+            # if op == pyop.NOP:
+            #     token = tokenizer.convert1(VMOp.NOP, self)
 
-            elif op == pyop.RETURN_VALUE:
+            if op == pyop.RETURN_VALUE:
                 token = tokenizer.convert1(VMOp.RET, self)
 
             # control flow
@@ -153,20 +153,20 @@ class PyToken(object):
             elif op == pyop.POP_JUMP_IF_TRUE:
                 token = tokenizer.convert_pop_jmp_if(self)
             # loops
-            elif op == pyop.SETUP_LOOP:
-                token = tokenizer.convert1(VMOp.NOP, self)
+            # elif op == pyop.SETUP_LOOP:
+            #     token = tokenizer.convert1(VMOp.NOP, self)
 
             elif op == pyop.BREAK_LOOP:
                 token = tokenizer.convert1(VMOp.JMP, self, data=bytearray(2))
 
-            elif op == pyop.FOR_ITER:
-                token = tokenizer.convert1(VMOp.NOP, self)
+            # elif op == pyop.FOR_ITER:
+            #     token = tokenizer.convert1(VMOp.NOP, self)
 
 #            elif op == pyop.GET_ITER:
 #                token = tokenizer.convert1(VMOp.NOP, self)
 
-            elif op == pyop.POP_BLOCK:
-                token = tokenizer.convert1(VMOp.NOP, self)
+            # elif op == pyop.POP_BLOCK:
+            #     token = tokenizer.convert1(VMOp.NOP, self)
 
             elif op == pyop.FROMALTSTACK:
                 token = tokenizer.convert1(VMOp.FROMALTSTACK, self)
