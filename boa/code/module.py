@@ -1,4 +1,3 @@
-from byteplay3 import Code, SetLinenoType, Label
 from boa.code import pyop
 
 from boa.code.line import Line
