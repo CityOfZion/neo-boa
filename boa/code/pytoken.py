@@ -1,21 +1,18 @@
 from boa.code import pyop
 
-from byteplay3 import Label, isopcode, haslocal, Code
+from byteplay3 import Label, isopcode, haslocal
 
 from opcode import opname
 
 from boa.blockchain.vm import VMOp
 
-import pdb
-import inspect
-
 NON_RETURN_SYS_CALLS = ['Notify', 'print', 'Log', 'Put', 'Register',
-                        'reverse', 'append',
+                        'reverse', 'append', 'remove',
                         'Delete', 'SetVotes', 'ContractDestroy',
                         'MerkleRoot', 'Hash', 'PrevHash', 'GetHeader', ]
 
 
-class PyToken():
+class PyToken(object):
 
     """
 
@@ -111,8 +108,6 @@ class PyToken():
         self.array_item = array_item
 
     def __str__(self):
-        arg = ''
-
         if self.args:
             if type(self.args) is Label:
                 arg = str(self.args)
@@ -225,7 +220,8 @@ class PyToken():
             elif op in [pyop.BINARY_MULTIPLY, pyop.INPLACE_MULTIPLY]:
                 token = tokenizer.convert1(VMOp.MUL, self)
 
-            elif op in [pyop.BINARY_FLOOR_DIVIDE, pyop.BINARY_TRUE_DIVIDE, pyop.INPLACE_FLOOR_DIVIDE, pyop.INPLACE_TRUE_DIVIDE]:
+            elif op in [pyop.BINARY_FLOOR_DIVIDE, pyop.BINARY_TRUE_DIVIDE,
+                        pyop.INPLACE_FLOOR_DIVIDE, pyop.INPLACE_TRUE_DIVIDE]:
                 token = tokenizer.convert1(VMOp.DIV, self)
 
             elif op in [pyop.BINARY_MODULO, pyop.INPLACE_MODULO]:
@@ -267,7 +263,7 @@ class PyToken():
 
             # arrays
             elif op == pyop.BUILD_LIST:
-                token = tokenizer.convert_new_array(VMOp.NEWARRAY, self)
+                token = tokenizer.convert_new_array(self)
             elif op == pyop.SETITEM:
                 token = tokenizer.convert_set_element(self, self.args)
 #                token = tokenizer.convert1(VMOp.SETITEM,self, data=self.args)

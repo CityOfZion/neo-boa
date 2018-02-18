@@ -11,12 +11,11 @@ def Main():
     r = range(0, 4)
 
     for i in range(0, 4):
-        count += wah(i, count)
-#        h = wah()
-#        print(count)
+        count = i
+        if i == 3:
+            break
 
     return count
-
 
 def wah(i, count):
 

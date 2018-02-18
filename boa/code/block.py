@@ -1,12 +1,12 @@
 
-from byteplay3 import Opcode, Label
+from byteplay3 import Opcode
 from boa.code.pytoken import PyToken
 from boa.code import pyop
 from boa.code.vmtoken import NEO_SC_FRAMEWORK
 import pdb
 
 
-class Block():
+class Block(object):
 
     """
 
@@ -82,7 +82,7 @@ class Block():
         """
         for token in self.oplist:
             if token.py_op == pyop.LOAD_ATTR and token.instance_type is None:
-                if token.args not in ['reverse', 'append', ]:
+                if token.args not in ['reverse', 'append', 'remove', ]:
                     return True
         return False
 
@@ -529,13 +529,12 @@ class Block():
     def lookup_return_types(self, orig_method):
         ivars = {}
         klass_type = None
-        return_type = None
         for index, token in enumerate(self.oplist):
             if token.py_op == pyop.CALL_FUNCTION:
                 param_count = token.args
 
                 # why would param count be 256 when calling w/ kwargs?
-                # when keyword args are sent, the param count is 256 * num paramms?
+                # when keyword args are sent, the param count is 256 * num params?
                 if param_count % 256 == 0:
                     param_count = 2 * int(param_count / 256)
 

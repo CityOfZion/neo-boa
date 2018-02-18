@@ -2,7 +2,7 @@ import os
 from boa.code.module import Module
 
 
-class Compiler():
+class Compiler(object):
     """
     The main compiler interface class.
 
@@ -54,7 +54,7 @@ class Compiler():
 
         try:
             return self.modules[0]
-        except Exception as e:
+        except Exception:
             pass
 
     @staticmethod
@@ -110,6 +110,9 @@ class Compiler():
             output_path = '%s/%s' % (path, newfilename)
 
         Compiler.write_file(data, output_path)
+
+        module = compiler.default
+        module.export_debug(output_path)
 
         return data
 

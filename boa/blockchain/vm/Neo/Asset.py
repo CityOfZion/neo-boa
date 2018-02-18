@@ -1,5 +1,5 @@
 
-class Asset():
+class Asset:
 
     @property
     def AssetId(self):

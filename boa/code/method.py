@@ -10,12 +10,9 @@ import inspect
 import dis
 
 import collections
-import pdb
-
-from byteplay3 import object_attributes, print_attr_values, printcodelist
 
 
-class Method():
+class Method(object):
     """
     The method is the main unit of functionality.  Any method can take 0 to many arguments and return 1 value
 
@@ -32,8 +29,9 @@ class Method():
 
     The VMTokenizer is responsible for turning PyToken objects into VMToken objects.
 
-    When the method has been tokenized, each token then has an address within the method.  Once these addresses are complete,
-    the ``convert_jumps`` method is called to tell each flow control operation where (which address) it will need to jump to.
+    When the method has been tokenized, each token then has an address within the method.  Once these addresses are
+    complete, the ``convert_jumps`` method is called to tell each flow control operation where (which address) it will
+    need to jump.
     """
 
     bp = None
@@ -356,7 +354,6 @@ class Method():
                 current_label = op
 
             else:
-                instance_type = None
                 if op in [pyop.STORE_FAST, pyop.STORE_NAME, pyop.STORE_GLOBAL] and arg not in self.local_stores.keys():
 
                     self._check_for_type(arg, total_lines)
@@ -399,14 +396,15 @@ class Method():
             if block.is_return:
 
                 # this jump needs to jump 3 bytes.  why? stay tuned to find out
-                # block_addr = b'\x03\x00'
-                #
-                # ret_token = PyToken(Opcode(pyop.BR_S),
-                #                     block.line, args=block_addr)
-                #
-                # ret_token.jump_label = block.oplist[0].jump_label
-                # block.oplist[0].jump_label = None
-                # block.oplist.insert(0, ret_token)
+
+#                block_addr = b'\x03\x00'
+
+#                ret_token = PyToken(Opcode(pyop.BR_S),
+#                                    block.line, args=block_addr)
+
+#                ret_token.jump_label = block.oplist[0].jump_label
+#                block.oplist[0].jump_label = None
+#                block.oplist.insert(0, ret_token)
                 block.mark_as_end()
 
             if block.has_load_attr:
