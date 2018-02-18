@@ -396,6 +396,7 @@ class Method(object):
             if block.is_return:
 
                 # this jump needs to jump 3 bytes.  why? stay tuned to find out
+
 #                block_addr = b'\x03\x00'
 
 #                ret_token = PyToken(Opcode(pyop.BR_S),
