@@ -26,10 +26,8 @@ class Compiler(object):
 
     __instance = None
 
-    modules = None
+    entry_module = None
 
-    def __init__(self):
-        self.modules = []
 
     @staticmethod
     def instance():
@@ -51,11 +49,7 @@ class Compiler(object):
 
         :return: the default `boa.code.Module` object or None upon exception
         """
-
-        try:
-            return self.modules[0]
-        except Exception:
-            pass
+        return self.entry_module
 
     @staticmethod
     def write_file(data, path):
@@ -77,8 +71,7 @@ class Compiler(object):
         :rtype: bytes
         """
 
-        module = self.default
-        out_bytes = bytes(module.write())
+        out_bytes = bytes(self.entry_module.write())
 #        module.to_s()
         return out_bytes
 
@@ -111,8 +104,7 @@ class Compiler(object):
 
         Compiler.write_file(data, output_path)
 
-        module = compiler.default
-        module.export_debug(output_path)
+#        self.entry_module.export_debug(output_path)
 
         return data
 
@@ -137,7 +129,16 @@ class Compiler(object):
 
         compiler = Compiler.instance()
 
-        module = Module(path)
-        compiler.modules.append(module)
+        compiler.entry_module = Module(path)
+
 
         return compiler
+
+
+
+#    def register_module(self, module:Module):
+#        if not module in self.modules:
+#            self.modules.append(module)
+
+
+

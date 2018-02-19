@@ -1,9 +1,9 @@
 import pdb
 from collections import OrderedDict
 from boa.code import pyop
-from byteplay3 import Label
-from boa.blockchain.vm import VMOp
-from boa.blockchain.vm.BigInteger import BigInteger
+from boa.interop import VMOp
+from boa.interop.BigInteger import BigInteger
+from bytecode import Label
 
 NEO_SC_FRAMEWORK = 'boa.blockchain.vm.'
 
@@ -153,27 +153,24 @@ class VMTokenizer(object):
     def method_begin_items(self):
 
         # we just need to inssert the total number of arguments + body variables
-        # which is the length of the method `local_stores` dictionary
+        # which is the length of the method `scope` dictionary
         # then create a new array for the vm to store
         """
 
         """
 
-#        if self.method.name == 'second':
-#            pdb.set_trace()
-
-        total_items = self.method.total_lines \
-            + len(self.method.args) \
-            + self.method.dynamic_iterator_count + 8
-
-        self.total_param_and_body_count_token = self.insert_push_integer(
-            total_items)
-        self.total_param_and_body_count_token.updatable_data = total_items
+        self.insert_push_integer(self.method.stacksize)
         self.insert1(VMOp.NEWARRAY)
         self.insert1(VMOp.TOALTSTACK)
 
         for index, arg in enumerate(self.method.args):
             self.convert_load_parameter(arg, index)
+
+
+    def method_end_items(self):
+        self.insert1(VMOp.FROMALTSTACK)
+        self.insert1(VMOp.DROP)
+
 
     def update_method_begin_items(self):
         """
@@ -377,13 +374,14 @@ class VMTokenizer(object):
             token = self.convert_push_integer(pytoken.args, pytoken)
         elif type(pytoken.args) is str:
             str_bytes = pytoken.args.encode('utf-8')
-            pytoken.args = str_bytes
-            token = self.convert_push_data(pytoken.args, pytoken)
+#            pytoken.args = str_bytes
+            token = self.convert_push_data(str_bytes, pytoken)
         elif type(pytoken.args) is bytes:
             token = self.convert_push_data(pytoken.args, pytoken)
         elif type(pytoken.args) is bytearray:
             token = self.convert_push_data(bytes(pytoken.args), pytoken)
         elif type(pytoken.args) is bool:
+            print("CONVERTING LOAD FALSE...... %s " % pytoken.args)
             token = self.convert_push_integer(pytoken.args)
         elif isinstance(pytoken.args, type(None)):
             token = self.convert_push_data(bytearray(0))
@@ -428,14 +426,19 @@ class VMTokenizer(object):
         :param py_token:
         :return:
         """
+        print("CONVERTING PUSH INT: %s " % i)
+        if py_token:
+            print("pytoken: %s " % py_token.args)
         if i == 0:
+            print("do zero")
             return self.convert1(VMOp.PUSH0, py_token=py_token)
         elif i == -1:
             return self.convert1(VMOp.PUSHM1, py_token=py_token)
         elif 0 < i <= 16:
             out = 0x50 + i
             return self.convert1(out, py_token=py_token)
-
+        else:
+            print("NOT COVRETING????")
         bigint = BigInteger(i)
 
         outdata = bigint.ToByteArray()
@@ -453,15 +456,17 @@ class VMTokenizer(object):
 
         local_name = py_token.args
 
-        position = self.method.local_stores[local_name]
+        if local_name in self.method.scope.keys():
+            position = self.method.scope[local_name]
 
-        # set i the index of the local variable to be stored
-        self.convert_push_integer(position)
+            self.convert_push_integer(position)
 
-        # set item
-        self.convert_push_integer(2)
-        self.convert1(VMOp.ROLL)
-        self.convert1(VMOp.SETITEM)
+            # set item
+            self.convert_push_integer(2)
+            self.convert1(VMOp.ROLL)
+            self.convert1(VMOp.SETITEM)
+        else:
+            raise Exception("local name '%s' not found in method scope '%s'" % (local_name, self.method.full_name))
 
     def convert_load_local(self, py_token, name=None):
         """
@@ -476,9 +481,8 @@ class VMTokenizer(object):
             local_name = py_token.args
 
         # check to see if this local is a variable
-        if local_name in self.method.local_stores:
-
-            position = self.method.local_stores[local_name]
+        if local_name in self.method.scope:
+            position = self.method.scope[local_name]
 
             # get array
             self.convert1(VMOp.DUPFROMALTSTACK, py_token=py_token)
@@ -551,7 +555,7 @@ class VMTokenizer(object):
         if type(arg.array_item) is str:
 
             # first we'll look for the local variable with name of the str
-            if arg.array_item in self.method.local_stores:
+            if arg.array_item in self.method.scope:
                 self.convert_load_local(None, name=arg.array_item)
             # otherwise we'll do the unknown type thing
             else:
@@ -567,9 +571,6 @@ class VMTokenizer(object):
         :param arg:
         :param position:
         """
-        length = len(self.method.local_stores)
-        self.method.local_stores[arg] = length
-
         # get array
         self.convert1(VMOp.DUPFROMALTSTACK)
 
@@ -638,6 +639,8 @@ class VMTokenizer(object):
         :return:
         """
 
+#        pdb.set_trace()
+
         if pytoken.func_name == 'list':
             return self.convert_built_in_list(pytoken)
         elif pytoken.func_name == 'bytearray':
@@ -645,10 +648,10 @@ class VMTokenizer(object):
         elif pytoken.func_name == 'bytes':
             return self.convert_push_data(pytoken.func_params[0].args, pytoken)
 
-        for t in pytoken.func_params:
-            t.to_vm(self)
+#        for t in pytoken.func_params:
+#            t.to_vm(self)
 
-        param_len = len(pytoken.func_params)
+        param_len = pytoken.num_params
 
         if param_len <= 1:
             pass
@@ -711,8 +714,8 @@ class VMTokenizer(object):
             vmtoken = self.convert_built_in(fname, pytoken)
 
         # look to see if this is a new intance of an object
-        elif self.is_class_init(fname):
-            vmtoken = self.convert_class_init(fname, pytoken)
+#        elif self.is_class_init(fname):
+#            vmtoken = self.convert_class_init(fname, pytoken)
 
         # otherwise we assume the method is defined by the module
         else:
@@ -943,51 +946,4 @@ class VMTokenizer(object):
 
         return vmtoken
 
-    def is_class_init(self, fname):
-        kls = self.method.lookup_type(fname)
-        if kls:
-            return True
-        return False
 
-    def convert_class_init(self, fname, pytoken):
-        klass = self.method.lookup_type(fname)
-
-        if not klass:
-            raise Exception("Could not find class for %s " % fname)
-
-        # push the number of fields in the class
-        # and create a new struct for it
-        token = self.convert_push_integer(klass.total_fields, py_token=pytoken)
-
-        self.convert1(VMOp.NEWSTRUCT)
-
-        self.convert1(VMOp.TOALTSTACK)
-
-        count = 0
-        for definition in klass.class_vars:
-
-            if definition.is_method_call:
-                #                self.convert_load_const(definition.value)
-                #                pdb.set_trace()
-                self.convert_method_call(definition.fn_call)
-            else:
-                if definition.value:
-                    self.convert_load_const(definition.value)
-                else:
-                    pdb.set_trace()
-                    raise Exception("value for %s " % definition.attr)
-
-            # get array
-            self.insert1(VMOp.DUPFROMALTSTACK)
-
-            self.insert_push_integer(count)
-            self.insert_push_integer(2)
-
-            self.insert1(VMOp.ROLL)
-            self.insert1(VMOp.SETITEM)
-
-            count += 1
-
-        self.convert1(VMOp.FROMALTSTACK)
-
-        return token
