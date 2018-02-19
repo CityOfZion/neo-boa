@@ -21,6 +21,11 @@ class method(object):
 
     address = 0
 
+    module = None
+
+    name = None
+    module_name = None
+
     _expressions = None
 
     _scope = None
@@ -39,6 +44,8 @@ class method(object):
 
     @property
     def full_name(self):
+        if len(self.module_name):
+            return '%s.%s' %  (self.module_name,self.name)
         return self.name
 
     @property
@@ -53,9 +60,10 @@ class method(object):
     def stacksize(self):
         return self.bytecode.argcount + len(self.cfg)
 
-    def __init__(self, module, block):
+    def __init__(self, module, block, module_name=''):
         self.module = module
         self.block = block
+        self.module_name = module_name
         self._scope = {}
         try:
             self.code = self.block[0].arg
@@ -76,12 +84,16 @@ class method(object):
                 if instr.lineno != start_ln:
                     self.cfg.split_block(block,index)
 
-#        for block in self.cfg:
-#            if block[-1].opcode == pyop.RETURN_VALUE:
-#                bl = block # type:BasicBlock
-#                bl.
-#                block.bytecode = [Instr('GET_AITER'), Instr('GET_ANEXT')] + block
-#                print("DO SOMETHING RETUR!!! %s " % block)
+        jmptargets=[]
+        for block in self.cfg:
+            if block.get_jump():
+                jmptargets.append(block.get_jump())
+
+        for index,block in enumerate(self.cfg):
+            if block in jmptargets:
+                if block[-1].opcode == pyop.RETURN_VALUE and len(block) > 1:
+                    self.cfg.split_block(block, 1)
+
 #        print_block(self.cfg, self.cfg[0])
 
         for block in self.cfg:
@@ -95,8 +107,6 @@ class method(object):
         self._expressions = []
 
     def prepare(self):
-
-
         for blk in self.cfg:
             exp = Expression(blk, self.tokenizer)
             exp.tokenize()
@@ -107,7 +117,6 @@ class method(object):
         for block in self.cfg:
             jmp = block.get_jump()
             if jmp:
-                print("JUMP:::: %s " % jmp)
                 j_start=None
                 j_end = None
                 for key,vmtoken in self.tokenizer.vm_tokens.items():
@@ -118,9 +127,7 @@ class method(object):
                             j_end = vmtoken
 
                 if j_start and j_end:
-                    print("START, END %s %s " % (j_start,j_end))
                     diff = j_end.addr - j_start.addr
-                    print("diff: %s " % diff)
                     j_start.data = diff.to_bytes(2, 'little',signed=True)
                 else:
                     raise Exception("Could not determine conditional jump for block %s " % block)

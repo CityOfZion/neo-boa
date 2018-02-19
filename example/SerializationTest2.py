@@ -1,6 +1,6 @@
 from boa.interop.Neo.Runtime import Notify
 from boa.interop.Neo.Storage import Get, GetContext, Put
-from boa.code.builtins import concat, list, range, take, substr
+from boa.builtins import concat, list, range, take, substr
 
 
 # this is the same thing as SerializationTest1, but using slice notation instead of substr

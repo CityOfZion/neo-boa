@@ -1,6 +1,7 @@
 from bytecode import BasicBlock,Instr,UNSET,Compare
 from boa.interop import VMOp
 from boa.code import pyop
+import binascii
 import opcode as _opcode
 import pdb
 
@@ -10,17 +11,68 @@ import pdb
 
 class Expression(object):
 
+    updated_blocklist = None
     block = None
     tokenizer = None
+
 
     def __init__(self,block:BasicBlock, tokenizer):
         self.block = block
         self.tokenizer = tokenizer
 
+    def _reverselists(self):
+        indices = []
+        for index,instr in enumerate(self.updated_blocklist):
+            if instr.opcode == pyop.BUILD_LIST:
+                indices.append(index)
+        if len(indices):
+            output = []
+            for index, instr in enumerate(self.updated_blocklist):
+                output.append(instr)
+                if index in indices:
+                    output.append(Instr("DUP_TOP",lineno=instr.lineno))
+                    output.append(Instr('YIELD_VALUE',lineno=instr.lineno))
+            self.updated_blocklist = output
+
+    def _checkbytearray(self):
+        to_remove=[]
+        for index,instr in enumerate(self.block):
+            if instr.opcode == pyop.LOAD_GLOBAL and instr.arg == 'bytearray':
+                to_remove.append(instr)
+                to_remove.append(self.block[index+2])
+        if len(to_remove):
+            self._remove_instructions(to_remove)
+    def _check_load_attr(self):
+        replaceable_attr_calls = ['append','remove','reverse',]
+        for index,instr in enumerate(self.block):
+            if instr.opcode == pyop.LOAD_ATTR and instr.arg in replaceable_attr_calls:
+                instr.opcode = pyop.LOAD_GLOBAL
+
+    def _check_function_kwargs(self):
+        to_remove = []
+        for index, instr in enumerate(self.updated_blocklist):
+            if instr.opcode == pyop.CALL_FUNCTION_KW:
+                instr.opcode = pyop.CALL_FUNCTION
+                to_remove.append(self.updated_blocklist[index-1])
+        if len(to_remove):
+            self._remove_instructions(to_remove)
+
+    def _remove_instructions(self, to_remove):
+        updated = []
+        for item in self.block:
+            if not item in to_remove:
+                updated.append(item)
+        self.updated_blocklist = updated
 
     def tokenize(self):
 
-        for index,instr in enumerate(self.block):
+        self.updated_blocklist = self.block
+        self._checkbytearray()
+        self._check_function_kwargs()
+        self._check_load_attr()
+        self._reverselists()
+
+        for index,instr in enumerate(self.updated_blocklist):
             token = PyToken(instr, self, index)
             token.to_vm(self.tokenizer)
 
@@ -55,6 +107,8 @@ class PyToken():
 #        print("INSTRUCTION ARG: %s %s" % (type(self.instruction.arg), self.instruction.arg))
         if isinstance(self.instruction.arg, BasicBlock):
             return 'jump to..'
+        elif isinstance(self.instruction.arg, bytes) or isinstance(self.instruction.arg, bytearray):
+            return str(self.instruction.arg)
         return self.instruction.arg if self.instruction.arg != UNSET else ''
 
     @property
@@ -91,15 +145,7 @@ class PyToken():
         if op == pyop.NOP:
             tokenizer.convert1(VMOp.NOP, self)
 
-#        elif op == pyop.GET_AITER:
-#            print("CONVERTING END ITEM1")
-#            tokenizer.insert1(VMOp.FROMALTSTACK, self)
-#        elif op == pyop.GET_ANEXT:
-##            print("CONVERTING END ITEM 2")
- #           tokenizer.insert1(VMOp.DROP, self)
-
         elif op == pyop.RETURN_VALUE:
-#            self.expression.block = [Instr("NOP"),Instr("NOP")] + self.expression.block
             tokenizer.method_end_items()
             tokenizer.convert1(VMOp.RET, self)
 
@@ -240,6 +286,13 @@ class PyToken():
         # arrays
         elif op == pyop.BUILD_LIST:
             tokenizer.convert_new_array(self)
+        elif op == pyop.DUP_TOP:
+            tokenizer.convert1(VMOp.DUP, self)
+        elif op == pyop.YIELD_VALUE:
+            tokenizer.convert1(VMOp.REVERSE, self)
+        elif op == pyop.STORE_SUBSCR:
+            tokenizer.convert_store_subscr(self)
+#            tokenizer.convert1(VMOp.SETITEM,self)
         elif op == pyop.SETITEM:
             tokenizer.convert_set_element(self, self.instruction.arg)
 #                tokenizer.convert1(VMOp.SETITEM,self, data=self.instruction.arg)

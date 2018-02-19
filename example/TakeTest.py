@@ -1,4 +1,4 @@
-from boa.code.builtins import take
+from boa.builtins import take
 
 
 def Main():

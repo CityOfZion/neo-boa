@@ -1,5 +1,3 @@
-from boa.interop.Neo.Runtime import Notify, Log
-
 
 def Main():
     """

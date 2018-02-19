@@ -11,7 +11,7 @@ from boa.interop.Neo.Output import GetScriptHash, GetValue, GetAssetId
 from boa.interop.Neo.Input import GetHash, GetIndex
 from boa.interop.Neo.Storage import GetContext, Get, Put, Delete
 
-from boa.code.builtins import range, concat, list, print_var
+from boa.builtins import range, concat, list, print_var
 
 OWNER = b'\xaf\x12\xa8h{\x14\x94\x8b\xc4\xa0\x08\x12\x8aU\nci[\xc1\xa5'
 

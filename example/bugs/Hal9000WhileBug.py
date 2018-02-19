@@ -1,6 +1,6 @@
 from boa.interop.Neo.Runtime import GetTrigger
 from boa.interop.Neo.TriggerType import Application, Verification
-from boa.code.builtins import substr
+from boa.builtins import substr
 
 
 def Main(bytes):

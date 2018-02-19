@@ -1,12 +1,11 @@
-from boa.interop.Neo.Runtime import Notify
-
+# tested
 
 def Main():
     """
 
     :return:
     """
-    m = [1, 2, 3, 4]
+    m = [16, 2, 3, 4]
 
     m.remove(1)
 

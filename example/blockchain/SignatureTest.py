@@ -1,4 +1,4 @@
-from boa.code.builtins import verify_signature
+from boa.builtins import verify_signature
 from boa.interop.Neo.Runtime import CheckWitness, Notify
 
 

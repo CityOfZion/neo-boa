@@ -129,7 +129,9 @@ class Compiler(object):
 
         compiler = Compiler.instance()
 
-        compiler.entry_module = Module(path)
+        cwd = os.getcwd()
+
+        compiler.entry_module = Module(path, cwd)
 
 
         return compiler

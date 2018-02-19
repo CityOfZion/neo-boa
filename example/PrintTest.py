@@ -1,5 +1,5 @@
 
-from boa.code.builtins import list, range
+from boa.builtins import list, range
 from boa.interop.Neo.Runtime import Log, Notify
 
 

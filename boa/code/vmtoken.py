@@ -5,7 +5,7 @@ from boa.interop import VMOp
 from boa.interop.BigInteger import BigInteger
 from bytecode import Label
 
-NEO_SC_FRAMEWORK = 'boa.blockchain.vm.'
+NEO_SC_FRAMEWORK = 'boa.interop.'
 
 
 class VMToken(object):
@@ -381,8 +381,7 @@ class VMTokenizer(object):
         elif type(pytoken.args) is bytearray:
             token = self.convert_push_data(bytes(pytoken.args), pytoken)
         elif type(pytoken.args) is bool:
-            print("CONVERTING LOAD FALSE...... %s " % pytoken.args)
-            token = self.convert_push_integer(pytoken.args)
+            token = self.convert_push_integer(pytoken.args, pytoken)
         elif isinstance(pytoken.args, type(None)):
             token = self.convert_push_data(bytearray(0))
 #        elif type(pytoken.args) == Code:
@@ -426,19 +425,14 @@ class VMTokenizer(object):
         :param py_token:
         :return:
         """
-        print("CONVERTING PUSH INT: %s " % i)
-        if py_token:
-            print("pytoken: %s " % py_token.args)
         if i == 0:
-            print("do zero")
             return self.convert1(VMOp.PUSH0, py_token=py_token)
         elif i == -1:
             return self.convert1(VMOp.PUSHM1, py_token=py_token)
         elif 0 < i <= 16:
             out = 0x50 + i
             return self.convert1(out, py_token=py_token)
-        else:
-            print("NOT COVRETING????")
+
         bigint = BigInteger(i)
 
         outdata = bigint.ToByteArray()
@@ -540,6 +534,11 @@ class VMTokenizer(object):
             raise Exception("Could not load type %s for item %s " %
                             (type(item), item))
 
+    def convert_store_subscr(self, pytoken):
+
+        self.convert1(VMOp.ROT)
+        self.convert1(VMOp.SETITEM, pytoken)
+
     def convert_set_element(self, arg, position):
         """
 
@@ -586,21 +585,6 @@ class VMTokenizer(object):
         :param pytoken:
         """
         lenfound = False
-        for index, token in enumerate(pytoken.func_params):
-
-            if token.args == 'length' and not lenfound:
-                # first we see if a constant ( ie integer was passed in
-
-                new_array_len = pytoken.func_params[index + 1].args
-
-                if type(new_array_len) is int:
-                    self.insert_push_integer(new_array_len)
-                else:
-                    self.convert_load_local(None, name=new_array_len)
-                lenfound = True
-
-        if not lenfound:
-            self.insert_push_integer(0)
         self.convert1(VMOp.NEWARRAY, pytoken)
 
     def convert_build_slice(self, pytoken):
@@ -790,6 +774,7 @@ class VMTokenizer(object):
         :param op:
         :return:
         """
+        print("CHECKING IS SYSCALL: %s " % op)
         if op is not None and NEO_SC_FRAMEWORK in op:
             if 'TriggerType' not in op:  # we will compile TriggerType normally
                 return True

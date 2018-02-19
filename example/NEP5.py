@@ -28,7 +28,7 @@ from boa.interop.Neo.Runtime import Log, GetTrigger, CheckWitness
 from boa.interop.Neo.Action import RegisterAction
 from boa.interop.Neo.TriggerType import Application, Verification
 from boa.interop.Neo.Storage import GetContext, Get, Put, Delete
-from boa.code.builtins import concat
+from boa.builtins import concat
 
 # -------------------------------------------
 # TOKEN SETTINGS

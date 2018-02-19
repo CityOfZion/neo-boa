@@ -1,8 +1,9 @@
 from boa.code import pyop
-from boa.code.method import method
+from boa.code.method import method as BoaMethod
 from boa.util import print_block,BlockType,get_block_type
 from bytecode import UNSET, Bytecode, BasicBlock,ControlFlowGraph, dump_bytecode,Label
 from boa.interop import VMOp
+import importlib
 
 from collections import OrderedDict
 
@@ -19,6 +20,35 @@ class Module(object):
     path = None
 
     all_vm_tokens = OrderedDict()
+
+    cwd = None
+    module_name = ''
+
+    to_import = None
+
+    @staticmethod
+    def ImportFromBlock(block:BasicBlock, current_path):
+        print("CURRENT PATH %s " % current_path)
+        mpath = None
+        mnames = []
+        for index, instr in enumerate(block):
+            if instr.opcode == pyop.IMPORT_NAME:
+                mpath = instr.arg
+            elif instr.opcode in [pyop.IMPORT_FROM, pyop.STORE_NAME]:
+                if not instr.arg in mnames:
+                    mnames.append(instr.arg)
+            elif instr.opcode == pyop.IMPORT_STAR:
+                mnames = ['*']
+
+#        if 'boa.interop' in mpath:
+#            return None
+        try:
+            pymodule = importlib.import_module(mpath, mpath)
+            filename = pymodule.__file__
+            return Module(filename,current_path,mpath,mnames)
+        except Exception as e:
+            print("Could not import: %s " % e)
+        return None
 
     @property
     def actions(self):
@@ -82,7 +112,7 @@ class Module(object):
 
         #        print("METHODS FOR MODULE: %s " % self.path)
         for m in self.methods:
-            #            print("METHODS: %s %s" % (m.name, m.full_name))
+            print("METHODS: %s %s" % (m.name, m.full_name))
             if m.full_name == method_name:
                 return m
             elif m.name == method_name:
@@ -90,9 +120,12 @@ class Module(object):
         return None
 
 
-    def __init__(self, path:str):
+    def __init__(self, path:str, working_dir, module_name='', to_import=['*']):
 
         self.path = path
+        self.cwd = working_dir
+        self.to_import = to_import
+        self.module_name = module_name
 
         source = open(path, 'rb')
 
@@ -104,7 +137,6 @@ class Module(object):
         source.close()
 
         self.build()
-
 
 
     def build(self):
@@ -123,10 +155,14 @@ class Module(object):
             type = get_block_type(blk)
 
             if type == BlockType.MAKE_FUNCTION:
-                m = method(self, blk)
-                self.methods.append(m)
-
-
+                m = BoaMethod(self, blk, self.module_name)
+                if self.to_import == ['*'] or m.name in self.to_import:
+                    self.methods.append(m)
+            elif type == BlockType.IMPORT_ITEM:
+                new_module = Module.ImportFromBlock(blk, self.cwd)
+                if new_module:
+                    for method in new_module.methods:
+                        self.methods.append(method)
 
     def write(self):
         """
@@ -174,7 +210,7 @@ class Module(object):
 
         address = 0
 
-        for method in self.methods:
+        for method in self.orderered_methods:
 
             method.address = address
 

@@ -1,4 +1,4 @@
-from boa.code.builtins import sha1, sha256, hash160, hash256
+from boa.builtins import sha1, sha256, hash160, hash256
 from boa.interop.Neo.Runtime import Notify
 
 

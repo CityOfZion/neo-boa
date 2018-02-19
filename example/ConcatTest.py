@@ -1,4 +1,4 @@
-from boa.code.builtins import concat
+from boa.builtins import concat
 
 
 def Main():

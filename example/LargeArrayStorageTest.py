@@ -16,7 +16,7 @@ Example Executions:
 """
 from boa.interop.Neo.Storage import Get, Put, Delete, GetContext
 from boa.interop.Neo.Runtime import Log, Notify
-from boa.code.builtins import concat, list, range, take, substr
+from boa.builtins import concat, list, range, take, substr
 
 # -- Global variables
 KEY = 'test_array'

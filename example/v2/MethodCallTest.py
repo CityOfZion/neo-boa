@@ -4,7 +4,7 @@ from boa.interop.Neo.Blockchain import GetHeader
 from boa.interop.Neo.Runtime import Notify
 from boa.interop.Neo.Storage import GetContext, Get
 
-from boa.code.builtins import concat
+from boa.builtins import concat
 
 
 def Main(a, b):

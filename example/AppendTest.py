@@ -20,8 +20,8 @@ def Main():
 
     m.append(b'\x01')
 
-#    answer = j[0]
+    answer = q[0]
 
-    Notify(m)
+#    Notify(m)
 
     return m[5]

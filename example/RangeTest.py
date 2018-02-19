@@ -1,5 +1,5 @@
 
-from boa.code.builtins import range
+from boa.builtins import range
 
 
 def Main():
@@ -11,9 +11,9 @@ def Main():
 
     # b = a[4] # this will fail, since the range list is only 4 elements long
     # ( 0, 1, 2, 3 )
-
-    b = a[3]
+#    print(a)
+    #b = a[3]
 
 #    q = add_items(4, 4)
 
-    return b
+    return a

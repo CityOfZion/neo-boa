@@ -1,22 +1,13 @@
-from boa.interop.Neo.Runtime import Notify
-
+# tested
 
 def Main():
 
-    # lets have fun
-
-    # this dosen't work. sad
-    #        m = [[1,2,3],'fun','cool','neo']
-    """
-
-    :return:
-    """
     m = [1, 2, 4, 'blah']
 
     m.reverse()
 
-    Notify(m)
+#    Notify(m)
 
-    m.reverse()
+#    m.reverse()
 
     return m[0]

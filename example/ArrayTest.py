@@ -1,42 +1,14 @@
+# tested
 
-from boa.code.builtins import list, range
-from boa.interop.Neo.Runtime import Log, Notify
+def Main(index):
 
+    j = 3
+    arr = [1, j + 3, 3, 4,gethting(),6,7,8,9]
 
-def Main():
-    """
+    m = arr[index]
 
-    :return:
-    """
-    mmm = range(2, 14)
+    return m
 
-    l = mmm[2]  # type:int
+def gethting():
 
-    Notify(l)
-
-    empty = list()
-
-    b = get_thing()
-    c = get_items_from_range(mmm, 7)
-
-    k = range(10, 12)
-
-    return l + b + c + k[0]
-
-
-def get_thing():
-    """
-
-    :return:
-    """
-    return 7
-
-
-def get_items_from_range(items, index):
-    """
-
-    :param items:
-    :param index:
-    :return:
-    """
-    return items[index]
+    return 8
