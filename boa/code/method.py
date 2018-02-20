@@ -1,4 +1,4 @@
-from bytecode import ControlFlowGraph,BasicBlock,Instr,Bytecode,Label,Compare
+from bytecode import BasicBlock,Instr,Bytecode,Label,Compare
 from boa.util import print_block
 from boa.code.vmtoken import VMTokenizer
 from boa.code.expression import Expression
@@ -26,6 +26,7 @@ class method(object):
     name = None
     module_name = None
 
+    _blocks = None
     _expressions = None
 
     _scope = None
@@ -33,7 +34,7 @@ class method(object):
 
     _forloop_counter = 0
 
-    _finished_loops = None
+
 
     @property
     def forloop_counter(self):
@@ -67,7 +68,7 @@ class method(object):
 
     @property
     def stacksize(self):
-        return self.bytecode.argcount + len(self.cfg) + 20
+        return self.bytecode.argcount + 20
 
     def __init__(self, module, block, module_name=''):
         self.module = module
@@ -82,58 +83,58 @@ class method(object):
             print("Colud not get code or name %s " % e)
 
         self.bytecode = Bytecode.from_code(self.code)
-        self.init_cfg()
+        self.setup()
 
-    def init_cfg(self):
+    def setup(self):
 
         self._scope = {}
-
-        self.cfg = ControlFlowGraph.from_bytecode(self.bytecode)
 
         for index,name in enumerate(self.bytecode.argnames):
             self._scope[name] = index
 
 
+        blocks = []
+        instructions = []
+        last_ln = self.bytecode[0].lineno
+        for instr in self.bytecode:
+            if not isinstance(instr, Label) and instr.lineno != last_ln:
+                last_ln = instr.lineno
+                if len(instructions):
+                    blocks.append(instructions)
+                instructions = []
+
+            if not isinstance(instr, Label) and instr.opcode == pyop.STORE_FAST:
+                self.add_to_scope(instr.arg)
+
+            instructions.append(instr)
+        if len(instructions):
+            blocks.append(instructions)
+
+        self._blocks = blocks
+
+        for b in blocks:
+            print("BLOCK %s " % b)
+
 #        print_block(self.cfg, self.cfg[0])
 
-        for block in self.cfg:
-            start_ln = block[0].lineno
-            for index,instr in enumerate(block):
-                if instr.lineno != start_ln:
-                    self.cfg.split_block(block,index)
+#        for block in self.cfg:
+#            start_ln = block[0].lineno
+#            for index,instr in enumerate(block):
+#                if instr.lineno != start_ln:
+#                    self.cfg.split_block(block,index)
 
 
-        # checking for loop iterations
-        got_setup = False
-        for index,block in enumerate(self.cfg):
-            if not got_setup and block[0].opcode == pyop.SETUP_LOOP and not block[0].lineno in self._finished_loops:
-                next_block = self.cfg[index+1]
-                print("FOUND A SETUP!!!!!!!! %s " % block)
-                got_setup = True
-                for item in next_block:
-                    # we've found a for loop
-                    if item.opcode == pyop.GET_ITER:
-                        print("FOUND A GETER %s " % block)
-                        loop_end_idex = self.cfg.get_block_index( block[0].arg)
-                        loopblocks = self.cfg[index:loop_end_idex]
-                        self.reprogram_loop(loopblocks, index, loop_end_idex)
-                        return
+ #       jmptargets=[]
+ #       for block in self.bytecode:
+ #           if block.get_jump():
+ #               jmptargets.append(block.get_jump())
 
-        jmptargets=[]
-        for block in self.cfg:
-            if block.get_jump():
-                jmptargets.append(block.get_jump())
-
-        for index,block in enumerate(self.cfg):
-            if block in jmptargets:
-                if block[-1].opcode == pyop.RETURN_VALUE and len(block) > 1:
-                    self.cfg.split_block(block, 1)
+#        for index,block in enumerate(self.bytecode):
+#            if block in jmptargets:
+#                if block[-1].opcode == pyop.RETURN_VALUE and len(block) > 1:
+#                    self.cfg.split_block(block, 1)
 
 
-        for block in self.cfg:
-            for instr in block:
-                if instr.opcode == pyop.STORE_FAST:
-                    self.add_to_scope(instr.arg)
 
 
         self.tokenizer = VMTokenizer(self)
@@ -147,49 +148,43 @@ class method(object):
             self._scope[argname] = current_total
 
     def prepare(self):
-        for blk in self.cfg:
-            exp = Expression(blk, self.tokenizer)
+        for block in self._blocks:
+            exp = Expression(block, self.tokenizer)
             self._expressions.append(exp)
             exp.tokenize()
 
-        self.convert_jumps()
         self.convert_breaks()
+        self.convert_jumps()
+#        self.convert_breaks()
 
 
     def convert_jumps(self):
-        for block in self.cfg:
-            jmp = block.get_jump()
-            if jmp:
-                j_start=None
-                j_end = None
-                for key,vmtoken in self.tokenizer.vm_tokens.items():
-                    if vmtoken.pytoken and vmtoken.pytoken.expression.block == block:
-                        j_start = vmtoken
-                    if not j_end and vmtoken.pytoken:
-                        if vmtoken.pytoken.expression.block == jmp:
-                            j_end = vmtoken
-
-                if j_start and j_end:
-#                    print("START, END %s%s\n %s%s " % (vars(j_start.pytoken),vars(j_start), vars(j_end.pytoken),vars(j_end)))
-#                    pdb.set_trace()
-                    diff = j_end.addr - j_start.addr
-                    j_start.data = diff.to_bytes(2, 'little',signed=True)
-                else:
-                    print("Could not determine conditional jump for block %s " % block)
+        filtered = []
+        for vmtoken in self.tokenizer.vm_tokens.values():
+            if vmtoken.pytoken:
+                filtered.append(vmtoken)
+        for vmtoken in filtered:
+            if vmtoken.pytoken.jump_from and not vmtoken.pytoken.jump_found:
+                for vmtoken2 in filtered:
+                    if vmtoken2.pytoken.jump_target == vmtoken.pytoken.jump_from:
+                        diff = vmtoken2.addr - vmtoken.addr
+                        vmtoken.data = diff.to_bytes(2, 'little',signed=True)
+                        vmtoken2.pytoken.jump_from_addr = vmtoken.addr
+                        vmtoken.pytoken.jump_to_addr = vmtoken2.addr
 
     def convert_breaks(self):
         tokens = list(self.vm_tokens.values())
-        tokens.reverse()
-        brk_token = None
+        setup_token_label = None
+
         for tkn in tokens:
             if tkn.pytoken:
+                if tkn.pytoken.pyop == pyop.SETUP_LOOP:
+                    setup_token_label = tkn.pytoken.jump_from
                 if tkn.pytoken.pyop == pyop.BREAK_LOOP:
-                    brk_token=tkn
-                if tkn.pytoken.pyop == pyop.SETUP_LOOP and brk_token:
-                    setup_token_jump_target = int.from_bytes(tkn.data,'little') + tkn.addr
-                    diff = setup_token_jump_target - brk_token.addr
-                    brk_token.data = diff.to_bytes(2,'little',signed=True)
-                    brk_token = None
+                    if not setup_token_label:
+                        raise Exception("No loopsetup for break")
+                    tkn.pytoken.jump_from = setup_token_label
+                    print("set jump from on brk loop")
 
 
 
@@ -198,20 +193,20 @@ class method(object):
         self._finished_loops.append(loopblocks[0][0].lineno)
 
         instructions = []
-        for index,blk in enumerate(self.cfg):
+        for index,blk in enumerate(self.bytecode):
             if index < startloop:
                 for item in blk:
                     instructions.append(item)
 
         instructions += self.create_loop_instructions(loopblocks)
 
-        for index,blk in enumerate(self.cfg):
+        for index,blk in enumerate(self.bytecode):
             if index >= endloop:
                 for item in blk:
                     instructions.append(item)
 
         self.bytecode = Bytecode(instructions)
-        self.init_cfg()
+#        self.init_cfg()
 
 
 

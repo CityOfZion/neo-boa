@@ -1,4 +1,4 @@
-from bytecode import BasicBlock,Instr,UNSET,Compare
+from bytecode import BasicBlock,Instr,UNSET,Compare,Label
 from boa.interop import VMOp
 from boa.code import pyop
 import binascii
@@ -17,15 +17,24 @@ class Expression(object):
     tokenizer = None
 
 
-    def __init__(self,block:BasicBlock, tokenizer):
+    methodnames = None
+
+    def __init__(self,block:list, tokenizer):
         self.block = block
         self.orig_block = block
         self.tokenizer = tokenizer
+        self.methodnames = []
+
+    def add_method(self, pytoken):
+
+        self.methodnames.append( pytoken.instruction.arg)
+
+        print("CURRENT METHODS %s " % self.methodnames)
 
     def _reverselists(self):
         indices = []
         for index,instr in enumerate(self.updated_blocklist):
-            if instr.opcode == pyop.BUILD_LIST:
+            if not isinstance(instr, Label) and instr.opcode == pyop.BUILD_LIST:
                 indices.append(index)
         if len(indices):
             output = []
@@ -39,7 +48,7 @@ class Expression(object):
     def _checkbytearray(self):
         to_remove=[]
         for index,instr in enumerate(self.block):
-            if instr.opcode == pyop.LOAD_GLOBAL and instr.arg == 'bytearray':
+            if not isinstance(instr, Label) and instr.opcode == pyop.LOAD_GLOBAL and instr.arg == 'bytearray':
                 to_remove.append(instr)
                 to_remove.append(self.block[index+2])
         if len(to_remove):
@@ -48,13 +57,13 @@ class Expression(object):
     def _check_load_attr(self):
         replaceable_attr_calls = ['append','remove','reverse',]
         for index,instr in enumerate(self.block):
-            if instr.opcode == pyop.LOAD_ATTR and instr.arg in replaceable_attr_calls:
+            if not isinstance(instr, Label) and instr.opcode == pyop.LOAD_ATTR and instr.arg in replaceable_attr_calls:
                 instr.opcode = pyop.LOAD_GLOBAL
 
     def _check_function_kwargs(self):
         to_remove = []
         for index, instr in enumerate(self.updated_blocklist):
-            if instr.opcode == pyop.CALL_FUNCTION_KW:
+            if not isinstance(instr, Label) and instr.opcode == pyop.CALL_FUNCTION_KW:
                 instr.opcode = pyop.CALL_FUNCTION
                 to_remove.append(self.updated_blocklist[index-1])
         if len(to_remove):
@@ -75,25 +84,21 @@ class Expression(object):
 
         self.updated_blocklist = self.block
         self._checkbytearray()
-  #      self._checkloops(method)
+#        self._checkloops(method)
         self._check_function_kwargs()
         self._check_load_attr()
         self._reverselists()
 
+        ln = None
         for index,instr in enumerate(self.updated_blocklist):
-            token = PyToken(instr, self, index)
+            if isinstance(instr, Instr):
+                ln = instr.lineno
+            token = PyToken(instr, self, index, ln)
             token.to_vm(self.tokenizer)
 
 
     def lookup_method_name(self, index):
-        items = reversed(self.block[:index])
-        for item in items:
-            if item.opcode == pyop.LOAD_GLOBAL:
-                return item.arg
-        items = reversed(self.updated_blocklist[:index])
-        for item in items:
-            if item.opcode == pyop.LOAD_GLOBAL:
-                return item.arg
+        return self.methodnames.pop()
 
 class PyToken():
 
@@ -101,14 +106,30 @@ class PyToken():
     expression = None # type:Expression
     index = 0
 
+    jump_found = False
+
+    jump_target = None
+    jump_from = None
+    jump_from_addr = None
+    jump_to_addr = None
 
     _methodname = None
 
-    def __init__(self, instruction, expression, index):
+    def __init__(self, instruction, expression, index, fallback_ln):
         self.instruction = instruction
         self.expression = expression
         self.index = index
         self._methodname = None
+        self.jump_from = None
+        self.jump_target = None
+        self.jump_found = False
+        self.jump_from_addr = None
+        self.jump_to_addr = None
+        if isinstance(instruction, Label):
+            self.jump_target = instruction
+            self.instruction = Instr("NOP",lineno=fallback_ln)
+        elif isinstance(instruction.arg, Label):
+            self.jump_from = instruction.arg
 
     @property
     def lineno(self):
@@ -117,8 +138,15 @@ class PyToken():
     @property
     def arg_str(self):
 #        print("INSTRUCTION ARG: %s %s" % (type(self.instruction.arg), self.instruction.arg))
-        if isinstance(self.instruction.arg, BasicBlock):
-            return 'jump to..'
+        params = ['a','b','c','d','e','f','g','h','i','j','k','l','m']
+        if self.jump_target:
+            return 'from %s ' % self.jump_from_addr
+        elif self.jump_from:
+            return 'to %s ' % self.jump_to_addr
+        elif self._methodname:
+            return '%s(%s)' % (self._methodname, ','.join(params[0:self.instruction.arg]))
+        elif isinstance(self.instruction.arg, Compare):
+            return self.instruction.arg.name
         elif isinstance(self.instruction.arg, bytes) or isinstance(self.instruction.arg, bytearray):
             return str(self.instruction.arg)
         return self.instruction.arg if self.instruction.arg != UNSET else ''
@@ -211,7 +239,8 @@ class PyToken():
         elif op == pyop.LOAD_GLOBAL:
 
             default_module = Compiler.instance().default
-
+            self.expression.add_method(self)
+#            tokenizer.convert1(VMOp.NOP, self)
 #            if default_module.method_by_name(self.args):
 #                print("FOUND METHOD BY NAME: %s " % self.args)
  #           else:
