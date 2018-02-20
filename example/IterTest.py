@@ -1,22 +1,13 @@
-from boa.builtins import range
-
 
 def Main():
-    """
 
-    :return:
-    """
-    count = 0
+    items = [1, 2, 4, 8]
 
-    r = range(0, 4)
+    j= 3
 
-    for i in range(0, 4):
-        count = i
-        if i == 3:
-            break
+    for i in items:
+        j+=i
+        print(j)
 
-    return count
+    return j
 
-def wah(i, count):
-
-    return count + 1 * i

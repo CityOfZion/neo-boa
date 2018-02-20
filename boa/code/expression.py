@@ -13,11 +13,13 @@ class Expression(object):
 
     updated_blocklist = None
     block = None
+    orig_block = None
     tokenizer = None
 
 
     def __init__(self,block:BasicBlock, tokenizer):
         self.block = block
+        self.orig_block = block
         self.tokenizer = tokenizer
 
     def _reverselists(self):
@@ -42,6 +44,7 @@ class Expression(object):
                 to_remove.append(self.block[index+2])
         if len(to_remove):
             self._remove_instructions(to_remove)
+
     def _check_load_attr(self):
         replaceable_attr_calls = ['append','remove','reverse',]
         for index,instr in enumerate(self.block):
@@ -64,10 +67,15 @@ class Expression(object):
                 updated.append(item)
         self.updated_blocklist = updated
 
+
+
+
     def tokenize(self):
+
 
         self.updated_blocklist = self.block
         self._checkbytearray()
+  #      self._checkloops(method)
         self._check_function_kwargs()
         self._check_load_attr()
         self._reverselists()
@@ -79,6 +87,10 @@ class Expression(object):
 
     def lookup_method_name(self, index):
         items = reversed(self.block[:index])
+        for item in items:
+            if item.opcode == pyop.LOAD_GLOBAL:
+                return item.arg
+        items = reversed(self.updated_blocklist[:index])
         for item in items:
             if item.opcode == pyop.LOAD_GLOBAL:
                 return item.arg
@@ -167,16 +179,15 @@ class PyToken():
             tokenizer.convert_pop_jmp_if(self)
         # loops
         elif op == pyop.SETUP_LOOP:
-            tokenizer.convert1(VMOp.NOP, self)
-
+            tokenizer.convert1(VMOp.NOP, self, data=bytearray(2))
         elif op == pyop.BREAK_LOOP:
             tokenizer.convert1(VMOp.JMP, self, data=bytearray(2))
 
         elif op == pyop.FOR_ITER:
-            tokenizer.convert1(VMOp.NOP, self)
+            tokenizer.convert1(VMOp.NOP, self, data=bytearray(2))
 
-#            elif op == pyop.GET_ITER:
-#                tokenizer.convert1(VMOp.NOP, self)
+        elif op == pyop.GET_ITER:
+            tokenizer.convert1(VMOp.NOP, self)
 
         elif op == pyop.POP_BLOCK:
             tokenizer.convert1(VMOp.NOP, self)

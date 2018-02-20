@@ -38,6 +38,8 @@ class VMToken(object):
             return self.vm_op
         elif type(self.vm_op) is bytes:
             return ord(self.vm_op)
+        elif type(self.vm_op) is str:
+            return self.vm_op
         else:
             raise Exception('Invalid op: %s ' % self.vm_op)
 
@@ -624,6 +626,7 @@ class VMTokenizer(object):
         """
 
 #        pdb.set_trace()
+        print("CONVERTING METHOD CALL %s %s " % (pytoken, pytoken.func_name))
 
         if pytoken.func_name == 'list':
             return self.convert_built_in_list(pytoken)

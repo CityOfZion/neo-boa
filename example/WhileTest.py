@@ -13,15 +13,13 @@ def Main():
 
         a = a + 1
 
-#        if a == 7:
-#            break
+        if a == 7:
+            break
 
-        while b < 4:
 
-            b = b + 1
 
-            while c > 20:
+    while c > 20:
 
-                c = c - 5
+        c = c - 5
 
-    return a + b + c  # expect 28
+    return a + b + c  # expect 34
