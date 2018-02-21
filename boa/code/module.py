@@ -218,16 +218,17 @@ class Module(object):
 
         for method in self.orderered_methods:
 
-            method.address = address
+            if not method.is_interop:
+                method.address = address
 
-            for key, vmtoken in method.vm_tokens.items():
-                self.all_vm_tokens[address] = vmtoken
-                address += 1
+                for key, vmtoken in method.vm_tokens.items():
+                    self.all_vm_tokens[address] = vmtoken
+                    address += 1
 
-                if vmtoken.data is not None:
-                    address += len(vmtoken.data)
+                    if vmtoken.data is not None:
+                        address += len(vmtoken.data)
 
-                vmtoken.addr = vmtoken.addr + method.address
+                    vmtoken.addr = vmtoken.addr + method.address
 
         for key, vmtoken in self.all_vm_tokens.items():
             if vmtoken.src_method is not None:

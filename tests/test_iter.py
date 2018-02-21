@@ -55,7 +55,7 @@ class TestContract(BoaTest):
         out = output.write()
         tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '','07')
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].GetByteArray(),bytearray(b'\x00abcdabcdabcd\x0c'))
+        self.assertEqual(results[0].GetByteArray(),bytearray(b'abcdabcdabcd\x0c'))
 
     def test_Iter5(self):
         output = Compiler.instance().load('example/IterTest5.py').default

@@ -54,6 +54,10 @@ class method(object):
         return self.tokenizer.vm_tokens
 
     @property
+    def is_interop(self):
+        return 'boa.interop.' in self.full_name
+
+    @property
     def full_name(self):
         if len(self.module_name):
             return '%s.%s' %  (self.module_name,self.name)

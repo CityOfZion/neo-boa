@@ -68,14 +68,5 @@ class TestContract(BoaTest):
         # this should I guess return nothing
         # for now it returns an empty byte array
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].GetByteArray(), bytearray(b'\x00'))
-
-    def test_InplaceMath(self):
-
-        output = Compiler.instance().load('example/InPlaceMath.py').default
-        out = output.write()
-
-        tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '','02')
-        self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].GetBigInteger(), 21)
+        self.assertEqual(results[0].GetByteArray(), bytearray(b''))
 
