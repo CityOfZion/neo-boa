@@ -9,9 +9,10 @@ class BlockType():
     MODULE_VAR = 4
     DOC_STRING = 5
     LOAD_CONST = 6
-    UNKNOWN = 0
+    UNKNOWN = 9
 
 def get_block_type(block):
+
     for instr in block:
         if instr.opcode in [pyop.IMPORT_FROM, pyop.IMPORT_NAME, pyop.IMPORT_STAR]:
             return BlockType.IMPORT_ITEM

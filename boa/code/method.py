@@ -3,6 +3,7 @@ from boa.util import print_block
 from boa.code.vmtoken import VMTokenizer
 from boa.code.expression import Expression
 from boa.code import pyop
+import dis
 import pdb
 
 class method(object):
@@ -34,6 +35,7 @@ class method(object):
 
     _forloop_counter = 0
 
+    _extra = None
 
     @property
     def forloop_counter(self):
@@ -69,10 +71,11 @@ class method(object):
     def stacksize(self):
         return self.bytecode.argcount + 50
 
-    def __init__(self, module, block, module_name=''):
+    def __init__(self, module, block, module_name, extra):
         self.module = module
         self.block = block
         self.module_name = module_name
+        self._extra = extra
         self._finished_loops = []
 
         try:
@@ -80,6 +83,9 @@ class method(object):
             self.name = self.block[1].arg
         except Exception as e:
             print("Colud not get code or name %s " % e)
+
+
+#        dis.dis(self.code)
 
         self.bytecode = Bytecode.from_code(self.code)
         self.setup()
@@ -92,6 +98,28 @@ class method(object):
             self._scope[name] = index
 
         blocks = []
+
+        # find LOAD_GLOBALS
+        gbl = []
+        for instr in self.bytecode:
+            if isinstance(instr,Instr) and instr.opcode == pyop.LOAD_GLOBAL:
+               gbl.append(instr.arg)
+
+
+        # if there are global things passed in
+        # we want to check if they are used in the method
+        # and if so, load them in
+        global_blocks = []
+        if len(self._extra):
+            for item in self._extra:
+                if item[-1].opcode == pyop.STORE_NAME:
+                    if item[-1].arg in gbl:
+                        global_blocks.append( item )
+                        self.add_to_scope(item[-1].arg)
+                        if item[0].opcode == pyop.LOAD_NAME:
+                            item[0].opcode = pyop.LOAD_GLOBAL
+            blocks = global_blocks
+
         instructions = []
         last_ln = self.bytecode[0].lineno
         for instr in self.bytecode:

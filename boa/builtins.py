@@ -117,3 +117,7 @@ def verify_signatures(signatures, pubkeys):
     :param pubkeys:
     """
     pass
+
+
+def throw_if_null(item):
+    pass

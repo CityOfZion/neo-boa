@@ -4,7 +4,7 @@ from boa.util import print_block,BlockType,get_block_type
 from bytecode import UNSET, Bytecode, BasicBlock,ControlFlowGraph, dump_bytecode,Label
 from boa.interop import VMOp
 import importlib
-
+from logzero import logger
 from collections import OrderedDict
 
 
@@ -147,20 +147,28 @@ class Module(object):
                 if instr.lineno != start_ln:
                     self.cfg.split_block(block,index)
 
-#        print("cfg blocks %s %s" %  (len(self.cfg._blocks),self.cfg._blocks))
-
+        extra_instr = []
+        new_method_blks=[]
         for blk in self.cfg:
             type = get_block_type(blk)
-
             if type == BlockType.MAKE_FUNCTION:
-                m = BoaMethod(self, blk, self.module_name)
-                if self.to_import == ['*'] or m.name in self.to_import:
-                    self.methods.append(m)
+                new_method_blks.append(blk)
             elif type == BlockType.IMPORT_ITEM:
                 new_module = Module.ImportFromBlock(blk, self.cwd)
                 if new_module:
                     for method in new_module.methods:
                         self.methods.append(method)
+            elif type == BlockType.UNKNOWN:
+                extra_instr.append(blk)
+            elif type == BlockType.CALL_FUNCTION:
+                extra_instr.append(blk)
+            else:
+                logger.info("Block type not used:: %s " % type)
+
+        for m in new_method_blks:
+            new_method = BoaMethod(self, m, self.module_name,extra_instr)
+            if self.to_import == ['*'] or new_method.name in self.to_import:
+                self.methods.append(new_method)
 
     def write(self):
         """
@@ -335,7 +343,7 @@ class Module(object):
 
                 # If this is a number, it is likely a custom python opcode, get the name
                 if str(pt.pyop).isnumeric():
-                    opname = pyop.to_name(int(str(pt.pyop)))
+                    opname = pyop.to_name(int(str(pt.pyop))).replace('HAVE_ARGUMENT','STORE_NAME')
                     if opname is not None:
                         op = "{:<20}".format(opname)
 

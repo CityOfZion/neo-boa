@@ -130,8 +130,9 @@ APPEND = b'\xC8'
 REVERSE = b'\xC9'
 REMOVE = b'\xCA'
 
+THROW = b'\xF0'
+THROWIFNOT = b'\xF1'
 
-DEBUG = b'\xCA'
 
 # the following is a convienience method
 # for a human readable version of the ops

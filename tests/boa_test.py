@@ -1,6 +1,7 @@
 from neo.Implementations.Wallets.peewee.UserWallet import UserWallet
 from neo.Settings import settings
 from neo.EventHub import events
+from neo.SmartContract.SmartContractEvent import SmartContractEvent
 from neocore.UInt160 import UInt160
 
 from neo.Utils.WalletFixtureTestCase import WalletFixtureTestCase
@@ -26,11 +27,6 @@ class BoaTest(WalletFixtureTestCase):
         if cls._wallet1 is None or recreate:
             cls._wallet1 = UserWallet.Open(BoaTest.wallet_1_dest(), BoaTest.wallet_1_pass())
         return cls._wallet1
-
-
-    @classmethod
-    def setUpClass(cls):
-        super(BoaTest, cls).setUpClass()
 
 
 class BoaFixtureTest(WalletFixtureTestCase):

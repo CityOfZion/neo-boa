@@ -725,7 +725,8 @@ class VMTokenizer(object):
         if op in ['len', 'abs', 'min', 'max', 'concat', 'take', 'substr',
                   'reverse', 'append', 'remove',
                   'sha1', 'sha256', 'hash160', 'hash256',
-                  'verify_signature', 'verify_signatures']:
+                  'verify_signature', 'verify_signatures',
+                  'Exception','throw_if_null',]:
             return True
         return False
 
@@ -768,6 +769,10 @@ class VMTokenizer(object):
             return self.convert1(VMOp.APPEND, pytoken)
         elif op == 'remove':
             return self.convert1(VMOp.REMOVE, pytoken)
+        elif op == 'Exception':
+            return self.convert1(VMOp.THROW, pytoken)
+        elif op == 'throw_if_null':
+            return self.convert1(VMOp.THROWIFNOT, pytoken)
         return None
 
     @staticmethod

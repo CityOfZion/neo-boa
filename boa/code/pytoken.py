@@ -2,7 +2,7 @@ from bytecode import Instr,UNSET,Compare,Label
 from boa.interop import VMOp
 from boa.code import pyop
 from logzero import logger
-
+import opcode
 
 class PyToken():
 
@@ -142,13 +142,10 @@ class PyToken():
             tokenizer.convert_store_local(self)
         elif op == pyop.LOAD_GLOBAL:
 
-#            default_module = Compiler.instance().default
-            self.expression.add_method(self)
-#            tokenizer.convert1(VMOp.NOP, self)
-#            if default_module.method_by_name(self.args):
-#                print("FOUND METHOD BY NAME: %s " % self.args)
- #           else:
- #               print("COULD NOT LOCATE METHOD BY NAME %s " % self.args)
+            if self.instruction.arg in self.expression.container_method.scope:
+                tokenizer.convert_load_local(self)
+            else:
+                self.expression.add_method(self)
 
         elif op in [pyop.LOAD_FAST, pyop.LOAD_NAME]:
             tokenizer.convert_load_local(self)
@@ -269,6 +266,8 @@ class PyToken():
 #
 #                if not is_action:
 #                    tokenizer.convert1(VMOp.DROP, self)
+        elif op == pyop.RAISE_VARARGS:
+            pass
         else:
             logger.info("Op Not Converted: %s " % self.instruction.name)
 
