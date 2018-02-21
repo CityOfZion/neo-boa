@@ -30,4 +30,12 @@ class TestContract(BoaTest):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBoolean(), True)
 
+    def test_M4(self):
+        output = Compiler.instance().load('example/ModuleMethodTest2.py').default
+        out = output.write()
+        print(output.to_s())
+        tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '','07')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetBigInteger(), 3003)
+
 

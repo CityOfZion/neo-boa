@@ -85,7 +85,7 @@ class method(object):
             print("Colud not get code or name %s " % e)
 
 
-#        dis.dis(self.code)
+        dis.dis(self.code)
 
         self.bytecode = Bytecode.from_code(self.code)
         self.setup()
@@ -110,6 +110,7 @@ class method(object):
         # we want to check if they are used in the method
         # and if so, load them in
         global_blocks = []
+
         if len(self._extra):
             for item in self._extra:
                 if item[-1].opcode == pyop.STORE_NAME:

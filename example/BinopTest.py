@@ -1,16 +1,35 @@
 
-def Main(a, b, c, d):
+def Main(operation, a, b):
 
-    f = b * d
 
-    g = d / c
+    if operation == '&':
+        print("DOING AND!")
+        return a & b
 
-    q = a + f
+    elif operation == '|':
+        return a | b
 
-    m = q + g
+    elif operation == '^':
+        return a ^ b
 
-    h = m - q
+    elif operation == '>>':
+        return a >> b
 
-    j = h % g
+    elif operation == '<<':
+        return a << b
 
-    return j
+    elif operation == '%':
+        return a % b
+
+    elif operation == '//':
+        return a // b
+
+    elif operation == '/':
+        return a / b
+
+    elif operation == '~':
+        return ~a
+
+
+
+    return 'unknown'

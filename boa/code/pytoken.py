@@ -152,8 +152,8 @@ class PyToken():
 
         # unary ops
 
-#            elif op == pyop.UNARY_INVERT:
-#                tokenizer.convert1(VMOp.INVERT, self)
+        elif op == pyop.UNARY_INVERT:
+            tokenizer.convert1(VMOp.INVERT, self)
 
         elif op == pyop.UNARY_NEGATIVE:
             tokenizer.convert1(VMOp.NEGATE, self)
@@ -189,13 +189,13 @@ class PyToken():
         elif op in [pyop.BINARY_MODULO, pyop.INPLACE_MODULO]:
             tokenizer.convert1(VMOp.MOD, self)
 
-        elif op == [pyop.BINARY_OR, pyop.INPLACE_OR]:
-            tokenizer.convert1(VMOp.BOOLOR, self)
+        elif op in [pyop.BINARY_OR, pyop.INPLACE_OR]:
+            tokenizer.convert1(VMOp.OR, self)
 
-        elif op == [pyop.BINARY_AND, pyop.INPLACE_AND]:
-            tokenizer.convert1(VMOp.BOOLAND, self)
+        elif op in [pyop.BINARY_AND, pyop.INPLACE_AND]:
+            tokenizer.convert1(VMOp.AND, self)
 
-        elif op == [pyop.BINARY_XOR, pyop.INPLACE_XOR]:
+        elif op in [pyop.BINARY_XOR, pyop.INPLACE_XOR]:
             tokenizer.convert1(VMOp.XOR, self)
 
         elif op in [pyop.BINARY_LSHIFT, pyop.INPLACE_LSHIFT]:
