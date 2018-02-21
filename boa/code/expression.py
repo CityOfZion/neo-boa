@@ -57,9 +57,30 @@ class Expression(object):
 
     def _check_load_attr(self):
         replaceable_attr_calls = ['append','remove','reverse',]
-        for index,instr in enumerate(self.block):
-            if not isinstance(instr, Label) and instr.opcode == pyop.LOAD_ATTR and instr.arg in replaceable_attr_calls:
-                instr.opcode = pyop.LOAD_GLOBAL
+        for index,instr in enumerate(self.updated_blocklist):
+            if not isinstance(instr, Label) and instr.opcode == pyop.LOAD_ATTR:
+                if instr.arg in replaceable_attr_calls:
+                    instr.opcode = pyop.LOAD_GLOBAL
+                else:
+                    print("CHECKING!!!!!!!!!!!!!")
+                    attr_name = 'Get%s' % instr.arg
+                    print("LOOKING UP %s " % attr_name)
+                    module_methods = self.container_method.module.methods
+                    matches = []
+                    for n in module_methods:
+                        if attr_name in n.full_name:
+                            matches.append(n)
+                    if len(matches) == 0:
+                        raise Exception("Could not load attribute %s " % instr.arg)
+                    elif len(matches) > 1:
+                        raise Exception(
+                            "Could not determine attribute to load. Options: %s " % [n.full_name for n in matches])
+                    else:
+                        instr.opcode = pyop.LOAD_GLOBAL
+                        instr.arg = attr_name
+                        self.updated_blocklist = self.block[:index+1] + [Instr('CALL_FUNCTION',1,lineno=instr.lineno)] + self.block[index+1:]
+
+                    print("INSTRUCTIONS NOW %s " % self.updated_blocklist)
 
     def _check_function_kwargs(self):
         to_remove = []

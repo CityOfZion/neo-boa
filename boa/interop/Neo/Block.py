@@ -1,4 +1,4 @@
-from boa.blockchain.vm.Neo.Header import GetIndex, GetHash, GetPrevHash, GetTimestamp, GetVersion, GetNextConsensus, GetMerkleRoot, GetConsensusData
+from boa.interop.Neo.Header import GetIndex, GetHash, GetPrevHash, GetTimestamp, GetVersion, GetNextConsensus, GetMerkleRoot, GetConsensusData
 
 
 class Block:

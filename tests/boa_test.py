@@ -1,8 +1,7 @@
 from neo.Implementations.Wallets.peewee.UserWallet import UserWallet
 from neo.Settings import settings
-from neo.EventHub import events
-from neo.SmartContract.SmartContractEvent import SmartContractEvent
 from neocore.UInt160 import UInt160
+from neo.Wallets.utils import to_aes_key
 
 from neo.Utils.WalletFixtureTestCase import WalletFixtureTestCase
 
@@ -25,7 +24,7 @@ class BoaTest(WalletFixtureTestCase):
     @classmethod
     def GetWallet1(cls, recreate=False):
         if cls._wallet1 is None or recreate:
-            cls._wallet1 = UserWallet.Open(BoaTest.wallet_1_dest(), BoaTest.wallet_1_pass())
+            cls._wallet1 = UserWallet.Open(BoaTest.wallet_1_dest(), to_aes_key( BoaTest.wallet_1_pass()))
         return cls._wallet1
 
 
@@ -43,6 +42,6 @@ class BoaFixtureTest(WalletFixtureTestCase):
     @classmethod
     def GetWallet1(cls, recreate=False):
         if cls._wallet1 is None or recreate:
-            cls._wallet1 = UserWallet.Open(BoaFixtureTest.wallet_1_dest(), BoaFixtureTest.wallet_1_pass())
+            cls._wallet1 = UserWallet.Open(BoaFixtureTest.wallet_1_dest(), to_aes_key(BoaFixtureTest.wallet_1_pass()))
         return cls._wallet1
 

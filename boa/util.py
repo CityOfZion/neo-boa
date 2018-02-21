@@ -1,5 +1,7 @@
 from bytecode import UNSET, Label, Instr, Bytecode, BasicBlock, ControlFlowGraph
 from boa.code import pyop
+import glob
+import importlib
 
 class BlockType():
     MAKE_FUNCTION = 0
@@ -61,4 +63,20 @@ def print_block(blocks, block, seen=None):
         print_block(blocks, target_block, seen)
 
 
+
+def all_interop_methods():
+
+    neo_interop_module = glob.glob('boa/interop/Neo/*.py')
+
+    interop_modules = [item.replace('/','.').replace('.py','') for item in neo_interop_module]
+
+    interop_modules.pop(interop_modules.index('boa.interop.Neo.__init__'))
+
+
+    for item in interop_modules:
+
+        importlib.import_module(item)
+
+
+    print("interop modules %s " % interop_modules)
 

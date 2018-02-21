@@ -248,6 +248,10 @@ class PyToken():
 
         # objects
 
+        elif op == pyop.LOAD_ATTR:
+            pass
+
+
         elif op == pyop.LOAD_CLASS_ATTR:
             tokenizer.convert_load_attr(self)
 

@@ -1,3 +1,5 @@
+# tested
+
 from boa.interop.Neo.Runtime import Notify
 from boa.builtins import concat
 

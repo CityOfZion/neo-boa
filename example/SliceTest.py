@@ -1,4 +1,4 @@
-from boa.interop.Neo.Runtime import Notify
+# tested
 
 
 def Main():

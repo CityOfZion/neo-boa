@@ -641,6 +641,7 @@ class VMTokenizer(object):
         param_len = pytoken.num_params
 
         if param_len <= 1:
+            print("PARAM LEN1, do nothing!!")
             pass
         elif param_len == 2:
             # if we are using concat or take, we don't want to swap
@@ -782,8 +783,10 @@ class VMTokenizer(object):
         :param op:
         :return:
         """
+        print("CHECKING IS SYS CALL: %s " % op)
         if op is not None and NEO_SC_FRAMEWORK in op:
             if 'TriggerType' not in op:  # we will compile TriggerType normally
+                print("IS SYSCALLs")
                 return True
         return False
 
@@ -799,7 +802,7 @@ class VMTokenizer(object):
         ba = bytearray([length]) + bytearray(syscall_name)
         pytoken.is_sys_call = False
         vmtoken = self.convert1(VMOp.SYSCALL, pytoken, data=ba)
-        # self.insert1(VMOp.NOP)
+        self.insert1(VMOp.NOP)
         return vmtoken
 
     @staticmethod
