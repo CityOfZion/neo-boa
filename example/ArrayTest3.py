@@ -4,7 +4,6 @@ def Main():
 
     # lets have fun
 
-    # this dosen't work. sad
     m = [[1,2,3],'fun','cool',['a','b','c']]
 
     answer = m[0]

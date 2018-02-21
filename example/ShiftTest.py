@@ -2,10 +2,7 @@ from boa.interop.Neo.Runtime import Notify
 
 
 def Main():
-    """
 
-    :return:
-    """
     a = 4
 
     b = a << 2

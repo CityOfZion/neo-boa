@@ -5,10 +5,7 @@ from boa.interop.Neo.Block import GetTransactions
 
 
 def Main():
-    """
 
-    :return:
-    """
     header = GetHeader(1234)
 
     m2 = header.Timestamp + header.Timestamp

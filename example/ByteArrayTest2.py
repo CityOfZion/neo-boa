@@ -4,15 +4,6 @@ from boa.builtins import concat
 
 def Main(ba1, ba2):
 
-    #    b = ba2
-
-    # m = ba2[1] # subscribt for a byte array does not work
-    """
-
-    :param ba1:
-    :param ba2:
-    :return:
-    """
     m = ba2[1:2]  # but you can do this instead
 
     # strings and byte arrays work the same
@@ -25,6 +16,6 @@ def Main(ba1, ba2):
     m = mystr[3:5]
 
     #
-    m = ba1[1:]
+    m = ba1[1:len(ba1)]
 
-    return concat(mystr, ba2)
+    return concat(m,concat(mystr, ba2))

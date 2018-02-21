@@ -3,17 +3,8 @@ from boa.builtins import range
 
 
 def Main():
-    """
 
-    :return:
-    """
     a = range(100, 120)
 
-    # b = a[4] # this will fail, since the range list is only 4 elements long
-    # ( 0, 1, 2, 3 )
-#    print(a)
-    #b = a[3]
-
-#    q = add_items(4, 4)
 
     return a

@@ -7,22 +7,11 @@ def Main():
 
     # this is a test to see if slice notation without specifying an end
     # is functional
-    s1 = m[4:]
+#    s1 = m[2:] # it is not
 
-    Notify(s1)  # should be b'\x05\x06\x07\x08'
-
-    q = 2
-
-    a = 1
-
-    # this is a test to see if a bunch of different stuff works
-    s2 = m[a + q - 1:get_slice_end() - 1]
-
-    Notify(s2)  # expected result should be b'\x03\x04'
-
-    return s1
+    # without specifying beginning it is:
+    s2 = m[:4]
 
 
-def get_slice_end():
 
-    return 5
+    return s2

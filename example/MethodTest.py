@@ -1,10 +1,7 @@
 # tested
 
 def Main(b1, b2):
-    """
 
-    :return:
-    """
     q = 4
 
     c2 = add_things(b1, b2)

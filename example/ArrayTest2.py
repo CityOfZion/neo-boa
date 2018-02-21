@@ -1,13 +1,9 @@
 
 def Main():
 
-    # array sizes once they are created are immutable
 
     # lets have fun with strings
-    """
 
-    :return:
-    """
     m = ['awesome', 'fun', 'cool', 'neo']
 
     q = m[1]

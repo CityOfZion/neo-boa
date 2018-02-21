@@ -49,3 +49,26 @@ class TestContract(BoaTest):
 #        self.assertEqual(len(results), 1)
 #        self.assertEqual(results[0].GetByteArray(), bytearray(b'\x01\xa0\x04\x04\x02\x04'))
 
+
+
+    def test_Take(self):
+        output = Compiler.instance().load('example/TakeTest.py').default
+        out = output.write()
+        tx, results, total_ops, engine = TestBuild(out, [2], self.GetWallet1(), '02', '07')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetString(), 'he')
+
+        tx, results, total_ops, engine = TestBuild(out, [0], self.GetWallet1(), '02', '07')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetString(), '')
+
+        tx, results, total_ops, engine = TestBuild(out, [12], self.GetWallet1(), '02', '07')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetString(), 'helloworld12')
+
+        tx, results, total_ops, engine = TestBuild(out, [40], self.GetWallet1(), '02', '07')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetString(), 'helloworld1234567')
+
+        tx, results, total_ops, engine = TestBuild(out, [-2], self.GetWallet1(), '02', '07')
+        self.assertEqual(len(results), 0)

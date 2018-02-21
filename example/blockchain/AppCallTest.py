@@ -7,10 +7,7 @@ AddContract = RegisterAppCall('d724c4191f83cee8d3c84e5d5bd91a054a9867d0', 'a', '
 
 
 def Main(a):
-    """
 
-    :return:
-    """
     test = 7
 
     res = AddContract(test, a)

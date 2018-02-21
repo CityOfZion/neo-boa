@@ -1,3 +1,4 @@
+# tested
 
 def Main():
 
@@ -7,7 +8,6 @@ def Main():
 
     for i in items:
         j+=i
-        print(j)
 
     return j
 

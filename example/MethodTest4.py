@@ -1,10 +1,7 @@
 # tested
 
 def Main():
-    """
 
-    :return:
-    """
     a = 1
 
     b = 10
@@ -19,13 +16,7 @@ def Main():
 
 
 def add(a, b, c):
-    """
 
-    :param a:
-    :param b:
-    :param c:
-    :return:
-    """
     result = a + b + c
 
     return result

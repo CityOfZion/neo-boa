@@ -28,7 +28,6 @@ class Module(object):
 
     @staticmethod
     def ImportFromBlock(block:BasicBlock, current_path):
-        print("CURRENT PATH %s " % current_path)
         mpath = None
         mnames = []
         for index, instr in enumerate(block):
@@ -112,7 +111,6 @@ class Module(object):
 
         #        print("METHODS FOR MODULE: %s " % self.path)
         for m in self.methods:
-            print("METHODS: %s %s" % (m.name, m.full_name))
             if m.full_name == method_name:
                 return m
             elif m.name == method_name:

@@ -6,10 +6,7 @@ OnThing = RegisterAction('blah', 'bloop', 'bleep')
 
 
 def Main():
-    """
 
-    :return:
-    """
     ename = 'thing'
     arg1 = 2
     arg2 = 4

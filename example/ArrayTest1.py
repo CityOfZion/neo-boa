@@ -2,18 +2,12 @@
 
 def Main():
 
-    # array sizes once they are created are immutable
-    """
 
-    :return:
-    """
     m = [2, 4, 1, 5 + 12]
 
     # we cant do this.  once you create an array you cant extend it
     # m[5] = 8
 
-    # we cant do this for now either
-#        m.append(8)
 
     m[2] = 7 + 10
 

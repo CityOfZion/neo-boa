@@ -626,12 +626,12 @@ class VMTokenizer(object):
         """
 
 #        pdb.set_trace()
-        print("CONVERTING METHOD CALL %s %s " % (pytoken, pytoken.func_name))
+#        print("CONVERTING METHOD CALL %s %s " % (pytoken, pytoken.func_name))
 
         if pytoken.func_name == 'list':
             return self.convert_built_in_list(pytoken)
         elif pytoken.func_name == 'bytearray':
-            return self.convert_push_data(bytes(pytoken.func_params[0].args), pytoken)
+            return self.convert_push_data(bytes(pytoken.instruction.arg), pytoken)
         elif pytoken.func_name == 'bytes':
             return self.convert_push_data(pytoken.func_params[0].args, pytoken)
 
@@ -777,7 +777,6 @@ class VMTokenizer(object):
         :param op:
         :return:
         """
-        print("CHECKING IS SYSCALL: %s " % op)
         if op is not None and NEO_SC_FRAMEWORK in op:
             if 'TriggerType' not in op:  # we will compile TriggerType normally
                 return True

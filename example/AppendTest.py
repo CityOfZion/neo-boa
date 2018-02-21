@@ -2,10 +2,7 @@ from boa.interop.Neo.Runtime import Notify
 
 
 def Main():
-    """
 
-    :return:
-    """
     m = [1, 2, 2]
 
     m.append(7)

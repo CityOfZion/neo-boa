@@ -8,7 +8,6 @@ class TestContract(BoaTest):
     def test_list0(self):
         output = Compiler.instance().load('example/ArrayTest.py').default
         out = output.write()
-        print(output.to_s())
         tx, results, total_ops, engine = TestBuild(out, [0], self.GetWallet1(), '02','02')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBigInteger(),1)
@@ -33,7 +32,6 @@ class TestContract(BoaTest):
     def test_list1(self):
         output = Compiler.instance().load('example/ArrayTest1.py').default
         out = output.write()
-        print(output.to_s())
         tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '','02')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBoolean(),True)
@@ -41,7 +39,6 @@ class TestContract(BoaTest):
     def test_list2(self):
         output = Compiler.instance().load('example/ArrayTest2.py').default
         out = output.write()
-        print(output.to_s())
         tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '','02')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetByteArray(),bytearray(b'\xa0'))
@@ -59,7 +56,6 @@ class TestContract(BoaTest):
     def test_list4(self):
         output = Compiler.instance().load('example/AppendTest.py').default
         out = output.write()
-        print(output.to_s())
         tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '','02')
         self.assertEqual(len(results), 1)
         res = results[0].GetArray()
@@ -69,7 +65,6 @@ class TestContract(BoaTest):
     def test_list5(self):
         output = Compiler.instance().load('example/ArrayRemoveTest.py').default
         out = output.write()
-        print(output.to_s())
         tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '','02')
         self.assertEqual(len(results), 1)
         res = results[0].GetArray()
@@ -80,7 +75,6 @@ class TestContract(BoaTest):
     def test_list6(self):
         output = Compiler.instance().load('example/ArrayReverseTest.py').default
         out = output.write()
-        print(output.to_s())
         tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '','02')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetString(), 'blah')
@@ -89,7 +83,6 @@ class TestContract(BoaTest):
     def test_list7(self):
         output = Compiler.instance().load('example/ArrayTest4.py').default
         out = output.write()
-        print(output.to_s())
         tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '','02')
         self.assertEqual(len(results), 1)
         res = results[0].GetArray()

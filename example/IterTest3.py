@@ -1,11 +1,8 @@
-#from boa.builtins import range
+# tested
 
 
 def Main():
-    """
 
-    :return:
-    """
     items = [0, 1, 2]
 
 
@@ -17,8 +14,20 @@ def Main():
 
         if i == 1:
             print("ONE!")
+
+            count += what()
+
         else:
-            print("NOT ONE!")
+            count -= minus(i)
 
 
     return count
+
+
+def what():
+
+    return 8
+
+
+def minus(a):
+    return a+1

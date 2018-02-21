@@ -1,10 +1,7 @@
 # tested
 
 def Main():
-    """
 
-    :return:
-    """
     a = 1
 
     b = 2

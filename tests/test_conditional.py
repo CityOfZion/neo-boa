@@ -11,7 +11,6 @@ class TestContract(BoaTest):
 
         output = Compiler.instance().load('example/CompareTest0.py').default
         out = output.write()
-        print(output.to_s())
 
         tx, results, total_ops, engine = TestBuild(out, [2,4], self.GetWallet1(), '0202','02')
         self.assertEqual(len(results), 1)
@@ -38,7 +37,6 @@ class TestContract(BoaTest):
 
         output = Compiler.instance().load('example/CompareTest1.py').default
         out = output.write()
-        print(output.to_s())
 
         tx, results, total_ops, engine = TestBuild(out, [1,2,3,4], self.GetWallet1(), '02020202','02')
         self.assertEqual(len(results), 1)
@@ -68,7 +66,6 @@ class TestContract(BoaTest):
 
         output = Compiler.instance().load('example/CompareTest2.py').default
         out = output.write()
-        print(output.to_s())
 
         tx, results, total_ops, engine = TestBuild(out, [2,2], self.GetWallet1(), '0202','01')
         self.assertEqual(len(results), 1)

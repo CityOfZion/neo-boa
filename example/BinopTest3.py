@@ -1,13 +1,6 @@
 
 def Main(a, b, c, d):
-    """
 
-    :param a:
-    :param b:
-    :param c:
-    :param d:
-    :return:
-    """
     j = a & b
 
     e = c / d

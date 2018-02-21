@@ -1,10 +1,7 @@
 # tested
 
 def Main():
-    """
 
-    :return:
-    """
 
     mylist = [1, 4, 6, 9, 13]
 
@@ -15,13 +12,7 @@ def Main():
 
 
 def add(a, b, c):
-    """
 
-    :param a:
-    :param b:
-    :param c:
-    :return:
-    """
     result = a + b + c
 
     return result

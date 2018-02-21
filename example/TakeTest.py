@@ -1,13 +1,11 @@
+# tested
+
 from boa.builtins import take
 
+def Main(amount):
 
-def Main():
-    """
+    str1 = 'helloworld1234567'
 
-    :return:
-    """
-    str1 = 'helloworld'
-
-    str2 = take(str1, 5)
+    str2 = take(str1, amount)
 
     return str2
