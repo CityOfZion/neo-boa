@@ -129,18 +129,9 @@ class Compiler(object):
 
         compiler = Compiler.instance()
 
-        cwd = os.getcwd()
-
-        compiler.entry_module = Module(path, cwd)
-
+        compiler.entry_module = Module(path)
 
         return compiler
-
-
-
-#    def register_module(self, module:Module):
-#        if not module in self.modules:
-#            self.modules.append(module)
 
 
 

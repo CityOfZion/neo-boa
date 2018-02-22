@@ -73,7 +73,7 @@ class PyToken():
     def num_params(self):
         return self.args
 
-    def to_vm(self, tokenizer):
+    def to_vm(self, tokenizer, prev_token=None):
         """
 
         :param tokenizer:
@@ -111,7 +111,7 @@ class PyToken():
             tokenizer.convert_pop_jmp_if(self)
         # loops
         elif op == pyop.SETUP_LOOP:
-            tokenizer.convert1(VMOp.NOP, self, data=bytearray(2))
+            tokenizer.convert1(VMOp.NOP, self)
         elif op == pyop.BREAK_LOOP:
             tokenizer.convert1(VMOp.JMP, self, data=bytearray(2))
 
@@ -261,15 +261,16 @@ class PyToken():
         elif op == pyop.CALL_FUNCTION:
             tokenizer.convert_method_call(self)
 
-#        elif op == pyop.POP_TOP:
-#            if prev_token.func_name not in NON_RETURN_SYS_CALLS:
-#                is_action = False
-#                for item in tokenizer.method.module.actions:
-#                    if item.method_name == prev_token.func_name:
-#                        is_action = True
-#
-#                if not is_action:
+        elif op == pyop.POP_TOP:
+            if prev_token:
+                is_action = False
+                for item in tokenizer.method.module.actions:
+                    if item.method_name == prev_token.func_name:
+                        is_action = True
+
+#                if is_action:
 #                    tokenizer.convert1(VMOp.DROP, self)
+
         elif op == pyop.RAISE_VARARGS:
             pass
         else:

@@ -62,9 +62,7 @@ class Expression(object):
                 if instr.arg in replaceable_attr_calls:
                     instr.opcode = pyop.LOAD_GLOBAL
                 else:
-                    print("CHECKING!!!!!!!!!!!!!")
                     attr_name = 'Get%s' % instr.arg
-                    print("LOOKING UP %s " % attr_name)
                     module_methods = self.container_method.module.methods
                     matches = []
                     for n in module_methods:
@@ -79,8 +77,6 @@ class Expression(object):
                         instr.opcode = pyop.LOAD_GLOBAL
                         instr.arg = attr_name
                         self.updated_blocklist = self.block[:index+1] + [Instr('CALL_FUNCTION',1,lineno=instr.lineno)] + self.block[index+1:]
-
-                    print("INSTRUCTIONS NOW %s " % self.updated_blocklist)
 
     def _check_function_kwargs(self):
         to_remove = []
@@ -224,12 +220,13 @@ class Expression(object):
         self._reverselists()
 
         ln = None
+        last_token = None
         for index,instr in enumerate(self.updated_blocklist):
             if isinstance(instr, Instr):
                 ln = instr.lineno
             token = PyToken(instr, self, index, ln)
-            token.to_vm(self.tokenizer)
-
+            token.to_vm(self.tokenizer, last_token)
+            last_token = token
 
     def lookup_method_name(self, index):
         return self.methodnames.pop()

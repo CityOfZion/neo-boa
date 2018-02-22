@@ -8,10 +8,8 @@ class TestContract(BoaFixtureTest):
 
 
     def test_Block(self):
-
         output = Compiler.instance().load('example/blockchain/BlockTest.py').default
         out = output.write()
-        print(output.to_s())
 
         tx, results, total_ops, engine = TestBuild(out, ['get_hash',1234], self.GetWallet1(), '02','02')
         self.assertEqual(len(results), 1)

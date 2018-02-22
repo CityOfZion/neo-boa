@@ -785,9 +785,7 @@ class VMTokenizer(object):
         """
         print("CHECKING IS SYS CALL: %s " % op)
         if op is not None and NEO_SC_FRAMEWORK in op:
-            if 'TriggerType' not in op:  # we will compile TriggerType normally
-                print("IS SYSCALLs")
-                return True
+            return True
         return False
 
     def convert_sys_call(self, op, pytoken=None):
@@ -797,6 +795,12 @@ class VMTokenizer(object):
         :param pytoken:
         :return:
         """
+
+        if 'TriggerType.Application' in op:
+            return self.convert_push_data(bytearray(b'\x10'),pytoken)
+        elif 'TriggerType.Verification' in op:
+            return self.convert_push_data(bytearray(b'\x00'),pytoken)
+
         syscall_name = op.replace(NEO_SC_FRAMEWORK, '').encode('utf-8')
         length = len(syscall_name)
         ba = bytearray([length]) + bytearray(syscall_name)

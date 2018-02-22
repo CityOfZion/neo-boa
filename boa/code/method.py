@@ -88,8 +88,7 @@ class method(object):
         except Exception as e:
             print("Colud not get code or name %s " % e)
 
-
-        dis.dis(self.code)
+#        dis.dis(self.code)
 
         self.bytecode = Bytecode.from_code(self.code)
         self.setup()
@@ -183,7 +182,7 @@ class method(object):
                         vmtoken.pytoken.jump_to_addr = vmtoken2.addr
 
     def convert_breaks(self):
-        tokens = list(self.vm_tokens.values())
+        tokens = list(self.tokenizer.vm_tokens.values())
         setup_token_label = None
 
         for tkn in tokens:

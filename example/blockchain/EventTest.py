@@ -1,11 +1,10 @@
+# tested
 
 from boa.interop.Neo.Action import RegisterAction
 
-
-Transfer = RegisterAction('transfer', 'from', 'to', 'amount')
+Transfer = RegisterAction('transfer_test', 'from', 'to', 'amount')
 
 Refund = RegisterAction('refund', 'to', 'amount')
-
 
 def Main():
 

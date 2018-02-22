@@ -1,13 +1,4 @@
 
-class ExecutionEngine:
-    """
-    Not used.
-
-    - Note: This method is implemented inside the Neo Virtual Machine.
-    """
-
-    pass
-
 
 def GetScriptContainer():
     """

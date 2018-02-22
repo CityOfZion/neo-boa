@@ -28,6 +28,7 @@ class TestContract(BoaTest):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBigInteger(), 24)
 
+
     def test_Iter1(self):
         output = Compiler.instance().load('example/IterTest.py').default
         out = output.write()

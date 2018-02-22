@@ -1,22 +1,21 @@
+# tested
+
 from boa.interop.Neo.TriggerType import Application, Verification
+from boa.interop.Neo.Runtime import GetTrigger
 
-from boa.interop.Neo.Runtime import Log, GetTrigger, Notify
+def Main(arg):
 
 
-def Main():
+    if arg == 1:
+        return Application()
 
-    trigger = GetTrigger()
+    elif arg == 2:
+        return Verification()
 
-    Notify(trigger)
+    elif arg == 3:
 
-    if trigger == Application():
-        print("application!")
+        if GetTrigger() == Application():
+            return b'\x20'
 
-    elif trigger == Verification():
-        print("verification!")
+    return -1
 
-    k = 10
-
-    print("hello")
-
-    return k

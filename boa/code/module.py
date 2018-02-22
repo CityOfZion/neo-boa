@@ -1,5 +1,8 @@
 from boa.code import pyop
 from boa.code.method import method as BoaMethod
+from boa.code.action import action as BoaAction
+from boa.code.appcall import appcall as BoaAppcall
+
 from boa.util import print_block,BlockType,get_block_type
 from bytecode import UNSET, Bytecode, BasicBlock,ControlFlowGraph, dump_bytecode,Label
 from boa.interop import VMOp
@@ -16,18 +19,19 @@ class Module(object):
     blocks = None
 
     methods = None
+    actions = None
+    app_call_registrations = None
 
     path = None
 
     all_vm_tokens = OrderedDict()
 
-    cwd = None
     module_name = ''
 
     to_import = None
 
     @staticmethod
-    def ImportFromBlock(block:BasicBlock, current_path):
+    def ImportFromBlock(block:BasicBlock):
         mpath = None
         mnames = []
         for index, instr in enumerate(block):
@@ -44,17 +48,11 @@ class Module(object):
         try:
             pymodule = importlib.import_module(mpath, mpath)
             filename = pymodule.__file__
-            return Module(filename,current_path,mpath,mnames)
+            return Module(filename,mpath,mnames)
         except Exception as e:
             print("Could not import: %s " % e)
         return None
 
-    @property
-    def actions(self):
-        return []
-    @property
-    def app_call_registrations(self):
-        return []
 
     @property
     def main(self):
@@ -118,10 +116,9 @@ class Module(object):
         return None
 
 
-    def __init__(self, path:str, working_dir, module_name='', to_import=['*']):
+    def __init__(self, path:str, module_name='', to_import=['*']):
 
         self.path = path
-        self.cwd = working_dir
         self.to_import = to_import
         self.module_name = module_name
 
@@ -140,6 +137,8 @@ class Module(object):
     def build(self):
         self.blocks = []
         self.methods = []
+        self.actions = []
+        self.app_call_registrations = []
 
         for block in self.cfg:
             start_ln = block[0].lineno
@@ -154,7 +153,7 @@ class Module(object):
             if type == BlockType.MAKE_FUNCTION:
                 new_method_blks.append(blk)
             elif type == BlockType.IMPORT_ITEM:
-                new_module = Module.ImportFromBlock(blk, self.cwd)
+                new_module = Module.ImportFromBlock(blk)
                 if new_module:
                     for method in new_module.methods:
                         self.methods.append(method)
@@ -162,6 +161,10 @@ class Module(object):
                 extra_instr.append(blk)
             elif type == BlockType.CALL_FUNCTION:
                 extra_instr.append(blk)
+            elif type == BlockType.ACTION_REG:
+                self.actions.append(BoaAction(blk))
+            elif type == BlockType.APPCALL_REG:
+                self.app_call_registrations.append(BoaAppcall(blk))
             else:
                 logger.info("Block type not used:: %s " % type)
 

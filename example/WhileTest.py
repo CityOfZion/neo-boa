@@ -17,7 +17,7 @@ def Main():
         if a == 7:
             break
 
-    while c > 20:
-        c = c - 5
+        while c > 20:
+            c = c - 5
 
     return a + b + c  # expect 24

@@ -1,3 +1,5 @@
+# tested
+
 from boa.interop.Neo.Blockchain import GetBlock
 from boa.interop.Neo.Block import *
 

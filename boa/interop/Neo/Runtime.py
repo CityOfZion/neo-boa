@@ -31,14 +31,6 @@ def Notify(arg):
     pass
 
 
-def GetCurrentBlock():
-    """
-
-    Returns: Block
-
-    """
-    pass
-
 
 def GetTime():
     """
