@@ -626,7 +626,6 @@ class VMTokenizer(object):
         """
 
 #        pdb.set_trace()
-        print("CONVERTING METHOD CALL %s %s " % (pytoken, pytoken.func_name))
 
         if pytoken.func_name == 'list':
             return self.convert_built_in_list(pytoken)
@@ -678,9 +677,7 @@ class VMTokenizer(object):
         fname = pytoken.func_name
         full_name = None
         for m in self.method.module.methods:
-            print("checking module methods %s %s " % (m.full_name, m.alt_name))
             if fname == m.alt_name:
-                print("Using full name for alt %s %s " % (m.alt_name, m.full_name))
                 full_name = m.full_name
             elif fname == m.name:
                 full_name = m.full_name
@@ -704,9 +701,6 @@ class VMTokenizer(object):
         elif self.is_built_in(fname):
             vmtoken = self.convert_built_in(fname, pytoken)
 
-        # look to see if this is a new intance of an object
-#        elif self.is_class_init(fname):
-#            vmtoken = self.convert_class_init(fname, pytoken)
 
         # otherwise we assume the method is defined by the module
         else:
@@ -786,7 +780,6 @@ class VMTokenizer(object):
         :param op:
         :return:
         """
-        print("CHECKING IS SYSCALL %s " % op)
         if op is not None and NEO_SC_FRAMEWORK in op:
             return True
         return False
@@ -803,7 +796,8 @@ class VMTokenizer(object):
             return self.convert_push_data(bytearray(b'\x10'),pytoken)
         elif 'TriggerType.Verification' in op:
             return self.convert_push_data(bytearray(b'\x00'),pytoken)
-
+        elif 'TransactionType' in op:
+            return self.convert_tx_type(op, pytoken)
         syscall_name = op.replace(NEO_SC_FRAMEWORK, '').encode('utf-8')
         length = len(syscall_name)
         ba = bytearray([length]) + bytearray(syscall_name)
@@ -811,6 +805,30 @@ class VMTokenizer(object):
         vmtoken = self.convert1(VMOp.SYSCALL, pytoken, data=ba)
         self.insert1(VMOp.NOP)
         return vmtoken
+
+    def convert_tx_type(self, op, pytoken=None):
+        if 'MinerTransaction' in op:
+            return self.convert_push_data(bytearray(b'\x00'),pytoken)
+        elif 'IssueTransaction' in op:
+            return self.convert_push_data(bytearray(b'\x01'),pytoken)
+        elif 'ClaimTransaction' in op:
+            return self.convert_push_data(bytearray(b'\x02'),pytoken)
+        elif 'EnrollmentTransaction' in op:
+            return self.convert_push_data(bytearray(b'\x20'),pytoken)
+        elif 'VotingTransaction' in op:
+            return self.convert_push_data(bytearray(b'\x24'),pytoken)
+        elif 'RegisterTransaction' in op:
+            return self.convert_push_data(bytearray(b'\x40'),pytoken)
+        elif 'ContractTransaction' in op:
+            return self.convert_push_data(bytearray(b'\x80'),pytoken)
+        elif 'AgencyTransaction' in op:
+            return self.convert_push_data(bytearray(b'\xb0'),pytoken)
+        elif 'PublishTransaction' in op:
+            return self.convert_push_data(bytearray(b'\xd0'),pytoken)
+        elif 'InvocationTransaction' in op:
+            return self.convert_push_data(bytearray(b'\xd1'),pytoken)
+        elif 'StateTransaction' in op:
+            return self.convert_push_data(bytearray(b'\x90'),pytoken)
 
     @staticmethod
     def is_built_in(op):

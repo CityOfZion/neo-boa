@@ -98,11 +98,8 @@ class method(object):
 
         if altnames != {}:
             for k,v in altnames.items():
-                print("Comparing %s to %s %s %s" % (v, self.full_name, type(v), type(self.full_name)))
                 if v == self.full_name:
-                    print("SETTING ALT NAME to %s " % k)
                     self._alt_name = k
-        print("ALTNAME %s " % self.alt_name)
 
         self.bytecode = Bytecode.from_code(self.code)
         self.setup()

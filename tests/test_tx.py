@@ -11,11 +11,74 @@ GAS = bytearray(b'\xe7-(iy\xeel\xb1\xb7\xe6]\xfd\xdf\xb2\xe3\x84\x10\x0b\x8d\x14
 class TestContract(BoaFixtureTest):
 
 
+    def test_TransactionTypes(self):
+        """
+            MinerTransaction = b'\x00'
+            IssueTransaction = b'\x01'
+            ClaimTransaction = b'\x02'
+            EnrollmentTransaction = b'\x20'
+            VotingTransaction = b'\x24'
+            RegisterTransaction = b'\x40'
+            ContractTransaction = b'\x80'
+            StateTransaction = b'\x90'
+            AgencyTransaction = b'\xb0'
+            PublishTransaction = b'\xd0'
+            InvocationTransaction = b'\xd1'
+        """
+        output = Compiler.instance().load('example/blockchain/TransactionTypeTest.py').default
+        out = output.write()
+#        print(output.to_s())
+
+        tx, results, total_ops, engine = TestBuild(out, ['miner'], self.GetWallet1(), '07','05')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetByteArray(), b'\x00')
+
+        tx, results, total_ops, engine = TestBuild(out, ['issue'], self.GetWallet1(), '07','05')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetByteArray(), b'\x01')
+
+        tx, results, total_ops, engine = TestBuild(out, ['claim'], self.GetWallet1(), '07','05')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetByteArray(), b'\x02')
+
+        tx, results, total_ops, engine = TestBuild(out, ['enrollment'], self.GetWallet1(), '07','05')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetByteArray(), b'\x20')
+
+        tx, results, total_ops, engine = TestBuild(out, ['voting'], self.GetWallet1(), '07','05')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetByteArray(), b'\x24')
+
+        tx, results, total_ops, engine = TestBuild(out, ['register'], self.GetWallet1(), '07','05')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetByteArray(), b'\x40')
+
+        tx, results, total_ops, engine = TestBuild(out, ['contract'], self.GetWallet1(), '07','05')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetByteArray(), b'\x80')
+
+        tx, results, total_ops, engine = TestBuild(out, ['state'], self.GetWallet1(), '07','05')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetByteArray(), b'\x90')
+
+        tx, results, total_ops, engine = TestBuild(out, ['agency'], self.GetWallet1(), '07','05')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetByteArray(), b'\xb0')
+
+        tx, results, total_ops, engine = TestBuild(out, ['publish'], self.GetWallet1(), '07','05')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetByteArray(), b'\xd0')
+
+        tx, results, total_ops, engine = TestBuild(out, ['invocation'], self.GetWallet1(), '07','05')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetByteArray(), b'\xd1')
+
+
     def test_Transaction(self):
 
         output = Compiler.instance().load('example/blockchain/TransactionTest.py').default
         out = output.write()
-        print(output.to_s())
+#        print(output.to_s())
 
         txid = bytearray(b'\xb4A?l#\xdc@7ki<)\x05\xed\xd5\x9a"\xc3I\x10-\x9f#[\xfc\xf6\xb1$N\\\xdb\xce')
 
@@ -92,30 +155,3 @@ class TestContract(BoaFixtureTest):
         self.assertEqual(len(results), 1)
         res = results[0].GetInterface()
         self.assertIsInstance(res, CoinReference)
-
-#            print("ITEM %s " % item)
-
-"""
-
-
-    if operation == 'get_hash':
-        return tx.Hash
-
-    elif operation == 'get_type':
-        return tx.Type
-
-    elif operation == 'get_attrs':
-        return tx.Attributes
-
-    elif operation == 'get_inputs':
-        return tx.Inputs
-
-    elif operation == 'get_outputs':
-        return tx.Outputs
-
-    elif operation == 'get_references':
-        return tx.References
-
-    elif operation == 'get_unspent':
-        return tx.UnspentCoins
-"""

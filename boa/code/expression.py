@@ -29,7 +29,6 @@ class Expression(object):
                 self.ops.append(item.opcode)
 
     def add_method(self, pytoken):
-        print("ADDING METHOD NAME %s " % pytoken.instruction.arg)
         self.methodnames.append( pytoken.instruction.arg)
 
     def _reverselists(self):

@@ -45,3 +45,4 @@ class BoaFixtureTest(WalletFixtureTestCase):
             cls._wallet1 = UserWallet.Open(BoaFixtureTest.wallet_1_dest(), to_aes_key(BoaFixtureTest.wallet_1_pass()))
         return cls._wallet1
 
+

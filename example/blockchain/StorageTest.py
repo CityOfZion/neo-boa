@@ -1,21 +1,28 @@
 from boa.interop.Neo.Storage import Get, Put, Delete, GetContext
 from boa.interop.Neo.Runtime import Notify
 
+context = GetContext()
 
-def Main():
 
-    context = GetContext()
+def Main(operation, arg, val):
 
-    print("hello")
-    Notify(context)
 
-    item_key = 'hello'
-    item_val = 'hhhhhhh'
-    Notify(item_val)
-    Put(context, item_key, item_val)
-    print("hhhh")
-    a = 1
+    print("context")
 
-    out = Get(context, item_key)
 
-    return out
+    if operation == 'sget':
+
+        return Get(context, arg)
+
+    elif operation == 'sput':
+
+        Put(context, arg, val)
+        return True
+
+    elif operation == 'sdel':
+
+        Delete(context, arg)
+        return True
+
+
+    return 'unknown operation'
