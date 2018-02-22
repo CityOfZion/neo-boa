@@ -29,6 +29,7 @@ class Expression(object):
                 self.ops.append(item.opcode)
 
     def add_method(self, pytoken):
+        print("ADDING METHOD NAME %s " % pytoken.instruction.arg)
         self.methodnames.append( pytoken.instruction.arg)
 
     def _reverselists(self):
@@ -68,6 +69,13 @@ class Expression(object):
                     for n in module_methods:
                         if attr_name in n.full_name:
                             matches.append(n)
+
+#                    if len(matches) > 1:
+#                        for index,m in enumerate(matches):
+#                            if m.alt_name:
+#                                print("deleting alt name... %s " % (m.alt_name))
+#                                matches.pop(index)
+
                     if len(matches) == 0:
                         raise Exception("Could not load attribute %s " % instr.arg)
                     elif len(matches) > 1:

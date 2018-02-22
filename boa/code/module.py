@@ -30,25 +30,39 @@ class Module(object):
 
     to_import = None
 
+    alternative_module_names = None
+
     @staticmethod
     def ImportFromBlock(block:BasicBlock):
         mpath = None
         mnames = []
+#        print("BLOCK %s " % block)
+        storename=None
+        importfrom=None
         for index, instr in enumerate(block):
             if instr.opcode == pyop.IMPORT_NAME:
                 mpath = instr.arg
-            elif instr.opcode in [pyop.IMPORT_FROM, pyop.STORE_NAME]:
+            elif instr.opcode == pyop.IMPORT_FROM:
+                importfrom = instr.arg
+            elif instr.opcode == pyop.STORE_NAME:
+                storename=instr.arg
                 if not instr.arg in mnames:
+                    print("appending to mnames %s " % instr.arg)
                     mnames.append(instr.arg)
             elif instr.opcode == pyop.IMPORT_STAR:
                 mnames = ['*']
 
+        alt_map={}
+        if storename and importfrom and storename != importfrom:
+            print("STORENAME AND IMPORT FROM DIFFERENTE!!! %s %s " % (storename,importfrom))
+            alt_map[storename] = '%s.%s' % (mpath,importfrom)
 #        if 'boa.interop' in mpath:
 #            return None
         try:
             pymodule = importlib.import_module(mpath, mpath)
             filename = pymodule.__file__
-            return Module(filename,mpath,mnames)
+            print("CREATING NEW MODULE %s " % filename)
+            return Module(filename,mpath,mnames, alt_map)
         except Exception as e:
             print("Could not import: %s " % e)
         return None
@@ -116,12 +130,13 @@ class Module(object):
         return None
 
 
-    def __init__(self, path:str, module_name='', to_import=['*']):
+    def __init__(self, path:str, module_name='', to_import=['*'], altname_map={}):
 
         self.path = path
         self.to_import = to_import
         self.module_name = module_name
-
+        self.alternative_module_names = altname_map
+        print("CREATED MODULE %s %s" % (module_name,altname_map))
         source = open(path, 'rb')
 
         compiled_source = compile(source.read(), path, 'exec')
@@ -156,6 +171,7 @@ class Module(object):
                 new_module = Module.ImportFromBlock(blk)
                 if new_module:
                     for method in new_module.methods:
+                        print("MMMMMMMMMMM %s " % method.name)
                         self.methods.append(method)
             elif type == BlockType.UNKNOWN:
                 extra_instr.append(blk)
@@ -169,8 +185,10 @@ class Module(object):
                 logger.info("Block type not used:: %s " % type)
 
         for m in new_method_blks:
-            new_method = BoaMethod(self, m, self.module_name,extra_instr)
-            if self.to_import == ['*'] or new_method.name in self.to_import:
+            new_method = BoaMethod(self, m, self.module_name,extra_instr,self.alternative_module_names)
+            print("Checking new method name .... %s %s" % (new_method.name, self.alternative_module_names))
+            if self.to_import == ['*'] or new_method.name in self.to_import or new_method.alt_name in self.to_import:
+#                print("IMPORTING NEW METHOD %s " % new_method.name)
                 self.methods.append(new_method)
 
     def write(self):

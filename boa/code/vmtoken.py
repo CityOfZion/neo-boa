@@ -626,7 +626,7 @@ class VMTokenizer(object):
         """
 
 #        pdb.set_trace()
-#        print("CONVERTING METHOD CALL %s %s " % (pytoken, pytoken.func_name))
+        print("CONVERTING METHOD CALL %s %s " % (pytoken, pytoken.func_name))
 
         if pytoken.func_name == 'list':
             return self.convert_built_in_list(pytoken)
@@ -641,7 +641,6 @@ class VMTokenizer(object):
         param_len = pytoken.num_params
 
         if param_len <= 1:
-            print("PARAM LEN1, do nothing!!")
             pass
         elif param_len == 2:
             # if we are using concat or take, we don't want to swap
@@ -679,7 +678,11 @@ class VMTokenizer(object):
         fname = pytoken.func_name
         full_name = None
         for m in self.method.module.methods:
-            if fname == m.name:
+            print("checking module methods %s %s " % (m.full_name, m.alt_name))
+            if fname == m.alt_name:
+                print("Using full name for alt %s %s " % (m.alt_name, m.full_name))
+                full_name = m.full_name
+            elif fname == m.name:
                 full_name = m.full_name
 
         # operational call like len(items) or abs(value)
@@ -783,7 +786,7 @@ class VMTokenizer(object):
         :param op:
         :return:
         """
-        print("CHECKING IS SYS CALL: %s " % op)
+        print("CHECKING IS SYSCALL %s " % op)
         if op is not None and NEO_SC_FRAMEWORK in op:
             return True
         return False

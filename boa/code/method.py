@@ -37,6 +37,8 @@ class method(object):
 
     _extra = None
 
+    _alt_name = None
+
     @property
     def forloop_counter(self):
         self._forloop_counter+=1
@@ -64,6 +66,10 @@ class method(object):
         return self.name
 
     @property
+    def alt_name(self):
+        return self._alt_name
+
+    @property
     def scope(self):
         return self._scope
 
@@ -75,7 +81,7 @@ class method(object):
     def stacksize(self):
         return self.bytecode.argcount + 50
 
-    def __init__(self, module, block, module_name, extra):
+    def __init__(self, module, block, module_name, extra,altnames={}):
         self.module = module
         self.block = block
         self.module_name = module_name
@@ -89,6 +95,14 @@ class method(object):
             print("Colud not get code or name %s " % e)
 
 #        dis.dis(self.code)
+
+        if altnames != {}:
+            for k,v in altnames.items():
+                print("Comparing %s to %s %s %s" % (v, self.full_name, type(v), type(self.full_name)))
+                if v == self.full_name:
+                    print("SETTING ALT NAME to %s " % k)
+                    self._alt_name = k
+        print("ALTNAME %s " % self.alt_name)
 
         self.bytecode = Bytecode.from_code(self.code)
         self.setup()
