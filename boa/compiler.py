@@ -28,7 +28,6 @@ class Compiler(object):
 
     entry_module = None
 
-
     @staticmethod
     def instance():
         """
@@ -132,6 +131,3 @@ class Compiler(object):
         compiler.entry_module = Module(path)
 
         return compiler
-
-
-

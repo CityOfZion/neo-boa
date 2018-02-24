@@ -2,6 +2,7 @@ from tests.boa_test import BoaTest
 from boa.compiler import Compiler
 from neo.Prompt.Commands.BuildNRun import TestBuild
 
+
 class TestContract(BoaTest):
 
     def test_Method1(self):
@@ -42,7 +43,6 @@ class TestContract(BoaTest):
         tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '', '02')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBigInteger(), 15)
-
 
     def test_MethodTest6(self):
         output = Compiler.instance().load('example/Fibonacci.py').default

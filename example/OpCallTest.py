@@ -1,6 +1,7 @@
 # tested
 
-from boa.builtins import sha1,sha256,hash160,hash256
+from boa.builtins import sha1, sha256, hash160, hash256
+
 
 def Main(operation, a, b):
 
@@ -25,7 +26,4 @@ def Main(operation, a, b):
     elif operation == 'hash256':
         return hash256(a)
 
-
     return 'unknown'
-
-

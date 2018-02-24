@@ -6,6 +6,7 @@ Transfer = RegisterAction('transfer_test', 'from', 'to', 'amount')
 
 Refund = RegisterAction('refund', 'to', 'amount')
 
+
 def Main():
 
     a = 2

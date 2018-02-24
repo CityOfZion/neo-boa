@@ -10,7 +10,7 @@ class TestContract(BoaTest):
         output = Compiler.instance().load('example/ModuleVariableTest1.py').default
         out = output.write()
         print(output.to_s())
-        tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '','07')
+        tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '', '07')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBigInteger(), 8)
 
@@ -18,7 +18,7 @@ class TestContract(BoaTest):
         output = Compiler.instance().load('example/ModuleVariableTest.py').default
         out = output.write()
         print(output.to_s())
-        tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '','07')
+        tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '', '07')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBigInteger(), 1260)
 
@@ -26,7 +26,7 @@ class TestContract(BoaTest):
         output = Compiler.instance().load('example/ModuleMethodTest1.py').default
         out = output.write()
         print(output.to_s())
-        tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '','07')
+        tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '', '07')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBoolean(), True)
 
@@ -34,8 +34,6 @@ class TestContract(BoaTest):
         output = Compiler.instance().load('example/ModuleMethodTest2.py').default
         out = output.write()
         print(output.to_s())
-        tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '','07')
+        tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '', '07')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBigInteger(), 3003)
-
-

@@ -2,6 +2,7 @@
 
 from boa.builtins import take
 
+
 def Main(amount):
 
     str1 = 'helloworld1234567'

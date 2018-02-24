@@ -5,7 +5,6 @@ def Main():
 
     items = [0, 1, 2]
 
-
     count = 0
 
     for i in items:
@@ -20,7 +19,6 @@ def Main():
         else:
             count -= minus(i)
 
-
     return count
 
 
@@ -30,4 +28,4 @@ def what():
 
 
 def minus(a):
-    return a+1
+    return a + 1

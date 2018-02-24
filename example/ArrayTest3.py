@@ -1,10 +1,11 @@
 # tested
 
+
 def Main():
 
     # lets have fun
 
-    m = [[1,2,3],'fun','cool',['a','b','c']]
+    m = [[1, 2, 3], 'fun', 'cool', ['a', 'b', 'c']]
 
     answer = m[0]
 

@@ -2,6 +2,7 @@
 from boa.builtins import list
 from boa.interop.Neo.Runtime import Notify
 
+
 def Main():
 
     m = 3

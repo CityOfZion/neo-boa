@@ -3,6 +3,7 @@ from boa.builtins import sha1
 
 MYSHA = sha1('abc')
 
+
 def Main():
 
     m = 3
@@ -14,5 +15,3 @@ def Main():
 #    print(j2)
 
     return j2 == j3
-
-

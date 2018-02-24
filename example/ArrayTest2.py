@@ -1,7 +1,6 @@
 
 def Main():
 
-
     # lets have fun with strings
 
     m = ['awesome', 'fun', 'cool', 'neo']
@@ -21,11 +20,10 @@ def Main():
     # this doesnt work
     q4 = m4[1]
 
-
     h = [2, m2[1], 'hello']
 
     j = h[1]
 
-    print(j) # prints 'wat'
+    print(j)  # prints 'wat'
 
     return q3

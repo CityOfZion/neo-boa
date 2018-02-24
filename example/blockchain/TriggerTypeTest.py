@@ -3,8 +3,8 @@
 from boa.interop.Neo.TriggerType import Application, Verification
 from boa.interop.Neo.Runtime import GetTrigger
 
-def Main(arg):
 
+def Main(arg):
 
     if arg == 1:
         return Application()
@@ -18,4 +18,3 @@ def Main(arg):
             return b'\x20'
 
     return -1
-

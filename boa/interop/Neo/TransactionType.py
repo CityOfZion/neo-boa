@@ -41,4 +41,3 @@ def PublishTransaction():
 
 def InvocationTransaction():
     return b'\xd1'
-

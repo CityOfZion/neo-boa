@@ -1,6 +1,8 @@
 # tested
 
 from boa.interop.Neo.TransactionType import *
+
+
 def Main(operation):
     """
         MinerTransaction = b'\x00'
@@ -15,7 +17,6 @@ def Main(operation):
         PublishTransaction = b'\xd0'
         InvocationTransaction = b'\xd1'
     """
-
 
     if operation == 'miner':
         return MinerTransaction()

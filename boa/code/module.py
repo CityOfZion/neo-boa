@@ -3,8 +3,8 @@ from boa.code.method import method as BoaMethod
 from boa.code.action import action as BoaAction
 from boa.code.appcall import appcall as BoaAppcall
 
-from boa.util import print_block,BlockType,get_block_type
-from bytecode import UNSET, Bytecode, BasicBlock,ControlFlowGraph, dump_bytecode,Label
+from boa.util import print_block, BlockType, get_block_type
+from bytecode import UNSET, Bytecode, BasicBlock, ControlFlowGraph, dump_bytecode, Label
 from boa.interop import VMOp
 import importlib
 from logzero import logger
@@ -33,37 +33,36 @@ class Module(object):
     alternative_module_names = None
 
     @staticmethod
-    def ImportFromBlock(block:BasicBlock):
+    def ImportFromBlock(block: BasicBlock):
         mpath = None
         mnames = []
 #        print("BLOCK %s " % block)
-        storename=None
-        importfrom=None
+        storename = None
+        importfrom = None
         for index, instr in enumerate(block):
             if instr.opcode == pyop.IMPORT_NAME:
                 mpath = instr.arg
             elif instr.opcode == pyop.IMPORT_FROM:
                 importfrom = instr.arg
             elif instr.opcode == pyop.STORE_NAME:
-                storename=instr.arg
+                storename = instr.arg
                 if not instr.arg in mnames:
                     mnames.append(instr.arg)
             elif instr.opcode == pyop.IMPORT_STAR:
                 mnames = ['*']
 
-        alt_map={}
+        alt_map = {}
         if storename and importfrom and storename != importfrom:
-#            print("STORENAME AND IMPORT FROM DIFFERENTE!!! %s %s " % (storename,importfrom))
-            alt_map[storename] = '%s.%s' % (mpath,importfrom)
+            #            print("STORENAME AND IMPORT FROM DIFFERENTE!!! %s %s " % (storename,importfrom))
+            alt_map[storename] = '%s.%s' % (mpath, importfrom)
 
         try:
             pymodule = importlib.import_module(mpath, mpath)
             filename = pymodule.__file__
-            return Module(filename,mpath,mnames, alt_map)
+            return Module(filename, mpath, mnames, alt_map)
         except Exception as e:
             print("Could not import: %s " % e)
         return None
-
 
     @property
     def main(self):
@@ -76,7 +75,7 @@ class Module(object):
 
         for m in self.methods:
 
-            if m.name in ['Main','main']:
+            if m.name in ['Main', 'main']:
                 return m
 
         if len(self.methods):
@@ -126,8 +125,7 @@ class Module(object):
                 return m
         return None
 
-
-    def __init__(self, path:str, module_name='', to_import=['*'], altname_map={}):
+    def __init__(self, path: str, module_name='', to_import=['*'], altname_map={}):
 
         self.path = path
         self.to_import = to_import
@@ -144,7 +142,6 @@ class Module(object):
 
         self.build()
 
-
     def build(self):
         self.blocks = []
         self.methods = []
@@ -153,12 +150,12 @@ class Module(object):
 
         for block in self.cfg:
             start_ln = block[0].lineno
-            for index,instr in enumerate(block):
+            for index, instr in enumerate(block):
                 if instr.lineno != start_ln:
-                    self.cfg.split_block(block,index)
+                    self.cfg.split_block(block, index)
 
         extra_instr = []
-        new_method_blks=[]
+        new_method_blks = []
         for blk in self.cfg:
             type = get_block_type(blk)
             if type == BlockType.MAKE_FUNCTION:
@@ -180,9 +177,9 @@ class Module(object):
                 logger.info("Block type not used:: %s " % type)
 
         for m in new_method_blks:
-            new_method = BoaMethod(self, m, self.module_name,extra_instr,self.alternative_module_names)
+            new_method = BoaMethod(self, m, self.module_name, extra_instr, self.alternative_module_names)
             if self.to_import == ['*'] or new_method.name in self.to_import or new_method.alt_name in self.to_import:
-#                print("IMPORTING NEW METHOD %s " % new_method.name)
+                #                print("IMPORTING NEW METHOD %s " % new_method.name)
                 self.methods.append(new_method)
 
     def write(self):
@@ -224,7 +221,7 @@ class Module(object):
         """
 
         for method in self.methods:
-#            method.link_return_types()
+            #            method.link_return_types()
             method.prepare()
 
         self.all_vm_tokens = OrderedDict()
@@ -256,15 +253,6 @@ class Module(object):
 
                     #                    pdb.set_trace()
                     raise Exception("Target method %s not found" % vmtoken.target_method)
-
-
-
-
-
-
-
-
-
 
     def to_s(self):
         """
@@ -359,7 +347,7 @@ class Module(object):
 
                 # If this is a number, it is likely a custom python opcode, get the name
                 if str(pt.pyop).isnumeric():
-                    opname = pyop.to_name(int(str(pt.pyop))).replace('HAVE_ARGUMENT','STORE_NAME')
+                    opname = pyop.to_name(int(str(pt.pyop))).replace('HAVE_ARGUMENT', 'STORE_NAME')
                     if opname is not None:
                         op = "{:<20}".format(opname)
 
@@ -368,4 +356,3 @@ class Module(object):
                 print("%s%s%s%s%s%s" % (lno, from_label, addr, op, arg, data))
 
             pstart = False
-

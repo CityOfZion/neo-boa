@@ -168,11 +168,9 @@ class VMTokenizer(object):
         for index, arg in enumerate(self.method.args):
             self.convert_load_parameter(arg, index)
 
-
     def method_end_items(self):
         self.insert1(VMOp.FROMALTSTACK)
         self.insert1(VMOp.DROP)
-
 
     def update_method_begin_items(self):
         """
@@ -701,7 +699,6 @@ class VMTokenizer(object):
         elif self.is_built_in(fname):
             vmtoken = self.convert_built_in(fname, pytoken)
 
-
         # otherwise we assume the method is defined by the module
         else:
             vmtoken = self.convert1(
@@ -724,7 +721,7 @@ class VMTokenizer(object):
                   'reverse', 'append', 'remove',
                   'sha1', 'sha256', 'hash160', 'hash256',
                   'verify_signature', 'verify_signatures',
-                  'Exception','throw_if_null',]:
+                  'Exception', 'throw_if_null', ]:
             return True
         return False
 
@@ -793,9 +790,9 @@ class VMTokenizer(object):
         """
 
         if 'TriggerType.Application' in op:
-            return self.convert_push_data(bytearray(b'\x10'),pytoken)
+            return self.convert_push_data(bytearray(b'\x10'), pytoken)
         elif 'TriggerType.Verification' in op:
-            return self.convert_push_data(bytearray(b'\x00'),pytoken)
+            return self.convert_push_data(bytearray(b'\x00'), pytoken)
         elif 'TransactionType' in op:
             return self.convert_tx_type(op, pytoken)
         syscall_name = op.replace(NEO_SC_FRAMEWORK, '').encode('utf-8')
@@ -808,27 +805,27 @@ class VMTokenizer(object):
 
     def convert_tx_type(self, op, pytoken=None):
         if 'MinerTransaction' in op:
-            return self.convert_push_data(bytearray(b'\x00'),pytoken)
+            return self.convert_push_data(bytearray(b'\x00'), pytoken)
         elif 'IssueTransaction' in op:
-            return self.convert_push_data(bytearray(b'\x01'),pytoken)
+            return self.convert_push_data(bytearray(b'\x01'), pytoken)
         elif 'ClaimTransaction' in op:
-            return self.convert_push_data(bytearray(b'\x02'),pytoken)
+            return self.convert_push_data(bytearray(b'\x02'), pytoken)
         elif 'EnrollmentTransaction' in op:
-            return self.convert_push_data(bytearray(b'\x20'),pytoken)
+            return self.convert_push_data(bytearray(b'\x20'), pytoken)
         elif 'VotingTransaction' in op:
-            return self.convert_push_data(bytearray(b'\x24'),pytoken)
+            return self.convert_push_data(bytearray(b'\x24'), pytoken)
         elif 'RegisterTransaction' in op:
-            return self.convert_push_data(bytearray(b'\x40'),pytoken)
+            return self.convert_push_data(bytearray(b'\x40'), pytoken)
         elif 'ContractTransaction' in op:
-            return self.convert_push_data(bytearray(b'\x80'),pytoken)
+            return self.convert_push_data(bytearray(b'\x80'), pytoken)
         elif 'AgencyTransaction' in op:
-            return self.convert_push_data(bytearray(b'\xb0'),pytoken)
+            return self.convert_push_data(bytearray(b'\xb0'), pytoken)
         elif 'PublishTransaction' in op:
-            return self.convert_push_data(bytearray(b'\xd0'),pytoken)
+            return self.convert_push_data(bytearray(b'\xd0'), pytoken)
         elif 'InvocationTransaction' in op:
-            return self.convert_push_data(bytearray(b'\xd1'),pytoken)
+            return self.convert_push_data(bytearray(b'\xd1'), pytoken)
         elif 'StateTransaction' in op:
-            return self.convert_push_data(bytearray(b'\x90'),pytoken)
+            return self.convert_push_data(bytearray(b'\x90'), pytoken)
 
     @staticmethod
     def is_built_in(op):
@@ -965,5 +962,3 @@ class VMTokenizer(object):
             VMOp.APPCALL, py_token=pytoken, data=sc_appcall.script_hash_addr)
 
         return vmtoken
-
-

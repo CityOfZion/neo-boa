@@ -12,6 +12,4 @@ def Main():
     # without specifying beginning it is:
     s2 = m[:4]
 
-
-
     return s2

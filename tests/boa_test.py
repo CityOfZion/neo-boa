@@ -6,8 +6,7 @@ from neo.Wallets.utils import to_aes_key
 from neo.Utils.WalletFixtureTestCase import WalletFixtureTestCase
 
 settings.USE_DEBUG_STORAGE = False
-#settings.DEBUG_STORAGE_PATH = './fixtures/debugstorage'
-
+# settings.DEBUG_STORAGE_PATH = './fixtures/debugstorage'
 
 
 class BoaTest(WalletFixtureTestCase):
@@ -24,7 +23,7 @@ class BoaTest(WalletFixtureTestCase):
     @classmethod
     def GetWallet1(cls, recreate=False):
         if cls._wallet1 is None or recreate:
-            cls._wallet1 = UserWallet.Open(BoaTest.wallet_1_dest(), to_aes_key( BoaTest.wallet_1_pass()))
+            cls._wallet1 = UserWallet.Open(BoaTest.wallet_1_dest(), to_aes_key(BoaTest.wallet_1_pass()))
         return cls._wallet1
 
 
@@ -44,5 +43,3 @@ class BoaFixtureTest(WalletFixtureTestCase):
         if cls._wallet1 is None or recreate:
             cls._wallet1 = UserWallet.Open(BoaFixtureTest.wallet_1_dest(), to_aes_key(BoaFixtureTest.wallet_1_pass()))
         return cls._wallet1
-
-

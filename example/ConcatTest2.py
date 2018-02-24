@@ -2,11 +2,13 @@
 
 from boa.builtins import concat
 
+
 def Main(operation, args):
     if operation == 'concat':
         return do_concat(args)
     else:
         return False
+
 
 def do_concat(args):
     if len(args) > 1:

@@ -3,6 +3,7 @@ from boa.code import pyop
 import glob
 import importlib
 
+
 class BlockType():
     MAKE_FUNCTION = 0
     CALL_FUNCTION = 1
@@ -15,10 +16,11 @@ class BlockType():
     APPCALL_REG = 8
     UNKNOWN = 9
 
+
 def get_block_type(block):
 
     for instr in block:
-        if instr.opcode  == pyop.LOAD_NAME and instr.arg == 'RegisterAction':
+        if instr.opcode == pyop.LOAD_NAME and instr.arg == 'RegisterAction':
             return BlockType.ACTION_REG
         elif instr.opcode == pyop.LOAD_NAME and instr.arg == 'RegisterAppCall':
             return BlockType.APPCALL_REG
@@ -51,7 +53,7 @@ def print_block(blocks, block, seen=None):
             arg = repr(instr.arg)
         else:
             arg = ''
-        print("    [%s] %s %s" % (instr.lineno,instr.name, arg))
+        print("    [%s] %s %s" % (instr.lineno, instr.name, arg))
 
     # is the block followed directly by another block?
     if block.next_block is not None:
@@ -70,20 +72,16 @@ def print_block(blocks, block, seen=None):
         print_block(blocks, target_block, seen)
 
 
-
 def all_interop_methods():
 
     neo_interop_module = glob.glob('boa/interop/Neo/*.py')
 
-    interop_modules = [item.replace('/','.').replace('.py','') for item in neo_interop_module]
+    interop_modules = [item.replace('/', '.').replace('.py', '') for item in neo_interop_module]
 
     interop_modules.pop(interop_modules.index('boa.interop.Neo.__init__'))
-
 
     for item in interop_modules:
 
         importlib.import_module(item)
 
-
     print("interop modules %s " % interop_modules)
-

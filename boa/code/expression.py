@@ -1,4 +1,4 @@
-from bytecode import Instr,Compare,Label
+from bytecode import Instr, Compare, Label
 from boa.code import pyop
 from boa.code.pytoken import PyToken
 
@@ -16,7 +16,7 @@ class Expression(object):
 
     ops = None
 
-    def __init__(self,block, tokenizer, container_method):
+    def __init__(self, block, tokenizer, container_method):
         self.block = block
         self.tokenizer = tokenizer
         self.container_method = container_method
@@ -25,15 +25,15 @@ class Expression(object):
 
         self.ops = []
         for item in self.block:
-            if isinstance(item,Instr):
+            if isinstance(item, Instr):
                 self.ops.append(item.opcode)
 
     def add_method(self, pytoken):
-        self.methodnames.append( pytoken.instruction.arg)
+        self.methodnames.append(pytoken.instruction.arg)
 
     def _reverselists(self):
         indices = []
-        for index,instr in enumerate(self.updated_blocklist):
+        for index, instr in enumerate(self.updated_blocklist):
             if not isinstance(instr, Label) and instr.opcode == pyop.BUILD_LIST:
                 indices.append(index)
         if len(indices):
@@ -41,23 +41,23 @@ class Expression(object):
             for index, instr in enumerate(self.updated_blocklist):
                 output.append(instr)
                 if index in indices:
-                    output.append(Instr("DUP_TOP",lineno=instr.lineno))
-                    output.append(Instr('YIELD_VALUE',lineno=instr.lineno))
+                    output.append(Instr("DUP_TOP", lineno=instr.lineno))
+                    output.append(Instr('YIELD_VALUE', lineno=instr.lineno))
             self.updated_blocklist = output
 
     def _checkbytearray(self):
-        to_remove=[]
-        for index,instr in enumerate(self.block):
+        to_remove = []
+        for index, instr in enumerate(self.block):
             if not isinstance(instr, Label) and instr.opcode == pyop.LOAD_GLOBAL and instr.arg == 'bytearray':
                 self.methodnames.append('bytearray')
                 to_remove.append(instr)
-                to_remove.append(self.block[index+2])
+                to_remove.append(self.block[index + 2])
         if len(to_remove):
             self._remove_instructions(to_remove)
 
     def _check_load_attr(self):
-        replaceable_attr_calls = ['append','remove','reverse',]
-        for index,instr in enumerate(self.updated_blocklist):
+        replaceable_attr_calls = ['append', 'remove', 'reverse', ]
+        for index, instr in enumerate(self.updated_blocklist):
             if not isinstance(instr, Label) and instr.opcode == pyop.LOAD_ATTR:
                 if instr.arg in replaceable_attr_calls:
                     instr.opcode = pyop.LOAD_GLOBAL
@@ -83,14 +83,14 @@ class Expression(object):
                     else:
                         instr.opcode = pyop.LOAD_GLOBAL
                         instr.arg = attr_name
-                        self.updated_blocklist = self.block[:index+1] + [Instr('CALL_FUNCTION',1,lineno=instr.lineno)] + self.block[index+1:]
+                        self.updated_blocklist = self.block[:index + 1] + [Instr('CALL_FUNCTION', 1, lineno=instr.lineno)] + self.block[index + 1:]
 
     def _check_function_kwargs(self):
         to_remove = []
         for index, instr in enumerate(self.updated_blocklist):
             if not isinstance(instr, Label) and instr.opcode == pyop.CALL_FUNCTION_KW:
                 instr.opcode = pyop.CALL_FUNCTION
-                to_remove.append(self.updated_blocklist[index-1])
+                to_remove.append(self.updated_blocklist[index - 1])
         if len(to_remove):
             self._remove_instructions(to_remove)
 
@@ -104,8 +104,8 @@ class Expression(object):
     def _checkslice(self):
         last = None
         to_del_index = -1
-        for index,instr in enumerate(self.block):
-            if isinstance(instr,Instr):
+        for index, instr in enumerate(self.block):
+            if isinstance(instr, Instr):
                 if last == pyop.BUILD_SLICE and instr.opcode == pyop.BINARY_SUBSCR:
                     to_del_index = index
                 last = instr.opcode
@@ -115,10 +115,8 @@ class Expression(object):
             self.updated_blocklist = self.block
             self._checkslice()
 
-
     def _checkloops(self):
         if pyop.SETUP_LOOP in self.ops and pyop.GET_ITER in self.ops:
-
 
             counter = self.container_method.forloop_counter
 
@@ -129,7 +127,9 @@ class Expression(object):
             iterable_name = self.block[-1].arg
             ln = self.block[0].lineno
 
-            if iterable == 'range':
+#            print("blocks %s " % self.block)
+
+            if iterable == 'range' or self.block[2].opcode == pyop.LOAD_ATTR:
 
                 dynamic_iterable_name = 'dynamic_iterable_%s' % counter
 
@@ -140,8 +140,8 @@ class Expression(object):
                 load_range_ops.append(Instr("STORE_FAST", dynamic_iterable_name, lineno=ln))
 
                 loop_exit = self.block[0].arg
-                loop_done = self.block[get_iter_index+2].arg
-                loop_start = self.block[get_iter_index+1]
+                loop_done = self.block[get_iter_index + 2].arg
+                loop_start = self.block[get_iter_index + 1]
 
                 instructions = [
                     #                Instr("SETUP_LOOP",loop_exit,lineno=ln),
@@ -173,14 +173,13 @@ class Expression(object):
 
                 ]
 
-
             else:
                 loop_exit = self.block[0].arg
                 loop_done = self.block[4].arg
                 loop_start = self.block[3]
 
                 instructions = [
-    #                Instr("SETUP_LOOP",loop_exit,lineno=ln),
+                    #                Instr("SETUP_LOOP",loop_exit,lineno=ln),
 
                     Instr("LOAD_CONST", 0, lineno=ln),
                     Instr("STORE_FAST", arg=loopcounter_name, lineno=ln),
@@ -214,21 +213,19 @@ class Expression(object):
 
             self.block = self.updated_blocklist = instructions
 
-
     def tokenize(self):
-
 
         self.updated_blocklist = self.block
         self._checkslice()
         self._checkbytearray()
         self._checkloops()
-        self._check_function_kwargs()
         self._check_load_attr()
+        self._check_function_kwargs()
         self._reverselists()
 
         ln = None
         last_token = None
-        for index,instr in enumerate(self.updated_blocklist):
+        for index, instr in enumerate(self.updated_blocklist):
             if isinstance(instr, Instr):
                 ln = instr.lineno
             token = PyToken(instr, self, index, ln)

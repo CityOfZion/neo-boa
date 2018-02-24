@@ -2,8 +2,8 @@
 
 from boa.interop.Neo.Runtime import *
 
-def Main(operation, arg):
 
+def Main(operation, arg):
 
     if operation == 'get_trigger':
         return GetTrigger()

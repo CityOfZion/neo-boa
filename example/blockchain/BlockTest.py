@@ -4,10 +4,9 @@ from boa.interop.Neo.Blockchain import GetBlock
 from boa.interop.Neo.Block import *
 
 
-def Main(operation,height):
+def Main(operation, height):
 
     block = GetBlock(height)
-
 
     if operation == 'get_hash':
         return block.Hash
@@ -41,7 +40,5 @@ def Main(operation,height):
 
     elif operation == 'get_transaction':
         return GetTransaction(block, 0)
-
-
 
     return 'unknown operation'

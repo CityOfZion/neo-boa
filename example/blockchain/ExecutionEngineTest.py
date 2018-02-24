@@ -1,7 +1,6 @@
 from boa.interop.System.ExecutionEngine import *
 
 
-
 def Main(operation):
 
     if operation == 'executing_sh':
@@ -18,4 +17,3 @@ def Main(operation):
         return GetEntryScriptHash()
 
     return 'unknown'
-

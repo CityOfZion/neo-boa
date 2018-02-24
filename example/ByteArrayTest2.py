@@ -18,4 +18,4 @@ def Main(ba1, ba2):
     #
     m = ba1[1:len(ba1)]
 
-    return concat(m,concat(mystr, ba2))
+    return concat(m, concat(mystr, ba2))

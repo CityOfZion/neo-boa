@@ -1,12 +1,13 @@
-from bytecode import Instr,UNSET,Compare,Label
+from bytecode import Instr, UNSET, Compare, Label
 from boa.interop import VMOp
 from boa.code import pyop
 from logzero import logger
 import opcode
 
+
 class PyToken():
 
-    instruction = None # type:Instr
+    instruction = None  # type:Instr
     expression = None
     index = 0
 
@@ -31,7 +32,7 @@ class PyToken():
         self.jump_to_addr = None
         if isinstance(instruction, Label):
             self.jump_target = instruction
-            self.instruction = Instr("NOP",lineno=fallback_ln)
+            self.instruction = Instr("NOP", lineno=fallback_ln)
         elif isinstance(instruction.arg, Label):
             self.jump_from = instruction.arg
 
@@ -41,8 +42,8 @@ class PyToken():
 
     @property
     def arg_str(self):
-#        print("INSTRUCTION ARG: %s %s" % (type(self.instruction.arg), self.instruction.arg))
-        params = ['a','b','c','d','e','f','g','h','i','j','k','l','m']
+        #        print("INSTRUCTION ARG: %s %s" % (type(self.instruction.arg), self.instruction.arg))
+        params = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm']
         if self.jump_target:
             return 'from %s' % (self.jump_from_addr)
         elif self.jump_from:
@@ -208,7 +209,7 @@ class PyToken():
 
         elif op == pyop.COMPARE_OP:
 
-#            pdb.set_trace()
+            #            pdb.set_trace()
             if self.instruction.arg == Compare.GT:
                 tokenizer.convert1(VMOp.GT, self)
             elif self.instruction.arg == Compare.GE:
@@ -251,7 +252,6 @@ class PyToken():
         elif op == pyop.LOAD_ATTR:
             pass
 
-
         elif op == pyop.LOAD_CLASS_ATTR:
             tokenizer.convert_load_attr(self)
 
@@ -275,7 +275,3 @@ class PyToken():
             pass
         else:
             logger.info("Op Not Converted: %s " % self.instruction.name)
-
-
-
-

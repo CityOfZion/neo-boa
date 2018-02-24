@@ -6,5 +6,4 @@ def Main():
 
     a = range(100, 120)
 
-
     return a

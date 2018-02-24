@@ -31,7 +31,6 @@ def Notify(arg):
     pass
 
 
-
 def GetTime():
     """
     returns timestamp of most recent block

@@ -1,4 +1,4 @@
-from bytecode import BasicBlock,Instr,Bytecode,Label,Compare
+from bytecode import BasicBlock, Instr, Bytecode, Label, Compare
 from boa.util import print_block
 from boa.code.vmtoken import VMTokenizer
 from boa.code.expression import Expression
@@ -6,10 +6,11 @@ from boa.code import pyop
 import dis
 import pdb
 
+
 class method(object):
 
-    code = None # type:code
-    bytecode = None # type:Bytecode
+    code = None  # type:code
+    bytecode = None  # type:Bytecode
 
     block = None
 
@@ -32,7 +33,6 @@ class method(object):
 
     _scope = None
 
-
     _forloop_counter = 0
 
     _extra = None
@@ -41,7 +41,7 @@ class method(object):
 
     @property
     def forloop_counter(self):
-        self._forloop_counter+=1
+        self._forloop_counter += 1
         return self._forloop_counter
 
     @property
@@ -62,7 +62,7 @@ class method(object):
     @property
     def full_name(self):
         if len(self.module_name):
-            return '%s.%s' %  (self.module_name,self.name)
+            return '%s.%s' % (self.module_name, self.name)
         return self.name
 
     @property
@@ -81,7 +81,7 @@ class method(object):
     def stacksize(self):
         return self.bytecode.argcount + 50
 
-    def __init__(self, module, block, module_name, extra,altnames={}):
+    def __init__(self, module, block, module_name, extra, altnames={}):
         self.module = module
         self.block = block
         self.module_name = module_name
@@ -97,7 +97,7 @@ class method(object):
 #        dis.dis(self.code)
 
         if altnames != {}:
-            for k,v in altnames.items():
+            for k, v in altnames.items():
                 if v == self.full_name:
                     self._alt_name = k
 
@@ -108,7 +108,7 @@ class method(object):
 
         self._scope = {}
 
-        for index,name in enumerate(self.bytecode.argnames):
+        for index, name in enumerate(self.bytecode.argnames):
             self._scope[name] = index
 
         blocks = []
@@ -116,9 +116,8 @@ class method(object):
         # find LOAD_GLOBALS
         gbl = []
         for instr in self.bytecode:
-            if isinstance(instr,Instr) and instr.opcode == pyop.LOAD_GLOBAL:
-               gbl.append(instr.arg)
-
+            if isinstance(instr, Instr) and instr.opcode == pyop.LOAD_GLOBAL:
+                gbl.append(instr.arg)
 
         # if there are global things passed in
         # we want to check if they are used in the method
@@ -129,7 +128,7 @@ class method(object):
             for item in self._extra:
                 if item[-1].opcode == pyop.STORE_NAME:
                     if item[-1].arg in gbl:
-                        global_blocks.append( item )
+                        global_blocks.append(item)
                         self.add_to_scope(item[-1].arg)
                         if item[0].opcode == pyop.LOAD_NAME:
                             item[0].opcode = pyop.LOAD_GLOBAL
@@ -156,14 +155,13 @@ class method(object):
 
         self._expressions = []
 
-
     def add_to_scope(self, argname):
         if not argname in self.scope.keys():
             current_total = len(self._scope)
             self._scope[argname] = current_total
 
     def prepare(self):
-        last_exp=None
+        last_exp = None
         for block in self._blocks:
             exp = Expression(block, self.tokenizer, self)
             self._expressions.append(exp)
@@ -177,7 +175,6 @@ class method(object):
         self.convert_breaks()
         self.convert_jumps()
 
-
     def convert_jumps(self):
         filtered = []
         for vmtoken in self.tokenizer.vm_tokens.values():
@@ -188,7 +185,7 @@ class method(object):
                 for vmtoken2 in filtered:
                     if vmtoken2.pytoken.jump_target == vmtoken.pytoken.jump_from:
                         diff = vmtoken2.addr - vmtoken.addr
-                        vmtoken.data = diff.to_bytes(2, 'little',signed=True)
+                        vmtoken.data = diff.to_bytes(2, 'little', signed=True)
                         vmtoken2.pytoken.jump_from_addr = vmtoken.addr
                         vmtoken.pytoken.jump_to_addr = vmtoken2.addr
 
@@ -204,7 +201,3 @@ class method(object):
                     if not setup_token_label:
                         raise Exception("No loopsetup for break")
                     tkn.pytoken.jump_from = setup_token_label
-
-
-
-

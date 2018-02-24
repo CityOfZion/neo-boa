@@ -6,9 +6,7 @@ context = GetContext()
 
 def Main(operation, arg, val):
 
-
     print("context")
-
 
     if operation == 'sget':
 
@@ -23,6 +21,5 @@ def Main(operation, arg, val):
 
         Delete(context, arg)
         return True
-
 
     return 'unknown operation'

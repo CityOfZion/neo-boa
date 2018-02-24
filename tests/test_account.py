@@ -6,7 +6,6 @@ from neo.Prompt.Commands.BuildNRun import TestBuild
 
 class TestContract(BoaFixtureTest):
 
-
     def test_Account(self):
 
         output = Compiler.instance().load('example/blockchain/AccountTest.py').default
@@ -17,25 +16,22 @@ class TestContract(BoaFixtureTest):
 
         bad_account = bytearray(b'S\xefB\xc8\xdf!^\xbeZ|z\xe8\x01\xcb\xc3\xac/\xacE)')
 
-        tx, results, total_ops, engine = TestBuild(out, ['get_hash',bad_account], self.GetWallet1(), '07','05')
+        tx, results, total_ops, engine = TestBuild(out, ['get_hash', bad_account], self.GetWallet1(), '07', '05')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBoolean(), False)
 
-
-        tx, results, total_ops, engine = TestBuild(out, ['get_hash',account], self.GetWallet1(), '07','05')
+        tx, results, total_ops, engine = TestBuild(out, ['get_hash', account], self.GetWallet1(), '07', '05')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetByteArray(), account)
 
-
-        tx, results, total_ops, engine = TestBuild(out, ['get_votes',account], self.GetWallet1(), '07','05')
+        tx, results, total_ops, engine = TestBuild(out, ['get_votes', account], self.GetWallet1(), '07', '05')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetArray(), [])
 
-        tx, results, total_ops, engine = TestBuild(out, ['get_balance_gas',account], self.GetWallet1(), '07','05')
+        tx, results, total_ops, engine = TestBuild(out, ['get_balance_gas', account], self.GetWallet1(), '07', '05')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBigInteger(), 10000000000)
 
-        tx, results, total_ops, engine = TestBuild(out, ['get_balance_neo',account], self.GetWallet1(), '07','05')
+        tx, results, total_ops, engine = TestBuild(out, ['get_balance_neo', account], self.GetWallet1(), '07', '05')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBigInteger(), 10000000000)
-

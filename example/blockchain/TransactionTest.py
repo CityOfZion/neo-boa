@@ -9,7 +9,8 @@ from boa.interop.Neo.Output import *
 NEO = b'\x9b|\xff\xda\xa6t\xbe\xae\x0f\x93\x0e\xbe`\x85\xaf\x90\x93\xe5\xfeV\xb3J\\"\x0c\xcd\xcfn\xfc3o\xc5'
 GAS = b'\xe7-(iy\xeel\xb1\xb7\xe6]\xfd\xdf\xb2\xe3\x84\x10\x0b\x8d\x14\x8ewX\xdeB\xe4\x16\x8bqy,`'
 
-def Main(operation,txid):
+
+def Main(operation, txid):
 
     tx = GetTransaction(txid)
 
@@ -37,19 +38,14 @@ def Main(operation,txid):
     elif operation == 'get_unspent':
         return tx.UnspentCoins
 
-
     elif operation == 'get_output_details':
         res = []
-        outputs = tx.Outputs
 
-        # @TODO
-        # need to fix for item in tx.Outputs
-
-        for item in outputs:
+        for item in tx.Outputs:
             subres = []
-            subres.append( item.Value)
-            subres.append( item.AssetId)
-            subres.append( item.ScriptHash)
+            subres.append(item.Value)
+            subres.append(item.AssetId)
+            subres.append(item.ScriptHash)
             res.append(subres)
 
         return res
@@ -81,7 +77,6 @@ def Main(operation,txid):
 #            res2.append(subres)
 #
 #        return res2
-
 
         # @TODO
     # name clash with Input.GetHash and Transaction.GetHash
