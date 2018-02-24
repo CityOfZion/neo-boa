@@ -1,12 +1,13 @@
 language: python
 python:
-  - "3.5"
+  - "3.6"
 
 
 
 # command to install dependencies
 install:
   - pip install -r requirements.txt
+  - pip install -r requirements_test.txt
   - pip install coveralls
 
 # command to run tests
@@ -14,6 +15,7 @@ script:
   - coverage run -m unittest discover tests
   - pycodestyle tests
   - pycodestyle boa
+  - pycodestyle example
 
 
 after_success:

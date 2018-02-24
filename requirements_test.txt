@@ -1,0 +1,1 @@
+-e git+git@github.com:localhuman/neo-python.git@2b8a707da601aca4081cf71fc26f31daba87276c#egg=neo_python
