@@ -315,7 +315,6 @@ class Module(object):
                         except Exception as e:
                             pass
 
-
                 lno = "{:<10}".format(
                     pt.lineno if do_print_line_no or pstart else '')
                 addr = "{:<5}".format(key)
