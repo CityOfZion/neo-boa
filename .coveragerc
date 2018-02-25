@@ -6,4 +6,4 @@ omit =
   venv*
   tests/*
   example/*
-  boa/interop
+  boa/interop/*

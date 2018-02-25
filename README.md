@@ -39,12 +39,11 @@ The compiler supports a subset of the Python language ( in the same way that a _
 #### What does it currently do
 
 - Compiles a subset of the Python language to the `.avm` format for use in the [Neo Virtual Machine](https://github.com/neo-project/neo-vm)
-- Works for Python 3.4 and 3.5
+- Works for Python 3.6+
 
 #### What will it do
 
 - Compile a larger subset of the Python language
-- Support Python 3.6
 
 #### Get Help or give help
 
