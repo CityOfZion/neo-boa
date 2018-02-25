@@ -10,6 +10,7 @@ class TestContract(BoaFixtureTest):
 
         output = Compiler.instance().load('example/blockchain/AccountTest.py').default
         out = output.write()
+        print(output.to_s())
 
         account = bytearray(b'S\xefB\xc8\xdf!^\xbeZ|z\xe8\x01\xcb\xc3\xac/\xacI)')
 

@@ -4,7 +4,7 @@ def Verification():
 
     :return:
     """
-    return b'\x00'
+    pass
 
 
 def Application():
@@ -12,4 +12,4 @@ def Application():
 
     :return:
     """
-    return b'\x10'
+    pass

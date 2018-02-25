@@ -38,8 +38,6 @@ class VMToken(object):
             return self.vm_op
         elif type(self.vm_op) is bytes:
             return ord(self.vm_op)
-        elif type(self.vm_op) is str:
-            return self.vm_op
         else:
             raise Exception('Invalid op: %s ' % self.vm_op)
 
@@ -47,9 +45,6 @@ class VMToken(object):
         self.vm_op = vm_op
         self.pytoken = pytoken
         self.addr = addr
-
-        if self.pytoken is not None and hasattr(self.pytoken, 'data'):
-            self.data = self.pytoken.data
 
         self.data = data
 
@@ -78,80 +73,6 @@ class VMTokenizer(object):
 
         self.method_begin_items()
 
-    def to_s(self):
-        """
-
-        """
-        lineno = self.method.start_line_no
-        pstart = True
-        for i, (key, value) in enumerate(self.vm_tokens.items()):
-
-            if value.pytoken:
-                pt = value.pytoken
-
-                do_print_line_no = False
-                to_label = None
-                from_label = '    '
-                if pt.line_no != lineno:
-                    print("\n")
-                    lineno = pt.line_no
-                    do_print_line_no = True
-
-                if pt.args and type(pt.args) is Label:
-                    addr = value.addr
-                    if value.data is not None:
-                        plus_addr = int.from_bytes(
-                            value.data, 'little', signed=True)
-                        target_addr = addr + plus_addr
-                        to_label = 'to %s    [ %s ]' % (target_addr, pt.args)
-                    else:
-                        to_label = 'from << %s ' % pt.args
-                        #                    to_label = 'to %s ' % pt.args
-                elif pt.jump_label:
-                    from_label = ' >> '
-                    to_label = 'from [%s]' % pt.jump_label
-
-                ds = ''
-                if value.data is not None:
-                    try:
-                        ds = int.from_bytes(value.data, 'little', signed=True)
-                    except Exception as e:
-                        pass
-                    if type(ds) is not int and len(ds) < 1:
-                        try:
-                            ds = value.data.decode('utf-8')
-                        except Exception:
-                            pass
-
-                if pt.py_op == pyop.CALL_FUNCTION:
-                    to_label = '%s %s ' % (pt.func_name, pt.func_params)
-
-                lno = "{:<10}".format(
-                    pt.line_no if do_print_line_no or pstart else '')
-                addr = "{:<5}".format(key)
-                op = "{:<20}".format(str(pt.py_op))
-                arg = "{:<50}".format(
-                    to_label if to_label is not None else pt.arg_s)
-                data = "[data] {:<20}".format(ds)
-                print("%s%s%s%s%s%s" % (lno, from_label, addr, op, arg, data))
-
-            pstart = False
-
-    def to_b(self):
-        """
-
-        :return:
-        """
-        b_array = bytearray()
-        for key, vm_token in self.vm_tokens.items():
-
-            b_array.append(vm_token.out_op)
-
-            if vm_token.data is not None and vm_token.vm_op != VMOp.NOP:
-                b_array = b_array + vm_token.data
-
-        return b_array
-
     def method_begin_items(self):
 
         # we just need to inssert the total number of arguments + body variables
@@ -172,17 +93,6 @@ class VMTokenizer(object):
         self.insert1(VMOp.FROMALTSTACK)
         self.insert1(VMOp.DROP)
 
-    def update_method_begin_items(self):
-        """
-
-        """
-        num_current_items = self.total_param_and_body_count_token.updatable_data
-
-        if self.method.dynamic_iterator_count > 0:
-            num_current_items += self.method.dynamic_iterator_count
-            self.update_push_integer(
-                self.total_param_and_body_count_token, num_current_items)
-
     def insert_vm_token_at(self, vm_token, index):
         """
 
@@ -190,72 +100,6 @@ class VMTokenizer(object):
         :param index:
         """
         self.vm_tokens[index] = vm_token
-
-    def update1(self, vmtoken, vm_op, data=None):
-        """
-
-        :param vmtoken:
-        :param vm_op:
-        :param data:
-        :return:
-        """
-        vmtoken.vm_op = vm_op
-        vmtoken.data = data
-
-        self.insert_vm_token_at(vmtoken, vmtoken.addr)
-
-        return vmtoken
-
-    def update_push_data(self, vmtoken, data):
-        """
-
-        :param vmtoken:
-        :param data:
-        :return:
-        """
-        dlen = len(data)
-
-        if dlen == 0:
-            return self.update1(vmtoken, VMOp.PUSH0)
-
-        elif dlen <= 75:
-            return self.update1(vmtoken, dlen, data)
-
-        if dlen < 0x100:
-            prefixlen = 1
-            code = VMOp.PUSHDATA1
-
-        elif dlen < 0x1000:
-            prefixlen = 2
-            code = VMOp.PUSHDATA2
-
-        else:
-            prefixlen = 4
-            code = VMOp.PUSHDATA4
-
-        byts = bytearray(dlen.to_bytes(prefixlen, 'little')) + data
-
-        return self.update1(vmtoken, code, byts)
-
-    def update_push_integer(self, vmtoken, i):
-        """
-
-        :param vmtoken:
-        :param i:
-        :return:
-        """
-        if i == 0:
-            return self.update1(vmtoken, VMOp.PUSH0)
-        elif i == -1:
-            return self.insert1(vmtoken, VMOp.PUSHM1)
-        elif 0 < i <= 16:
-            out = 0x50 + i
-            return self.update1(vmtoken, out)
-
-        bigint = BigInteger(i)
-        outdata = bigint.ToByteArray()
-
-        return self.update_push_data(vmtoken, outdata)
 
     def insert1(self, vm_op, data=None):
         """
@@ -469,10 +313,7 @@ class VMTokenizer(object):
         :param name:
         """
 
-        if name is not None:
-            local_name = name
-        else:
-            local_name = py_token.args
+        local_name = py_token.args
 
         # check to see if this local is a variable
         if local_name in self.method.scope:
@@ -490,49 +331,6 @@ class VMTokenizer(object):
             py_token.func_name = local_name
 
             self.convert_method_call(py_token)
-
-    def convert_load_attr(self, pytoken):
-
-        self.convert_load_local(pytoken, name=pytoken.instance_name)
-
-        index = pytoken.instance_type.index_of_varname(pytoken.args)
-
-        self.convert_push_integer(index)
-        self.convert1(VMOp.PICKITEM, None)
-
-    def convert_store_attr(self, pytoken):
-
-        index = pytoken.instance_type.index_of_varname(pytoken.args)
-
-        self.convert_push_integer(index)
-        self.convert1(VMOp.ROT)
-        self.convert1(VMOp.SETITEM, py_token=pytoken)
-
-    def insert_unknown_type(self, item):
-        """
-
-        :param item:
-        """
-        if type(item) is int:
-            self.insert_push_integer(item)
-
-        elif type(item) is str:
-            str_bytes = item.encode('utf-8')
-            self.insert_push_data(str_bytes)
-
-        elif type(item) is bytearray:
-            self.insert_push_data(bytes(item))
-
-        elif type(item) is bytes:
-            self.insert_push_data(item)
-
-        elif type(item) is bool:
-            self.insert_push_data(item)
-        elif isinstance(item, type(None)):
-            self.insert_push_data(bytearray(0))
-        else:
-            raise Exception("Could not load type %s for item %s " %
-                            (type(item), item))
 
     def convert_store_subscr(self, pytoken):
 
@@ -557,10 +355,6 @@ class VMTokenizer(object):
             if arg.array_item in self.method.scope:
                 self.convert_load_local(None, name=arg.array_item)
             # otherwise we'll do the unknown type thing
-            else:
-                self.insert_unknown_type(arg.array_item)
-        else:
-            self.insert_unknown_type(arg.array_item)
 
         self.convert1(VMOp.SETITEM, arg)
 

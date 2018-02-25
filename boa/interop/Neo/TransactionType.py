@@ -1,43 +1,43 @@
 
 def MinerTransaction():
-    return b'\x00'
+    pass
 
 
 def IssueTransaction():
-    return b'\x01'
+    pass
 
 
 def ClaimTransaction():
-    return b'\x02'
+    pass
 
 
 def EnrollmentTransaction():
-    return b'\x20'
+    pass
 
 
 def VotingTransaction():
-    return b'\x24'
+    pass
 
 
 def RegisterTransaction():
-    return b'\x40'
+    pass
 
 
 def ContractTransaction():
-    return b'\x80'
+    pass
 
 
 def StateTransaction():
-    return b'\x90'
+    pass
 
 
 def AgencyTransaction():
-    return b'\xb0'
+    pass
 
 
 def PublishTransaction():
-    return b'\xd0'
+    pass
 
 
 def InvocationTransaction():
-    return b'\xd1'
+    pass
