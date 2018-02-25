@@ -7,3 +7,4 @@ omit =
   tests/*
   example/*
   boa/interop/*
+  boa/builtins.py

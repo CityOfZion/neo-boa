@@ -1,6 +1,6 @@
 from boa.interop.Neo.App import RegisterAppCall
 
-CalculatorContract = RegisterAppCall('e9e17cd49e4a198e8825b775bd685a4d0818a757', 'operation', 'a', 'b')
+CalculatorContract = RegisterAppCall(b'W\xa7\x18\x08MZh\xbdu\xb7%\x88\x8e\x19J\x9e\xd4|\xe1\xe3\xaa', 'operation', 'a', 'b')
 
 
 def Main(operation, a, b):

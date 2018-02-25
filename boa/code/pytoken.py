@@ -18,6 +18,8 @@ class PyToken():
     jump_from_addr = None
     jump_to_addr = None
 
+    is_dynamic_appcall = False
+
     _methodname = None
 
     def __init__(self, instruction, expression, index, fallback_ln):
