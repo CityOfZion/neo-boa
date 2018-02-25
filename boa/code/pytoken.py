@@ -97,8 +97,6 @@ class PyToken():
             tokenizer.convert1(VMOp.RET, self)
 
         # control flow
-        elif op == pyop.BR_S:
-            tokenizer.convert1(VMOp.JMP, self, data=self.instruction.arg)
 
         elif op == pyop.JUMP_FORWARD:
             tokenizer.convert1(VMOp.JMP, self, data=bytearray(2))
@@ -117,12 +115,6 @@ class PyToken():
             tokenizer.convert1(VMOp.NOP, self)
         elif op == pyop.BREAK_LOOP:
             tokenizer.convert1(VMOp.JMP, self, data=bytearray(2))
-
-        elif op == pyop.FOR_ITER:
-            tokenizer.convert1(VMOp.NOP, self, data=bytearray(2))
-
-        elif op == pyop.GET_ITER:
-            tokenizer.convert1(VMOp.NOP, self)
 
         elif op == pyop.POP_BLOCK:
             tokenizer.convert1(VMOp.NOP, self)
@@ -236,29 +228,11 @@ class PyToken():
             tokenizer.convert1(VMOp.REVERSE, self)
         elif op == pyop.STORE_SUBSCR:
             tokenizer.convert_store_subscr(self)
-#            tokenizer.convert1(VMOp.SETITEM,self)
-        elif op == pyop.SETITEM:
-            tokenizer.convert_set_element(self, self.instruction.arg)
-#                tokenizer.convert1(VMOp.SETITEM,self, data=self.instruction.arg)
-        elif op == pyop.STORE_SUBSCR:
-            # this wont occur because this op is preprocessed into a SETITEM op
-            pass
         elif op == pyop.BINARY_SUBSCR:
             tokenizer.convert1(VMOp.PICKITEM, self)
 
         elif op == pyop.BUILD_SLICE:
             tokenizer.convert_build_slice(self)
-
-        # objects
-
-        elif op == pyop.LOAD_ATTR:
-            pass
-
-        elif op == pyop.LOAD_CLASS_ATTR:
-            tokenizer.convert_load_attr(self)
-
-        elif op == pyop.STORE_ATTR:
-            tokenizer.convert_store_attr(self)
 
         elif op == pyop.CALL_FUNCTION:
             tokenizer.convert_method_call(self)

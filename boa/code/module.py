@@ -303,20 +303,6 @@ class Module(object):
                     lineno = pt.lineno
                     do_print_line_no = True
 
-                if pt.args and type(pt.args) is BasicBlock:
-                    addr = value.addr
-                    if value.data is not None:
-                        plus_addr = int.from_bytes(
-                            value.data, 'little', signed=True)
-                        target_addr = addr + plus_addr
-                        to_label = 'to %s    [ %s ]' % (target_addr, pt.arg_str)
-                    else:
-                        to_label = 'from << %s ' % pt.arg_str
-                        #                    to_label = 'to %s ' % pt.args
-#                elif pt.jump_label:
-#                    from_label = ' >> '
-#                    to_label = 'from [%s]' % pt.jump_label
-
                 ds = ''
                 if value.data is not None:
                     try:
@@ -329,16 +315,6 @@ class Module(object):
                         except Exception as e:
                             pass
 
-                if pt.pyop == pyop.CALL_FUNCTION:
-                    if to_label is None:
-                        old = ""
-                    else:
-                        old = to_label
-#                    param_string = "("
-#                    for param in pt.func_params:
-#                        param_string += str(param.args) + ", "
-#                    param_string = param_string.rstrip(", ") + ")"
-#                    to_label = '%s %s %s' % (pt.func_name, param_string, old)
 
                 lno = "{:<10}".format(
                     pt.lineno if do_print_line_no or pstart else '')

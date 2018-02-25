@@ -85,12 +85,3 @@ class TestContract(BoaTest):
         res = results[0].GetArray()
         self.assertEqual(len(res), 3)
         self.assertEqual(res[0].GetBigInteger(), 3)
-
-# Need looping first
-#    def test_list8(self):
-#        output = Compiler.instance().load('example/RangeTest.py').default
-#        out = output.write()
-#
-#        tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '','02')
-#        self.assertEqual(len(results), 1)
-#        print("Results %s " % results)
