@@ -9,7 +9,6 @@ class TestContract(BoaTest):
     def test_binops(self):
         output = Compiler.instance().load('example/BinopTest.py').default
         out = output.write()
-        print(output.to_s())
 
         tx, results, total_ops, engine = TestBuild(out, ['&', 4, 4], self.GetWallet1(), '', '07')
         self.assertEqual(len(results), 1)

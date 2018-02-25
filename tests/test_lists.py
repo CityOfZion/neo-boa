@@ -90,7 +90,7 @@ class TestContract(BoaTest):
 #    def test_list8(self):
 #        output = Compiler.instance().load('example/RangeTest.py').default
 #        out = output.write()
-#        print(output.to_s())
+#
 #        tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '','02')
 #        self.assertEqual(len(results), 1)
 #        print("Results %s " % results)

@@ -173,8 +173,8 @@ class Module(object):
                 self.actions.append(BoaAction(blk))
             elif type == BlockType.APPCALL_REG:
                 self.app_call_registrations.append(BoaAppcall(blk))
-            else:
-                logger.info("Block type not used:: %s " % type)
+#            else:
+#                logger.info("Block type not used:: %s " % type)
 
         for m in new_method_blks:
             new_method = BoaMethod(self, m, self.module_name, extra_instr, self.alternative_module_names)

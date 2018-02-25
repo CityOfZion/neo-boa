@@ -24,7 +24,6 @@ class TestContract(BoaFixtureTest):
 
         output = Compiler.instance().load('example/blockchain/RuntimeTest.py').default
         out = output.write()
-        print(output.to_s())
 
         tx, results, total_ops, engine = TestBuild(out, ['get_time', 1], self.GetWallet1(), '0202', '02')
         self.assertEqual(len(results), 1)
@@ -61,7 +60,6 @@ class TestContract(BoaFixtureTest):
 
         output = Compiler.instance().load('example/blockchain/TriggerTypeTest.py').default
         out = output.write()
-        print(output.to_s())
 
         tx, results, total_ops, engine = TestBuild(out, [1], self.GetWallet1(), '02', '02')
         self.assertEqual(len(results), 1)
