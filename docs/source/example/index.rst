@@ -7,14 +7,14 @@ Addition
 
 This example show how to add numbers. It is also an example of a smart contract that accepts multiple parameters (4).
 
-.. automodule:: boa.tests.src.AddTest1
+.. automodule:: example.AddTest1
 
 Lists
 =====
 
 This example shows how to create and manipulate lists.
 
-.. automodule:: boa.tests.src.ArrayTest
+.. automodule:: example.ArrayTest
 
 
 Binary Operators
@@ -22,7 +22,7 @@ Binary Operators
 
 This example shows how to use binary operators.
 
-.. automodule:: boa.tests.src.BinopTest
+.. automodule:: example.BinopTest
 
 
 NEP5 Token
@@ -30,4 +30,4 @@ NEP5 Token
 
 This example shows how to create a NEP5 token.
 
-.. automodule:: boa.tests.src.NEP5
+.. automodule:: example.demo.NEP5

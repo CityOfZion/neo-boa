@@ -1,16 +1,13 @@
-from bytecode import BasicBlock, Instr, Bytecode, Label, Compare
-from boa.util import print_block
+from bytecode import Instr, Bytecode, Label
 from boa.code.vmtoken import VMTokenizer
 from boa.code.expression import Expression
 from boa.code import pyop
-import dis
-import pdb
 
 
 class method(object):
 
-    code = None  # type:code
-    bytecode = None  # type:Bytecode
+    code = None
+    bytecode = None
 
     block = None
 

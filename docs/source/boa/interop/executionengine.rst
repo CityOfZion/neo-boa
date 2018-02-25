@@ -9,4 +9,4 @@ Please see the `neo-python <https://github.com/CityOfZion/neo-python>`_ project 
 Methods
 -------
 
-.. automodule:: boa.blockchain.vm.System.ExecutionEngine
+.. automodule:: boa.interop.System.ExecutionEngine

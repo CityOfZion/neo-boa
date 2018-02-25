@@ -10,24 +10,23 @@ What it currently does
 
 -  Compiles a subset of the Python language to the ``.avm`` format for
    use in the `Neo Virtual Machine`_.
--  Works for Python 3.4 and 3.5.
+-  Works for Python 3.4+
 
 What will it do
 ^^^^^^^^^^^^^^^
 
 -  Compile a larger subset of the Python language.
--  Works for Python 3.6.
 
 
 What parts of Python are supported?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The following is a glimpse into the currently supported Python language features. 
-For details, please see all samples in the ``boa.tests.src`` directory.
+For details, please see all samples in the ``example`` directory.
 
 - Flow Control:
 
-    - If, Else, Elif, While, Break, Method calls, Lamdbas, for x in.
+    - If, Else, Elif, While, Break, Method calls, Lamdbas, for x in y.
 
 - Arithmetric and equality Operators for integer math:
 
@@ -46,9 +45,12 @@ For details, please see all samples in the ``boa.tests.src`` directory.
         # this also works
         x = [1,3,65,23]
 
-        # this does NOT work
-        x = []
-        x.append(1)
+        x.append('neo')
+
+        x.remove(1)
+
+        x.reverse()
+
 
 - list manipulation (building slices) is supported.
 
@@ -56,6 +58,16 @@ For details, please see all samples in the ``boa.tests.src`` directory.
 
         x = [1,2,46,56]
         y = x[1:3]
+
+        # you must specify the end element of a slice, the following will not work
+        z = x[1:]
+
+        # instead, use this
+        z = x[1:len(x)]
+
+
+        # the -1 index of a list does also not work at the moment
+
 
 - Where possible, some of Python's ``__builtins__`` have been implemented in a custom way for the Neo Virtual Machine.
 
@@ -112,4 +124,4 @@ everything you plan on using in a smart contract using the functionality listed 
         # this does NOT work
         m = [x for x in range(1,10)]
 
-- Class objects are currently **not** supported. This is also on the roadmap.
+- Class objects are currently **not** supported.

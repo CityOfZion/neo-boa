@@ -12,7 +12,8 @@ addons:
 # command to install dependencies
 install:
   - pip install -r requirements.txt
-  - pip install -r requirements_test.txt
+  - pip install pip install -e git+https://github.com/CityOfZion/neo-python-core.git@feature-36#egg=neocore
+  - pip install -e git+https://github.com/CityOfZion/neo-python.git@feature-36#egg=neo-python
   - pip install coveralls
 
 # command to run tests

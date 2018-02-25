@@ -3,7 +3,7 @@ from boa.code.method import method as BoaMethod
 from boa.code.action import action as BoaAction
 from boa.code.appcall import appcall as BoaAppcall
 
-from boa.util import print_block, BlockType, get_block_type
+from boa.util import BlockType, get_block_type
 from bytecode import UNSET, Bytecode, BasicBlock, ControlFlowGraph, dump_bytecode, Label
 from boa.interop import VMOp
 import importlib

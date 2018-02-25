@@ -19,7 +19,7 @@ The compiler supports a subset of the Python language (in the same way that a Bo
     boa/compiler
     boa/code/module
     boa/code/method
-    boa/tests/src/index
+    example/index
     boa/interop/blockchain
     boa/interop/executionengine
 

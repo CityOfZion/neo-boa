@@ -10,14 +10,14 @@ Please see the `neo-python <https://github.com/CityOfZion/neo-python>`_ project 
 Blockchain
 ^^^^^^^^^^
 
-.. automodule:: boa.blockchain.vm.Neo.Blockchain
+.. automodule:: boa.interop.Neo.Blockchain
 
 
 Header
 ^^^^^^
 A Header object contains all information about a block, except for the transaction data.
 
-.. automodule:: boa.blockchain.vm.Neo.Header
+.. automodule:: boa.interop.Neo.Header
 
 
 Block
@@ -25,7 +25,7 @@ Block
 
 A Block object contains the transaction data for a block.
 
-.. automodule:: boa.blockchain.vm.Neo.Block
+.. automodule:: boa.interop.Neo.Block
 
 
 Account
@@ -33,7 +33,7 @@ Account
 
 The Account object represents an address on the blockchain.
 
-.. automodule:: boa.blockchain.vm.Neo.Account
+.. automodule:: boa.interop.Neo.Account
 
 
 Action
@@ -41,7 +41,7 @@ Action
 
 An Action object is used to register an action/event listener on the blockchain.
 
-.. automodule:: boa.blockchain.vm.Neo.Action
+.. automodule:: boa.interop.Neo.Action
 
 
 App
@@ -49,7 +49,7 @@ App
 
 An App object used to call other contracts on the blockchain.
 
-.. automodule:: boa.blockchain.vm.Neo.App
+.. automodule:: boa.interop.Neo.App
 
 
 Asset
@@ -57,4 +57,4 @@ Asset
 
 An Asset object is used to look up information about native assets such as NEO or Gas.
 
-.. automodule:: boa.blockchain.vm.Neo.Asset
+.. automodule:: boa.interop.Neo.Asset
