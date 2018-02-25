@@ -34,5 +34,3 @@ def get_block_type(block):
             return BlockType.CALL_FUNCTION
 
     return BlockType.UNKNOWN
-
-

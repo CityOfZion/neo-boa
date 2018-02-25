@@ -153,7 +153,7 @@ class method(object):
         self._expressions = []
 
     def add_to_scope(self, argname):
-        if not argname in self.scope.keys():
+        if argname not in self.scope.keys():
             current_total = len(self._scope)
             self._scope[argname] = current_total
 

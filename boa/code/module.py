@@ -46,7 +46,7 @@ class Module(object):
                 importfrom = instr.arg
             elif instr.opcode == pyop.STORE_NAME:
                 storename = instr.arg
-                if not instr.arg in mnames:
+                if instr.arg not in mnames:
                     mnames.append(instr.arg)
             elif instr.opcode == pyop.IMPORT_STAR:
                 mnames = ['*']

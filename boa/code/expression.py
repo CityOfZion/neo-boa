@@ -97,7 +97,7 @@ class Expression(object):
     def _remove_instructions(self, to_remove):
         updated = []
         for item in self.block:
-            if not item in to_remove:
+            if item not in to_remove:
                 updated.append(item)
         self.updated_blocklist = updated
 

@@ -2,7 +2,7 @@
 BLAH = 10 * 300
 
 # This wont work
-#BLAH2 = BLAH * 100
+# BLAH2 = BLAH * 100
 
 
 def Main():
