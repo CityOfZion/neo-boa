@@ -14,8 +14,8 @@ import os
 settings.USE_DEBUG_STORAGE = True
 settings.DEBUG_STORAGE_PATH = './fixtures/debugstorage'
 
-class TestContract(BoaFixtureTest):
 
+class TestContract(BoaFixtureTest):
 
     @classmethod
     def tearDownClass(cls):
@@ -26,7 +26,6 @@ class TestContract(BoaFixtureTest):
                 shutil.rmtree(settings.DEBUG_STORAGE_PATH)
         except Exception as e:
             print("couldn't remove debug storage %s " % e)
-
 
     def test_ICOTemplate(self):
 
@@ -46,7 +45,6 @@ class TestContract(BoaFixtureTest):
         output = Compiler.instance().load('example/demo/ICO_Template.py').default
         out = output.write()
 #        print(output.to_s())
-
 
         tx, results, total_ops, engine = TestBuild(out, ['name', '[]'], self.GetWallet1(), '07', '05')
         self.assertEqual(len(results), 1)
@@ -82,7 +80,6 @@ class TestContract(BoaFixtureTest):
         tx, results, total_ops, engine = TestBuild(out, ['totalSupply', '[]'], self.GetWallet1(), '07', '05')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBigInteger(), TOKEN_INITIAL_AMOUNT)
-
 
         # now the owner should have a balance of the TOKEN_INITIAL_AMOUNT
         tx, results, total_ops, engine = TestBuild(out, ['balanceOf', parse_param([bytearray(TOKEN_OWNER)])], self.GetWallet1(), '07', '05')

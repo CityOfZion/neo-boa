@@ -1,6 +1,6 @@
 from boa.interop.Neo.Blockchain import GetHeight
 from boa.interop.Neo.Action import RegisterAction
-from boa.interop.Neo.Runtime import Notify,CheckWitness
+from boa.interop.Neo.Runtime import Notify, CheckWitness
 from boa.interop.Neo.Storage import *
 from boa.builtins import concat
 from example.demo.nex.token import *
@@ -9,9 +9,8 @@ from example.demo.nex.txio import get_asset_attachments
 OnTransfer = RegisterAction('transfer', 'from', 'to', 'amount')
 OnRefund = RegisterAction('refund', 'to', 'amount')
 
-OnInvalidKYCAddress = RegisterAction('invalid_registration','address')
-OnKYCRegister = RegisterAction('kyc_registration','address')
-
+OnInvalidKYCAddress = RegisterAction('invalid_registration', 'address')
+OnKYCRegister = RegisterAction('kyc_registration', 'address')
 
 
 kyc_key = b'kyc_ok'
@@ -19,6 +18,7 @@ kyc_key = b'kyc_ok'
 limited_round_key = b'r1'
 
 ctx = GetContext()
+
 
 def kyc_register(args):
     """
@@ -37,7 +37,7 @@ def kyc_register(args):
             if len(address) == 20:
 
                 kyc_storage_key = concat(kyc_key, address)
-                Put(ctx,kyc_storage_key, True)
+                Put(ctx, kyc_storage_key, True)
 
                 OnKYCRegister(address)
                 ok_count += 1
@@ -59,10 +59,9 @@ def kyc_status(args):
 
         kyc_storage_key = concat(kyc_key, addr)
 
-        return Get(ctx,kyc_storage_key)
+        return Get(ctx, kyc_storage_key)
 
     return False
-
 
 
 def exchange():
@@ -73,8 +72,7 @@ def exchange():
         bool: Whether the exchange was successful
     """
 
-    attachments = get_asset_attachments() # [receiver, sender, neo, gas]
-
+    attachments = get_asset_attachments()  # [receiver, sender, neo, gas]
 
     # this looks up whether the exchange can proceed
     exchange_ok = can_exchange(attachments, False)
@@ -88,13 +86,12 @@ def exchange():
         if attachments[2] > 0:
             OnRefund(attachments[1], attachments[2])
         # if you want to exchange gas instead of neo, use this
-        #if attachments.gas_attached > 0:
+        # if attachments.gas_attached > 0:
         #    OnRefund(attachments.sender_addr, attachments.gas_attached)
         return False
 
-
     # lookup the current balance of the address
-    current_balance = Get(ctx,attachments[1])
+    current_balance = Get(ctx, attachments[1])
 
     # calculate the amount of tokens the attached neo will earn
     exchanged_tokens = attachments[2] * TOKENS_PER_NEO / 100000000
@@ -102,10 +99,9 @@ def exchange():
     # if you want to exchange gas instead of neo, use this
     # exchanged_tokens += attachments[3] * TOKENS_PER_GAS / 100000000
 
-
     # add it to the the exchanged tokens and persist in storage
     new_total = exchanged_tokens + current_balance
-    Put(ctx,attachments[1], new_total)
+    Put(ctx, attachments[1], new_total)
 
     # update the in circulation amount
     add_to_circulation(exchanged_tokens)
@@ -148,7 +144,6 @@ def can_exchange(attachments, verify_only):
     if not get_kyc_status(attachments[1]):
         return False
 
-
     # caluclate the amount requested
     amount_requested = attachments[2] * TOKENS_PER_NEO / 100000000
 
@@ -171,7 +166,7 @@ def get_kyc_status(address):
     """
     kyc_storage_key = concat(kyc_key, address)
 
-    return Get(ctx,kyc_storage_key)
+    return Get(ctx, kyc_storage_key)
 
 
 def calculate_can_exchange(amount, address, verify_only):
@@ -185,8 +180,7 @@ def calculate_can_exchange(amount, address, verify_only):
     """
     height = GetHeight()
 
-
-    current_in_circulation = Get(ctx,TOKEN_CIRC_KEY)
+    current_in_circulation = Get(ctx, TOKEN_CIRC_KEY)
 
     new_amount = current_in_circulation + amount
 
@@ -204,7 +198,6 @@ def calculate_can_exchange(amount, address, verify_only):
         print("Free for all, accept as much as possible")
         return True
 
-
     # check amount in limited round
 
     if amount <= MAX_EXCHANGE_LIMITED_ROUND:
@@ -212,7 +205,7 @@ def calculate_can_exchange(amount, address, verify_only):
         # check if they have already exchanged in the limited round
         r1key = concat(address, limited_round_key)
 
-        has_exchanged =  Get(ctx,r1key)
+        has_exchanged = Get(ctx, r1key)
 
         # if not, then save the exchange for limited round
         if not has_exchanged:
@@ -221,7 +214,7 @@ def calculate_can_exchange(amount, address, verify_only):
             # this works around a "method Neo.Storage.Put not found in ->" error in InteropService.py
             # since Verification is read-only and thus uses a StateReader, not a StateMachine
             if not verify_only:
-                Put(ctx,r1key, True)
+                Put(ctx, r1key, True)
             return True
 
         print("already exchanged in limited round")

@@ -6,11 +6,10 @@ from boa.builtins import concat
 from example.demo.nex.token import *
 
 
-
 OnTransfer = RegisterAction('transfer', 'addr_from', 'addr_to', 'amount')
 OnApprove = RegisterAction('approve', 'addr_from', 'addr_to', 'amount')
 
-NEP5_METHODS = ['name', 'symbol', 'decimals', 'totalSupply', 'balanceOf','transfer', 'transferFrom', 'approve', 'allowance']
+NEP5_METHODS = ['name', 'symbol', 'decimals', 'totalSupply', 'balanceOf', 'transfer', 'transferFrom', 'approve', 'allowance']
 
 ctx = GetContext()
 
@@ -28,18 +27,17 @@ def handle_nep51(operation, args):
     elif operation == 'symbol':
         return TOKEN_SYMBOL
 
-
     arg_error = 'Incorrect Arg Length'
 
     if operation == 'totalSupply':
-        return Get(ctx,TOKEN_CIRC_KEY)
+        return Get(ctx, TOKEN_CIRC_KEY)
 
     elif operation == 'balanceOf':
         if len(args) == 1:
             account = args[0]
             print("GETTING BALANCE")
             print(account)
-            return Get(ctx,account)
+            return Get(ctx, account)
         return arg_error
 
     elif operation == 'transfer':
@@ -76,6 +74,7 @@ def handle_nep51(operation, args):
 
     return False
 
+
 def do_transfer(t_from, t_to, amount):
 
     if amount <= 0:
@@ -90,24 +89,24 @@ def do_transfer(t_from, t_to, amount):
             print("transfer to self!")
             return True
 
-        from_val = Get(ctx,t_from)
+        from_val = Get(ctx, t_from)
 
         if from_val < amount:
             print("insufficient funds")
             return False
 
         if from_val == amount:
-            Delete(ctx,t_from)
+            Delete(ctx, t_from)
 
         else:
             difference = from_val - amount
-            Put(ctx,t_from, difference)
+            Put(ctx, t_from, difference)
 
-        to_value = Get(ctx,t_to)
+        to_value = Get(ctx, t_to)
 
         to_total = to_value + amount
 
-        Put(ctx,t_to, to_total)
+        Put(ctx, t_to, to_total)
 
         OnTransfer(t_from, t_to, amount)
 
@@ -116,6 +115,7 @@ def do_transfer(t_from, t_to, amount):
         print("from address is not the tx sender")
 
     return False
+
 
 def do_transfer_from(t_from, t_to, amount):
 
@@ -127,26 +127,26 @@ def do_transfer_from(t_from, t_to, amount):
     if len(available_key) != 40:
         return False
 
-    available_to_to_addr = Get(ctx,available_key)
+    available_to_to_addr = Get(ctx, available_key)
 
     if available_to_to_addr < amount:
         print("Insufficient funds approved")
         return False
 
-    from_balance = Get(ctx,t_from)
+    from_balance = Get(ctx, t_from)
 
     if from_balance < amount:
         print("Insufficient tokens in from balance")
         return False
 
-    to_balance = Get(ctx,t_to)
+    to_balance = Get(ctx, t_to)
 
     new_from_balance = from_balance - amount
 
     new_to_balance = to_balance + amount
 
-    Put(ctx,t_to, new_to_balance)
-    Put(ctx,t_from, new_from_balance)
+    Put(ctx, t_to, new_to_balance)
+    Put(ctx, t_from, new_from_balance)
 
     print("transfer complete")
 
@@ -154,14 +154,15 @@ def do_transfer_from(t_from, t_to, amount):
 
     if new_allowance == 0:
         print("removing all balance")
-        Delete(ctx,available_key)
+        Delete(ctx, available_key)
     else:
         print("updating allowance to new allowance")
-        Put(ctx,available_key, new_allowance)
+        Put(ctx, available_key, new_allowance)
 
     OnTransfer(t_from, t_to, amount)
 
     return True
+
 
 def do_approve(t_owner, t_spender, amount):
 
@@ -173,7 +174,7 @@ def do_approve(t_owner, t_spender, amount):
         print("Negative amount")
         return False
 
-    from_balance = Get(ctx,t_owner)
+    from_balance = Get(ctx, t_owner)
 
     # cannot approve an amount that is
     # currently greater than the from balance
@@ -182,9 +183,9 @@ def do_approve(t_owner, t_spender, amount):
         approval_key = concat(t_owner, t_spender)
 
         if amount == 0:
-            Delete(ctx,approval_key)
+            Delete(ctx, approval_key)
         else:
-            Put(ctx,approval_key, amount)
+            Put(ctx, approval_key, amount)
 
         OnApprove(t_owner, t_spender, amount)
 
@@ -192,10 +193,11 @@ def do_approve(t_owner, t_spender, amount):
 
     return False
 
+
 def do_allowance(t_owner, t_spender):
 
     allowance_key = concat(t_owner, t_spender)
 
-    amount = Get(ctx,allowance_key)
+    amount = Get(ctx, allowance_key)
 
     return amount

@@ -38,13 +38,14 @@ LIMITED_ROUND_END = 875000 + 10000
 
 ctx = GetContext()
 
+
 def crowdsale_available_amount():
     """
 
     :return: int The amount of tokens left for sale in the crowdsale
     """
 
-    in_circ = Get(ctx,TOKEN_CIRC_KEY)
+    in_circ = Get(ctx, TOKEN_CIRC_KEY)
 
     available = TOKEN_TOTAL_SUPPLY - in_circ
 
@@ -59,7 +60,7 @@ def add_to_circulation(amount):
     """
 
     print("getting current supply")
-    current_supply = Get(ctx,TOKEN_CIRC_KEY)
+    current_supply = Get(ctx, TOKEN_CIRC_KEY)
     print("amount")
 
     current_supply += amount
@@ -67,6 +68,7 @@ def add_to_circulation(amount):
     Put(ctx, TOKEN_CIRC_KEY, current_supply)
     print("did put")
     return True
+
 
 def get_circulation():
     """
@@ -76,4 +78,3 @@ def get_circulation():
         int: Total amount in circulation
     """
     return Get(ctx, TOKEN_CIRC_KEY)
-

@@ -14,8 +14,8 @@ from boa.interop.Neo.TriggerType import Application, Verification
 from boa.interop.Neo.Storage import *
 from example.demo.nex.txio import get_asset_attachments
 from example.demo.nex.token import *
-from example.demo.nex.crowdsale import can_exchange,exchange,kyc_register,kyc_status
-from example.demo.nex.nep5 import NEP5_METHODS,handle_nep51
+from example.demo.nex.crowdsale import can_exchange, exchange, kyc_register, kyc_status
+from example.demo.nex.nep5 import NEP5_METHODS, handle_nep51
 
 ctx = GetContext()
 
@@ -96,13 +96,10 @@ def deploy():
         print("Must be owner to deploy")
         return False
 
-    if not Get(ctx,'initialized'):
+    if not Get(ctx, 'initialized'):
         # do deploy logic
-        Put(ctx,'initialized', 1)
+        Put(ctx, 'initialized', 1)
         Put(ctx, TOKEN_OWNER, TOKEN_INITIAL_AMOUNT)
         return add_to_circulation(TOKEN_INITIAL_AMOUNT)
 
     return False
-
-
-

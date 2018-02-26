@@ -82,7 +82,7 @@ class Expression(object):
                             if attr_name in n.full_name:
                                 matches.append(n)
 
-                                            #                    if len(matches) > 1:
+                                #                    if len(matches) > 1:
 #                        for index,m in enumerate(matches):
 #                            if m.alt_name:
 #                                print("deleting alt name... %s " % (m.alt_name))

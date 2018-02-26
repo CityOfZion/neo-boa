@@ -107,7 +107,6 @@ class Module(object):
 
         return oms
 
-
     def method_by_name(self, method_name):
         """
         Look up a method by its name from the module ``methods`` list.
@@ -182,7 +181,7 @@ class Module(object):
         for m in new_method_blks:
             new_method = BoaMethod(self, m, self.module_name, self._extra_instr)
             if self.to_import == ['*'] or new_method.name in self.to_import:
-#                print("IMPORTING NEW METHOD %s to module %s " % (new_method.name, self.module_name))
+                #                print("IMPORTING NEW METHOD %s to module %s " % (new_method.name, self.module_name))
                 self.methods.append(new_method)
             else:
                 self._local_methods.append(new_method)
@@ -224,8 +223,6 @@ class Module(object):
         """
         Perform linkage of addresses between methods.
         """
-
-
 
         for method in self.methods:
             #            method.link_return_types()

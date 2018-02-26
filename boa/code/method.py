@@ -34,7 +34,6 @@ class method(object):
 
     _extra = None
 
-
     @property
     def forloop_counter(self):
         self._forloop_counter += 1
@@ -61,8 +60,6 @@ class method(object):
             return '%s.%s' % (self.module_name, self.name)
         return self.name
 
-
-
     @property
     def scope(self):
         return self._scope
@@ -88,7 +85,6 @@ class method(object):
             print("Colud not get code or name %s " % e)
 
 #        dis.dis(self.code)
-
 
         self.bytecode = Bytecode.from_code(self.code)
         self.setup()

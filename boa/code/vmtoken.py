@@ -588,9 +588,9 @@ class VMTokenizer(object):
         elif 'TransactionType' in op:
             return self.convert_tx_type(op, pytoken)
         if 'GetTXHash' in op:
-            op = op.replace('GetTXHash','GetHash')
+            op = op.replace('GetTXHash', 'GetHash')
         if 'GetInputHash' in op:
-            op = op.replace('GetInputHash','GetHash')
+            op = op.replace('GetInputHash', 'GetHash')
         syscall_name = op.replace(NEO_SC_FRAMEWORK, '').encode('utf-8')
         length = len(syscall_name)
         ba = bytearray([length]) + bytearray(syscall_name)
