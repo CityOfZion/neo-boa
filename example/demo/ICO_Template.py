@@ -31,8 +31,6 @@ def Main(operation, args):
 
     trigger = GetTrigger()
 
-    #print("Executing ICO Template")
-
     # This is used in the Verification portion of the contract
     # To determine whether a transfer of system assets ( NEO/Gas) involving
     # This contract's address can proceed
@@ -54,33 +52,31 @@ def Main(operation, args):
 
     elif trigger == Application():
 
-        if operation != None:
+        for op in NEP5_METHODS:
+            if operation == op:
+                return handle_nep51(operation, args)
 
-            for op in NEP5_METHODS:
-                if operation == op:
-                    return handle_nep51(operation, args)
+        if operation == 'deploy':
+            return deploy()
 
-            if operation == 'deploy':
-                return deploy()
+        if operation == 'circulation':
+            return get_circulation()
 
-            if operation == 'circulation':
-                return get_circulation()
+        # the following are handled by crowdsale
 
-            # the following are handled by crowdsale
+        if operation == 'mintTokens':
+            return exchange()
 
-            if operation == 'mintTokens':
-                return exchange()
+        if operation == 'crowdsale_register':
+            return kyc_register(args)
 
-            if operation == 'crowdsale_register':
-                return kyc_register(args)
+        if operation == 'crowdsale_status':
+            return kyc_status(args)
 
-            if operation == 'crowdsale_status':
-                return kyc_status(args)
+        if operation == 'crowdsale_available':
+            return crowdsale_available_amount()
 
-            if operation == 'crowdsale_available':
-                return crowdsale_available_amount()
-
-            return 'unknown operation'
+        return 'unknown operation'
 
     return False
 
