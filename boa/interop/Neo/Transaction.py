@@ -7,7 +7,7 @@ class Transaction:
 
         :return:
         """
-        return GetHash(self)
+        return GetTXHash(self)
 
     @property
     def Type(self):
@@ -54,7 +54,7 @@ class Transaction:
         return GetUnspentCoins(self)
 
 
-def GetHash(transaction):
+def GetTXHash(transaction):
     """
 
     :param transaction:

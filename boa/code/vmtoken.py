@@ -469,9 +469,7 @@ class VMTokenizer(object):
         fname = pytoken.func_name
         full_name = None
         for m in self.method.module.methods:
-            if fname == m.alt_name:
-                full_name = m.full_name
-            elif fname == m.name:
+            if fname == m.name:
                 full_name = m.full_name
 
         # operational call like len(items) or abs(value)
@@ -589,6 +587,10 @@ class VMTokenizer(object):
             return self.convert_push_data(bytearray(b'\x00'), pytoken)
         elif 'TransactionType' in op:
             return self.convert_tx_type(op, pytoken)
+        if 'GetTXHash' in op:
+            op = op.replace('GetTXHash','GetHash')
+        if 'GetInputHash' in op:
+            op = op.replace('GetInputHash','GetHash')
         syscall_name = op.replace(NEO_SC_FRAMEWORK, '').encode('utf-8')
         length = len(syscall_name)
         ba = bytearray([length]) + bytearray(syscall_name)

@@ -145,5 +145,7 @@ class TestContract(BoaFixtureTest):
 
         tx, results, total_ops, engine = TestBuild(out, ['get_input_details', txid], self.GetWallet1(), '07', '05')
         self.assertEqual(len(results), 1)
-        res = results[0].GetInterface()
-        self.assertIsInstance(res, CoinReference)
+        res = results[0].GetArray()
+        self.assertEqual(len(res), 2)
+        self.assertEqual(res[0].GetByteArray(), bytearray(b'\x02\x06\xcco\x91\x96\x95\xfbU\xc9`\\U\x12q(\xc2\x96\x97\xd7\x91\xaf\x88L&6Ali\xa9D\x88'))
+        self.assertEqual(res[1].GetBigInteger(), 1)

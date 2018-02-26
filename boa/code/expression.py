@@ -69,7 +69,20 @@ class Expression(object):
                         if attr_name in n.full_name:
                             matches.append(n)
 
-#                    if len(matches) > 1:
+                    # these two are special cases for name collisions between
+                    # block.Hash, tx.Hash, and input.Hash
+                    if len(matches) == 0:
+                        attr_name = 'GetTX%s' % instr.arg
+                        for n in module_methods:
+                            if attr_name in n.full_name:
+                                matches.append(n)
+                    if len(matches) == 0:
+                        attr_name = 'GetInput%s' % instr.arg
+                        for n in module_methods:
+                            if attr_name in n.full_name:
+                                matches.append(n)
+
+                                            #                    if len(matches) > 1:
 #                        for index,m in enumerate(matches):
 #                            if m.alt_name:
 #                                print("deleting alt name... %s " % (m.alt_name))

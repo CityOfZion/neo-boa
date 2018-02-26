@@ -34,7 +34,6 @@ class method(object):
 
     _extra = None
 
-    _alt_name = None
 
     @property
     def forloop_counter(self):
@@ -62,9 +61,7 @@ class method(object):
             return '%s.%s' % (self.module_name, self.name)
         return self.name
 
-    @property
-    def alt_name(self):
-        return self._alt_name
+
 
     @property
     def scope(self):
@@ -78,12 +75,11 @@ class method(object):
     def stacksize(self):
         return self.bytecode.argcount + 50
 
-    def __init__(self, module, block, module_name, extra, altnames={}):
+    def __init__(self, module, block, module_name, extra):
         self.module = module
         self.block = block
         self.module_name = module_name
         self._extra = extra
-        self._finished_loops = []
 
         try:
             self.code = self.block[0].arg
@@ -93,10 +89,6 @@ class method(object):
 
 #        dis.dis(self.code)
 
-        if altnames != {}:
-            for k, v in altnames.items():
-                if v == self.full_name:
-                    self._alt_name = k
 
         self.bytecode = Bytecode.from_code(self.code)
         self.setup()
@@ -158,6 +150,7 @@ class method(object):
             self._scope[argname] = current_total
 
     def prepare(self):
+
         last_exp = None
         for block in self._blocks:
             exp = Expression(block, self.tokenizer, self)

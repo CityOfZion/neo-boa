@@ -7,7 +7,7 @@ class TransactionInput:
 
         :return:
         """
-        return GetHash(self)
+        return GetInputHash(self)
 
     @property
     def Index(self):
@@ -18,7 +18,7 @@ class TransactionInput:
         return GetIndex(self)
 
 
-def GetHash(input):
+def GetInputHash(input):
     """
 
     :param input:

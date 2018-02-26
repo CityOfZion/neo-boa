@@ -30,36 +30,36 @@ class Module(object):
 
     to_import = None
 
-    alternative_module_names = None
+    _extra_instr = None
+
+    _local_methods = None
+
+    @property
+    def extra_instructions(self):
+        return self._extra_instr
+
+    @property
+    def local_methods(self):
+        return self._local_methods
 
     @staticmethod
     def ImportFromBlock(block: BasicBlock):
         mpath = None
         mnames = []
-#        print("BLOCK %s " % block)
-        storename = None
-        importfrom = None
+
         for index, instr in enumerate(block):
             if instr.opcode == pyop.IMPORT_NAME:
                 mpath = instr.arg
-            elif instr.opcode == pyop.IMPORT_FROM:
-                importfrom = instr.arg
             elif instr.opcode == pyop.STORE_NAME:
-                storename = instr.arg
                 if instr.arg not in mnames:
                     mnames.append(instr.arg)
             elif instr.opcode == pyop.IMPORT_STAR:
                 mnames = ['*']
 
-        alt_map = {}
-        if storename and importfrom and storename != importfrom:
-            #            print("STORENAME AND IMPORT FROM DIFFERENTE!!! %s %s " % (storename,importfrom))
-            alt_map[storename] = '%s.%s' % (mpath, importfrom)
-
         try:
             pymodule = importlib.import_module(mpath, mpath)
             filename = pymodule.__file__
-            return Module(filename, mpath, mnames, alt_map)
+            return Module(filename, mpath, mnames)
         except Exception as e:
             print("Could not import: %s " % e)
         return None
@@ -107,6 +107,7 @@ class Module(object):
 
         return oms
 
+
     def method_by_name(self, method_name):
         """
         Look up a method by its name from the module ``methods`` list.
@@ -119,18 +120,17 @@ class Module(object):
 
         #        print("METHODS FOR MODULE: %s " % self.path)
         for m in self.methods:
-            if m.full_name == method_name:
+            if m.full_name == method_name or m.name == method_name:
                 return m
-            elif m.name == method_name:
-                return m
+
         return None
 
-    def __init__(self, path: str, module_name='', to_import=['*'], altname_map={}):
+    def __init__(self, path: str, module_name='', to_import=['*']):
 
         self.path = path
         self.to_import = to_import
         self.module_name = module_name
-        self.alternative_module_names = altname_map
+        self._local_methods = []
         source = open(path, 'rb')
 
         compiled_source = compile(source.read(), path, 'exec')
@@ -154,7 +154,7 @@ class Module(object):
                 if instr.lineno != start_ln:
                     self.cfg.split_block(block, index)
 
-        extra_instr = []
+        self._extra_instr = []
         new_method_blks = []
         for blk in self.cfg:
             type = get_block_type(blk)
@@ -165,10 +165,13 @@ class Module(object):
                 if new_module:
                     for method in new_module.methods:
                         self.methods.append(method)
+                    for method in new_module.local_methods:
+                        self.methods.append(method)
+                    self._extra_instr = self._extra_instr + new_module.extra_instructions
             elif type == BlockType.UNKNOWN:
-                extra_instr.append(blk)
+                self._extra_instr.append(blk)
             elif type == BlockType.CALL_FUNCTION:
-                extra_instr.append(blk)
+                self._extra_instr.append(blk)
             elif type == BlockType.ACTION_REG:
                 self.actions.append(BoaAction(blk))
             elif type == BlockType.APPCALL_REG:
@@ -177,10 +180,12 @@ class Module(object):
 #                logger.info("Block type not used:: %s " % type)
 
         for m in new_method_blks:
-            new_method = BoaMethod(self, m, self.module_name, extra_instr, self.alternative_module_names)
-            if self.to_import == ['*'] or new_method.name in self.to_import or new_method.alt_name in self.to_import:
-                #                print("IMPORTING NEW METHOD %s " % new_method.name)
+            new_method = BoaMethod(self, m, self.module_name, self._extra_instr)
+            if self.to_import == ['*'] or new_method.name in self.to_import:
+#                print("IMPORTING NEW METHOD %s to module %s " % (new_method.name, self.module_name))
                 self.methods.append(new_method)
+            else:
+                self._local_methods.append(new_method)
 
     def write(self):
         """
@@ -220,6 +225,8 @@ class Module(object):
         Perform linkage of addresses between methods.
         """
 
+
+
         for method in self.methods:
             #            method.link_return_types()
             method.prepare()
@@ -242,6 +249,16 @@ class Module(object):
 
                     vmtoken.addr = vmtoken.addr + method.address
 
+        # loop through once to see if there are any local methods to add
+#        local_count = 0
+#        for key, vmtoken in self.all_vm_tokens.items():
+#            if vmtoken.src_method is not None:
+#                target_method, is_local = self.method_by_name(vmtoken.target_method)
+#                if is_local:
+#                    local_count+=1
+#        if local_count > 0:
+#            return self.link_methods()
+
         for key, vmtoken in self.all_vm_tokens.items():
             if vmtoken.src_method is not None:
 
@@ -250,8 +267,8 @@ class Module(object):
                     jump_len = target_method.address - vmtoken.addr
                     vmtoken.data = jump_len.to_bytes(2, 'little', signed=True)
                 else:
-
-                    #                    pdb.set_trace()
+                    import pdb
+                    pdb.set_trace()
                     raise Exception("Target method %s not found" % vmtoken.target_method)
 
     def to_s(self):
