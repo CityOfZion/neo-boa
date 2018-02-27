@@ -15,7 +15,7 @@ class TestContract(BoaTest):
             dispatched_events.append(evt)
         events.on(SmartContractEvent.RUNTIME_NOTIFY, on_notif)
 
-        output = Compiler.instance().load('example/blockchain/EventTest.py').default
+        output = Compiler.instance().load('boa_test/example/blockchain/EventTest.py').default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '', '07')

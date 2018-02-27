@@ -1,4 +1,4 @@
-from tests.boa_test import BoaFixtureTest
+from boa_test.tests.boa_test import BoaFixtureTest
 from neo.Settings import settings
 from boa.compiler import Compiler
 from neo.Prompt.Commands.BuildNRun import TestBuild
@@ -23,7 +23,7 @@ class TestContract(BoaFixtureTest):
             print("couldn't remove debug storage %s " % e)
 
     def test_Storage(self):
-        output = Compiler.instance().load('example/blockchain/StorageTest.py').default
+        output = Compiler.instance().load('boa_test/example/blockchain/StorageTest.py').default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, ['sget', 'something', 'blah'], self.GetWallet1(), '070505', '05')
@@ -47,7 +47,7 @@ class TestContract(BoaFixtureTest):
         self.assertEqual(results[0].GetByteArray(), b'')
 
     def test_Storage2(self):
-        output = Compiler.instance().load('example/blockchain/StorageTest.py').default
+        output = Compiler.instance().load('boa_test/example/blockchain/StorageTest.py').default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, ['sget', 100, 10000000000], self.GetWallet1(), '070505', '05')

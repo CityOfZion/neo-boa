@@ -7,7 +7,7 @@ from neo.Prompt.Commands.BuildNRun import TestBuild
 class TestContract(BoaTest):
 
     def test_Throw1(self):
-        output = Compiler.instance().load('example/ThrowTest.py').default
+        output = Compiler.instance().load('boa_test/example/ThrowTest.py').default
         out = output.write()
         tx, results, total_ops, engine = TestBuild(out, [1], self.GetWallet1(), '02', '07')
         self.assertEqual(len(results), 1)
@@ -17,7 +17,7 @@ class TestContract(BoaTest):
         self.assertEqual(len(results), 0)
 
     def test_Throw2(self):
-        output = Compiler.instance().load('example/ThrowIfNotTest.py').default
+        output = Compiler.instance().load('boa_test/example/ThrowIfNotTest.py').default
         out = output.write()
         tx, results, total_ops, engine = TestBuild(out, [True], self.GetWallet1(), '01', '07')
         self.assertEqual(len(results), 1)

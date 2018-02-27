@@ -5,8 +5,7 @@ import os
 
 class CompilerTestCase(TestCase):
 
-    TEST_SC_OUTPUT = './example/AddTest1.avm'
-    TEST_SC_PATH = './example/AddTest1.py'
+    TEST_SC_OUTPUT = 'boa_test/example/AddTest1.avm'
 
     @classmethod
     def setUpClass(cls):
@@ -17,13 +16,13 @@ class CompilerTestCase(TestCase):
 
     def test_compile_1(self):
 
-        sc = Compiler.load_and_save('./example/AddTest1.py')
+        sc = Compiler.load_and_save('boa_test/example/AddTest1.py')
 
         self.assertTrue(os.path.exists(self.TEST_SC_OUTPUT))
 
     def test_compile_2(self):
 
-        sc = Compiler.load('./example/AddTest1.py')
+        sc = Compiler.load('boa_test/example/AddTest1.py')
 
         default_module = sc.default
 

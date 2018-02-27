@@ -1,4 +1,4 @@
-from tests.boa_test import BoaFixtureTest
+from boa_test.tests.boa_test import BoaFixtureTest
 from boa.compiler import Compiler
 from neo.Core.TX.Transaction import Transaction
 from neo.Prompt.Commands.BuildNRun import TestBuild
@@ -49,7 +49,7 @@ class TestContract(BoaFixtureTest):
 
     def test_ICOTemplate_1(self):
 
-        output = Compiler.instance().load('example/demo/ICO_Template.py').default
+        output = Compiler.instance().load('boa_test/example/demo/ICO_Template.py').default
         out = output.write()
 #        print(output.to_s())
 
@@ -99,7 +99,7 @@ class TestContract(BoaFixtureTest):
 
     def test_ICOTemplate_2(self):
 
-        output = Compiler.instance().load('example/demo/ICO_Template.py').default
+        output = Compiler.instance().load('boa_test/example/demo/ICO_Template.py').default
         out = output.write()
 
         # now transfer tokens to wallet 2
@@ -155,7 +155,7 @@ class TestContract(BoaFixtureTest):
 
     def test_ICOTemplate_3_KYC(self):
 
-        output = Compiler.instance().load('example/demo/ICO_Template.py').default
+        output = Compiler.instance().load('boa_test/example/demo/ICO_Template.py').default
         out = output.write()
         print(output.to_s())
         # now transfer tokens to wallet 2
@@ -201,7 +201,7 @@ class TestContract(BoaFixtureTest):
 
     def test_ICOTemplate_4_attachments(self):
 
-        output = Compiler.instance().load('example/demo/ICO_Template.py').default
+        output = Compiler.instance().load('boa_test/example/demo/ICO_Template.py').default
         out = output.write()
 
         # test mint tokens without being kyc verified
@@ -236,7 +236,7 @@ class TestContract(BoaFixtureTest):
 
     def test_ICOTemplate_5_mint(self):
 
-        output = Compiler.instance().load('example/demo/ICO_Template.py').default
+        output = Compiler.instance().load('boa_test/example/demo/ICO_Template.py').default
         out = output.write()
 
         # register an address
@@ -275,7 +275,7 @@ class TestContract(BoaFixtureTest):
 
     def test_ICOTemplate_6_approval(self):
 
-        output = Compiler.instance().load('example/demo/ICO_Template.py').default
+        output = Compiler.instance().load('boa_test/example/demo/ICO_Template.py').default
         out = output.write()
 
         # tranfer_from, approve, allowance

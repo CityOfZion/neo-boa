@@ -12,16 +12,14 @@ addons:
 # command to install dependencies
 install:
   - pip install -r requirements.txt
-  - pip install -e git+https://github.com/CityOfZion/neo-python-core.git@feature-36#egg=neocore
   - pip install -e git+https://github.com/CityOfZion/neo-python.git@feature-36#egg=neo-python
   - pip install coveralls
 
 # command to run tests
 script:
-  - coverage run -m unittest discover tests
-  - pycodestyle tests
+  - coverage run -m unittest discover boa_test
   - pycodestyle boa
-  - pycodestyle example
+  - pycodestyle boa_test
 
 
 after_success:

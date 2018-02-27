@@ -7,7 +7,7 @@ from neo.Prompt.Commands.BuildNRun import TestBuild
 class TestContract(BoaTest):
 
     def test_binops(self):
-        output = Compiler.instance().load('example/BinopTest.py').default
+        output = Compiler.instance().load('boa_test/example/BinopTest.py').default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, ['&', 4, 4], self.GetWallet1(), '', '07')

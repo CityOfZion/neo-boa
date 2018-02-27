@@ -8,7 +8,7 @@ class TestContract(BoaTest):
 
     def test_opcalls(self):
 
-        output = Compiler.instance().load('example/OpCallTest.py').default
+        output = Compiler.instance().load('boa_test/example/OpCallTest.py').default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, ['omin', 4, 4], self.GetWallet1(), '', '07')

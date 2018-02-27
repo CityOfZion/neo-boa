@@ -1,4 +1,4 @@
-from tests.boa_test import BoaFixtureTest
+from boa_test.tests.boa_test import BoaFixtureTest
 from boa.compiler import Compiler
 from neo.Core.TX.Transaction import Transaction
 from neo.Prompt.Commands.BuildNRun import TestBuild
@@ -22,7 +22,7 @@ class TestContract(BoaFixtureTest):
         events.on(SmartContractEvent.RUNTIME_NOTIFY, on_notif)
         events.on(SmartContractEvent.RUNTIME_LOG, on_log)
 
-        output = Compiler.instance().load('example/blockchain/RuntimeTest.py').default
+        output = Compiler.instance().load('boa_test/example/blockchain/RuntimeTest.py').default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, ['get_time', 1], self.GetWallet1(), '0202', '02')
@@ -58,7 +58,7 @@ class TestContract(BoaFixtureTest):
 
     def test_Triggers(self):
 
-        output = Compiler.instance().load('example/blockchain/TriggerTypeTest.py').default
+        output = Compiler.instance().load('boa_test/example/blockchain/TriggerTypeTest.py').default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, [1], self.GetWallet1(), '02', '02')

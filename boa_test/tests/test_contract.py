@@ -1,4 +1,4 @@
-from tests.boa_test import BoaFixtureTest
+from boa_test.tests.boa_test import BoaFixtureTest
 from neo.Settings import settings
 from neo.Core.State.ContractState import ContractState
 from neo.SmartContract.StorageContext import StorageContext
@@ -25,7 +25,7 @@ class TestContract(BoaFixtureTest):
             print("couldn't remove debug storage %s " % e)
 
     def test_Contract(self):
-        output = Compiler.instance().load('example/blockchain/ContractTest.py').default
+        output = Compiler.instance().load('boa_test/example/blockchain/ContractTest.py').default
         out = output.write()
 
         contract_hash = bytearray(b"\xccN\xe2\xf1\xc9\xf4\xe0x\'V\xda\xbf$m\nO\xe6\n\x03T")

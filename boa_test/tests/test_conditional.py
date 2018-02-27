@@ -8,7 +8,7 @@ class TestContract(BoaTest):
 
     def test_CompareTest0(self):
 
-        output = Compiler.instance().load('example/CompareTest0.py').default
+        output = Compiler.instance().load('boa_test/example/CompareTest0.py').default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, [2, 4], self.GetWallet1(), '0202', '02')
@@ -33,7 +33,7 @@ class TestContract(BoaTest):
 
     def test_CompareTest1(self):
 
-        output = Compiler.instance().load('example/CompareTest1.py').default
+        output = Compiler.instance().load('boa_test/example/CompareTest1.py').default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, [1, 2, 3, 4], self.GetWallet1(), '02020202', '02')
@@ -62,7 +62,7 @@ class TestContract(BoaTest):
 
     def test_CompareTest2(self):
 
-        output = Compiler.instance().load('example/CompareTest2.py').default
+        output = Compiler.instance().load('boa_test/example/CompareTest2.py').default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, [2, 2], self.GetWallet1(), '0202', '01')

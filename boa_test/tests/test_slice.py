@@ -7,14 +7,14 @@ from neo.Prompt.Commands.BuildNRun import TestBuild
 class TestContract(BoaTest):
 
     def test_Slice1(self):
-        output = Compiler.instance().load('example/SliceTest.py').default
+        output = Compiler.instance().load('boa_test/example/SliceTest.py').default
         out = output.write()
         tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '', '07')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetByteArray(), bytearray(b'\x01\x02\x03\x04'))
 
     def test_Slice2(self):
-        output = Compiler.instance().load('example/SliceTest2.py').default
+        output = Compiler.instance().load('boa_test/example/SliceTest2.py').default
         out = output.write()
         tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '', '07')
         self.assertEqual(len(results), 1)

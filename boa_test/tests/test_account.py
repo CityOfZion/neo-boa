@@ -1,4 +1,4 @@
-from tests.boa_test import BoaFixtureTest
+from boa_test.tests.boa_test import BoaFixtureTest
 from boa.compiler import Compiler
 from neo.Core.TX.Transaction import Transaction
 from neo.Prompt.Commands.BuildNRun import TestBuild
@@ -8,7 +8,7 @@ class TestContract(BoaFixtureTest):
 
     def test_Account(self):
 
-        output = Compiler.instance().load('example/blockchain/AccountTest.py').default
+        output = Compiler.instance().load('boa_test/example/blockchain/AccountTest.py').default
         out = output.write()
         print(output.to_s())
 

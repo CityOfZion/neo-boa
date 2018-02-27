@@ -1,4 +1,4 @@
-from tests.boa_test import BoaFixtureTest
+from boa_test.tests.boa_test import BoaFixtureTest
 from boa.compiler import Compiler
 from neo.Core.TX.Transaction import Transaction
 from neo.Prompt.Commands.BuildNRun import TestBuild
@@ -7,7 +7,7 @@ from neo.Prompt.Commands.BuildNRun import TestBuild
 class TestContract(BoaFixtureTest):
 
     def test_Block(self):
-        output = Compiler.instance().load('example/blockchain/BlockTest.py').default
+        output = Compiler.instance().load('boa_test/example/blockchain/BlockTest.py').default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, ['get_hash', 1234], self.GetWallet1(), '02', '02')
