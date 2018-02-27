@@ -53,6 +53,8 @@ The compiler supports a subset of the Python language ( in the same way that a _
 
 ## Installation
 
+Installation requires a Python 3.6 or later environment.
+
 #### Pip
 
 ```
@@ -84,10 +86,10 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-or, to install Python 3.5 specifically:
+or, to install Python 3.6 specifically:
 
 ```
-virtualenv -p /usr/local/bin/python3.5 venv
+virtualenv -p /usr/local/bin/python3.6 venv
 source venv/bin/activate
 ```
 
