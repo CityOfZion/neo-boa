@@ -151,7 +151,7 @@ class TestContract(BoaFixtureTest):
         # get balance no params
         tx, results, total_ops, engine = TestBuild(out, ['balanceOf', parse_param([])], self.GetWallet1(), '0705', '05')
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].GetString(), 'Incorrect Arg Length')
+        self.assertEqual(results[0].GetBoolean(), False)
 
     def test_ICOTemplate_3_KYC(self):
 

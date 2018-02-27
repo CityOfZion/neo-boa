@@ -96,8 +96,11 @@ class method(object):
         except Exception as e:
             print("Colud not get code or name %s " % e)
 
+#        print("**********************")
+#        print("**********************")
+#        print("METHOD %s " % self.name)
+#        import dis
 #        dis.dis(self.code)
-
         self.bytecode = Bytecode.from_code(self.code)
         self.setup()
 

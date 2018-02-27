@@ -17,6 +17,7 @@ from boa.interop.Neo.TriggerType import Application, Verification
 from boa.interop.Neo.Storage import *
 
 ctx = GetContext()
+NEP5_METHODS = ['name', 'symbol', 'decimals', 'totalSupply', 'balanceOf', 'transfer', 'transferFrom', 'approve', 'allowance']
 
 
 def Main(operation, args):

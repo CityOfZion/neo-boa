@@ -9,12 +9,8 @@ from example.demo.nex.token import *
 OnTransfer = RegisterAction('transfer', 'addr_from', 'addr_to', 'amount')
 OnApprove = RegisterAction('approve', 'addr_from', 'addr_to', 'amount')
 
-NEP5_METHODS = ['name', 'symbol', 'decimals', 'totalSupply', 'balanceOf', 'transfer', 'transferFrom', 'approve', 'allowance']
-
 
 def handle_nep51(ctx, operation, args):
-
-    arg_error = 'Incorrect Arg Length'
 
     if operation == 'name':
         return TOKEN_NAME
@@ -31,30 +27,22 @@ def handle_nep51(ctx, operation, args):
     elif operation == 'balanceOf':
         if len(args) == 1:
             return Get(ctx, args[0])
-        return arg_error
 
     elif operation == 'transfer':
         if len(args) == 3:
             return do_transfer(ctx, args[0], args[1], args[2])
-        return arg_error
 
     elif operation == 'transferFrom':
         if len(args) == 3:
             return do_transfer_from(ctx, args[0], args[1], args[2])
-        return arg_error
 
     elif operation == 'approve':
         if len(args) == 3:
-            t_owner = args[0]
-            t_spender = args[1]
-            t_amount = args[2]
-            return do_approve(ctx, t_owner, t_spender, t_amount)
-        return arg_error
+            return do_approve(ctx, args[0], args[1], args[2])
 
     elif operation == 'allowance':
         if len(args) == 2:
             return do_allowance(ctx, args[0], args[1])
-        return arg_error
 
     return False
 
