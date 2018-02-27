@@ -1,4 +1,4 @@
-from tests.boa_test import BoaTest
+from boa_test.tests.boa_test import BoaTest
 from boa.compiler import Compiler
 
 from neo.Prompt.Commands.BuildNRun import TestBuild
@@ -8,7 +8,7 @@ class TestContract(BoaTest):
 
     def test_AddTest(self):
 
-        output = Compiler.instance().load('boa_test/example/AddTest.py').default.write()
+        output = Compiler.instance().load('%s/boa_test/example/AddTest.py' % TestContract.dirname).default.write()
 
         tx, results, total_ops, engine = TestBuild(output, [2], self.GetWallet1(), '02', '02')
         self.assertEqual(len(results), 1)
@@ -25,7 +25,7 @@ class TestContract(BoaTest):
 
     def test_AddTest1(self):
 
-        output = Compiler.instance().load('boa_test/example/AddTest1.py').default.write()
+        output = Compiler.instance().load('%s/boa_test/example/AddTest1.py' % TestContract.dirname).default.write()
 
         tx, results, total_ops, engine = TestBuild(output, [1, 2, 3, 4], self.GetWallet1(), '02020202', '02')
         self.assertEqual(len(results), 1)
@@ -41,7 +41,7 @@ class TestContract(BoaTest):
 
     def test_AddTest2(self):
 
-        output = Compiler.instance().load('boa_test/example/AddTest2.py').default.write()
+        output = Compiler.instance().load('%s/boa_test/example/AddTest2.py' % TestContract.dirname).default.write()
 
         tx, results, total_ops, engine = TestBuild(output, [], self.GetWallet1(), '', '02')
         self.assertEqual(len(results), 1)
@@ -49,7 +49,7 @@ class TestContract(BoaTest):
 
     def test_AddTest4(self):
 
-        output = Compiler.instance().load('boa_test/example/AddTest4.py').default.write()
+        output = Compiler.instance().load('%s/boa_test/example/AddTest4.py' % TestContract.dirname).default.write()
 
         tx, results, total_ops, engine = TestBuild(output, [1, 2, 3, 4], self.GetWallet1(), '', '02')
         self.assertEqual(len(results), 1)
@@ -57,7 +57,7 @@ class TestContract(BoaTest):
 
     def test_AddVoid(self):
 
-        output = Compiler.instance().load('boa_test/example/AddTestVoid.py').default
+        output = Compiler.instance().load('%s/boa_test/example/AddTestVoid.py' % TestContract.dirname).default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, [3], self.GetWallet1(), '02', 'ff')

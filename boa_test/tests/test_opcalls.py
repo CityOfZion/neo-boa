@@ -1,4 +1,4 @@
-from tests.boa_test import BoaTest
+from boa_test.tests.boa_test import BoaTest
 from boa.compiler import Compiler
 
 from neo.Prompt.Commands.BuildNRun import TestBuild
@@ -8,7 +8,7 @@ class TestContract(BoaTest):
 
     def test_opcalls(self):
 
-        output = Compiler.instance().load('boa_test/example/OpCallTest.py').default
+        output = Compiler.instance().load('%s/boa_test/example/OpCallTest.py' % TestContract.dirname).default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, ['omin', 4, 4], self.GetWallet1(), '', '07')

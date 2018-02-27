@@ -13,7 +13,7 @@ class TestContract(BoaFixtureTest):
 
     def test_Output(self):
 
-        output = Compiler.instance().load('boa_test/example/blockchain/OutputsTest.py').default
+        output = Compiler.instance().load('%s/boa_test/example/blockchain/OutputsTest.py' % TestContract.dirname).default
         out = output.write()
 
         txid = bytearray(b'\xb4A?l#\xdc@7ki<)\x05\xed\xd5\x9a"\xc3I\x10-\x9f#[\xfc\xf6\xb1$N\\\xdb\xce')
@@ -24,7 +24,7 @@ class TestContract(BoaFixtureTest):
 
     def test_TransactionTypes(self):
 
-        output = Compiler.instance().load('boa_test/example/blockchain/TransactionTypeTest.py').default
+        output = Compiler.instance().load('%s/boa_test/example/blockchain/TransactionTypeTest.py' % TestContract.dirname).default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, ['miner'], self.GetWallet1(), '07', '05')
@@ -73,7 +73,7 @@ class TestContract(BoaFixtureTest):
 
     def test_Transaction(self):
 
-        output = Compiler.instance().load('boa_test/example/blockchain/TransactionTest.py').default
+        output = Compiler.instance().load('%s/boa_test/example/blockchain/TransactionTest.py' % TestContract.dirname).default
         out = output.write()
 
         txid = bytearray(b'\xb4A?l#\xdc@7ki<)\x05\xed\xd5\x9a"\xc3I\x10-\x9f#[\xfc\xf6\xb1$N\\\xdb\xce')

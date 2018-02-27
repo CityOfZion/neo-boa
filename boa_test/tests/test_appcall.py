@@ -9,14 +9,14 @@ class TestContract(BoaFixtureTest):
     def test_Appcall1(self):
 
         with self.assertRaises(Exception):
-            Compiler.instance().load('boa_test/example/blockchain/AppCallTest2.py').default
+            Compiler.instance().load('%s/boa_test/example/blockchain/AppCallTest2.py' % TestContract.dirname).default
 
         with self.assertRaises(Exception):
-            Compiler.instance().load('boa_test/example/blockchain/AppCallTest3.py').default
+            Compiler.instance().load('%s/boa_test/example/blockchain/AppCallTest3.py' % TestContract.dirname).default
 
     def test_Appcall2(self):
 
-        output = Compiler.instance().load('boa_test/example/blockchain/AppCallTest.py').default
+        output = Compiler.instance().load('%s/boa_test/example/blockchain/AppCallTest.py' % TestContract.dirname).default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, ['add', 3, 5], self.GetWallet1(), '070202', '02')
@@ -37,7 +37,7 @@ class TestContract(BoaFixtureTest):
 
     def test_DynamicAppcall(self):
 
-        output = Compiler.instance().load('boa_test/example/blockchain/DynamicAppCallTest.py').default
+        output = Compiler.instance().load('%s/boa_test/example/blockchain/DynamicAppCallTest.py' % TestContract.dirname).default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, [bytearray(b'W\xa7\x18\x08MZh\xbdu\xb7%\x88\x8e\x19J\x9e\xd4|\xe1\xe9'), 'add', 3, 5], self.GetWallet1(), '05070202', '02', dynamic=True)

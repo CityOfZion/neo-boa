@@ -7,7 +7,7 @@ from neo.Prompt.Commands.BuildNRun import TestBuild
 class TestContract(BoaFixtureTest):
 
     def test_Block(self):
-        output = Compiler.instance().load('boa_test/example/blockchain/BlockTest.py').default
+        output = Compiler.instance().load('%s/boa_test/example/blockchain/BlockTest.py' % TestContract.dirname).default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, ['get_hash', 1234], self.GetWallet1(), '02', '02')

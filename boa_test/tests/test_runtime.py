@@ -22,7 +22,7 @@ class TestContract(BoaFixtureTest):
         events.on(SmartContractEvent.RUNTIME_NOTIFY, on_notif)
         events.on(SmartContractEvent.RUNTIME_LOG, on_log)
 
-        output = Compiler.instance().load('boa_test/example/blockchain/RuntimeTest.py').default
+        output = Compiler.instance().load('%s/boa_test/example/blockchain/RuntimeTest.py' % TestContract.dirname).default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, ['get_time', 1], self.GetWallet1(), '0202', '02')
@@ -58,7 +58,7 @@ class TestContract(BoaFixtureTest):
 
     def test_Triggers(self):
 
-        output = Compiler.instance().load('boa_test/example/blockchain/TriggerTypeTest.py').default
+        output = Compiler.instance().load('%s/boa_test/example/blockchain/TriggerTypeTest.py' % TestContract.dirname).default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, [1], self.GetWallet1(), '02', '02')

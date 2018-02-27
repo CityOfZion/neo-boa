@@ -8,7 +8,7 @@ from neo.Settings import settings
 from neo.Prompt.Utils import parse_param
 from neo.Core.FunctionCode import FunctionCode
 from neocore.Fixed8 import Fixed8
-from example.demo.nex.token import *
+from boa_test.example.demo.nex.token import *
 
 import shutil
 import os
@@ -34,7 +34,7 @@ class TestContract(BoaFixtureTest):
 
     @classmethod
     def setUpClass(cls):
-        super(BoaFixtureTest, cls).setUpClass()
+        super(TestContract, cls).setUpClass()
 
         def on_notif(evt):
             print(evt)
@@ -49,7 +49,7 @@ class TestContract(BoaFixtureTest):
 
     def test_ICOTemplate_1(self):
 
-        output = Compiler.instance().load('boa_test/example/demo/ICO_Template.py').default
+        output = Compiler.instance().load('%s/boa_test/example/demo/ICO_Template.py' % TestContract.dirname).default
         out = output.write()
 #        print(output.to_s())
 
@@ -99,7 +99,7 @@ class TestContract(BoaFixtureTest):
 
     def test_ICOTemplate_2(self):
 
-        output = Compiler.instance().load('boa_test/example/demo/ICO_Template.py').default
+        output = Compiler.instance().load('%s/boa_test/example/demo/ICO_Template.py' % TestContract.dirname).default
         out = output.write()
 
         # now transfer tokens to wallet 2
@@ -155,7 +155,7 @@ class TestContract(BoaFixtureTest):
 
     def test_ICOTemplate_3_KYC(self):
 
-        output = Compiler.instance().load('boa_test/example/demo/ICO_Template.py').default
+        output = Compiler.instance().load('%s/boa_test/example/demo/ICO_Template.py' % TestContract.dirname).default
         out = output.write()
         print(output.to_s())
         # now transfer tokens to wallet 2
@@ -201,7 +201,7 @@ class TestContract(BoaFixtureTest):
 
     def test_ICOTemplate_4_attachments(self):
 
-        output = Compiler.instance().load('boa_test/example/demo/ICO_Template.py').default
+        output = Compiler.instance().load('%s/boa_test/example/demo/ICO_Template.py' % TestContract.dirname).default
         out = output.write()
 
         # test mint tokens without being kyc verified
@@ -236,7 +236,7 @@ class TestContract(BoaFixtureTest):
 
     def test_ICOTemplate_5_mint(self):
 
-        output = Compiler.instance().load('boa_test/example/demo/ICO_Template.py').default
+        output = Compiler.instance().load('%s/boa_test/example/demo/ICO_Template.py' % TestContract.dirname).default
         out = output.write()
 
         # register an address
@@ -275,7 +275,7 @@ class TestContract(BoaFixtureTest):
 
     def test_ICOTemplate_6_approval(self):
 
-        output = Compiler.instance().load('boa_test/example/demo/ICO_Template.py').default
+        output = Compiler.instance().load('%s/boa_test/example/demo/ICO_Template.py' % TestContract.dirname).default
         out = output.write()
 
         # tranfer_from, approve, allowance

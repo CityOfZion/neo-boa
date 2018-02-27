@@ -25,7 +25,7 @@ class TestContract(BoaFixtureTest):
             print("couldn't remove debug storage %s " % e)
 
     def test_Contract(self):
-        output = Compiler.instance().load('boa_test/example/blockchain/ContractTest.py').default
+        output = Compiler.instance().load('%s/boa_test/example/blockchain/ContractTest.py' % TestContract.dirname).default
         out = output.write()
 
         contract_hash = bytearray(b"\xccN\xe2\xf1\xc9\xf4\xe0x\'V\xda\xbf$m\nO\xe6\n\x03T")

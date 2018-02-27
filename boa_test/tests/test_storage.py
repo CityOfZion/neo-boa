@@ -23,7 +23,7 @@ class TestContract(BoaFixtureTest):
             print("couldn't remove debug storage %s " % e)
 
     def test_Storage(self):
-        output = Compiler.instance().load('boa_test/example/blockchain/StorageTest.py').default
+        output = Compiler.instance().load('%s/boa_test/example/blockchain/StorageTest.py' % TestContract.dirname).default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, ['sget', 'something', 'blah'], self.GetWallet1(), '070505', '05')
@@ -47,7 +47,7 @@ class TestContract(BoaFixtureTest):
         self.assertEqual(results[0].GetByteArray(), b'')
 
     def test_Storage2(self):
-        output = Compiler.instance().load('boa_test/example/blockchain/StorageTest.py').default
+        output = Compiler.instance().load('%s/boa_test/example/blockchain/StorageTest.py' % TestContract.dirname).default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, ['sget', 100, 10000000000], self.GetWallet1(), '070505', '05')

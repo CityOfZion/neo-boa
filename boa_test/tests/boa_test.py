@@ -2,7 +2,7 @@ from neo.Implementations.Wallets.peewee.UserWallet import UserWallet
 from neo.Settings import settings
 from neocore.UInt160 import UInt160
 from neo.Wallets.utils import to_aes_key
-
+import os
 from neo.Utils.WalletFixtureTestCase import WalletFixtureTestCase
 
 settings.USE_DEBUG_STORAGE = False
@@ -11,14 +11,23 @@ settings.USE_DEBUG_STORAGE = False
 
 class BoaTest(WalletFixtureTestCase):
 
+    dirname = None
+
     FIXTURE_REMOTE_LOC = 'https://s3.us-east-2.amazonaws.com/cityofzion/fixtures/fixtures_v5.tar.gz'
-    FIXTURE_FILENAME = './fixtures/empty_fixture.tar.gz'
+    FIXTURE_FILENAME = 'fixtures/empty_fixture.tar.gz'
 
     wallet_1_script_hash = UInt160(data=b'S\xefB\xc8\xdf!^\xbeZ|z\xe8\x01\xcb\xc3\xac/\xacI)')
 
     wallet_1_addr = 'APRgMZHZubii29UXF9uFa6sohrsYupNAvx'
 
     _wallet1 = None
+
+    @classmethod
+    def setUpClass(cls):
+
+        cls.dirname = '/'.join(os.path.abspath(__file__).split('/')[:-3])
+
+        super(BoaTest, cls).setUpClass()
 
     @classmethod
     def GetWallet1(cls, recreate=False):
@@ -28,6 +37,8 @@ class BoaTest(WalletFixtureTestCase):
 
 
 class BoaFixtureTest(WalletFixtureTestCase):
+
+    dirname = None
 
     FIXTURE_REMOTE_LOC = 'https://s3.us-east-2.amazonaws.com/cityofzion/fixtures/fixtures_v5.tar.gz'
     FIXTURE_FILENAME = './fixtures/fixtures_v5.tar.gz'
@@ -49,6 +60,11 @@ class BoaFixtureTest(WalletFixtureTestCase):
     wallet_3_addr = 'AWygZ1B5c3GDiLL6u5bHSVU45Ya1SVGX9P'
 
     _wallet3 = None
+
+    @classmethod
+    def setUpClass(cls):
+        super(BoaFixtureTest, cls).setUpClass()
+        cls.dirname = '/'.join(os.path.abspath(__file__).split('/')[:-3])
 
     @classmethod
     def GetWallet1(cls, recreate=False):

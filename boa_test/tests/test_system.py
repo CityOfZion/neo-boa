@@ -8,7 +8,7 @@ class TestContract(BoaFixtureTest):
 
     def test_Runtime(self):
 
-        output = Compiler.instance().load('boa_test/example/blockchain/ExecutionEngineTest.py').default
+        output = Compiler.instance().load('%s/boa_test/example/blockchain/ExecutionEngineTest.py' % TestContract.dirname).default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, ['executing_sh'], self.GetWallet1(), '07', '05')

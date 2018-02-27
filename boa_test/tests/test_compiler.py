@@ -1,14 +1,15 @@
-from unittest import TestCase
+from boa_test.tests.boa_test import BoaTest
 from boa.compiler import Compiler
 import os
 
 
-class CompilerTestCase(TestCase):
+class TestContract(BoaTest):
 
     TEST_SC_OUTPUT = 'boa_test/example/AddTest1.avm'
 
     @classmethod
     def setUpClass(cls):
+        super(TestContract, cls).setUpClass()
         try:
             os.remove(cls.TEST_SC_OUTPUT)
         except Exception as e:
@@ -16,13 +17,15 @@ class CompilerTestCase(TestCase):
 
     def test_compile_1(self):
 
-        sc = Compiler.load_and_save('boa_test/example/AddTest1.py')
+        sc = Compiler.load_and_save('%s/boa_test/example/AddTest1.py' % TestContract.dirname)
 
-        self.assertTrue(os.path.exists(self.TEST_SC_OUTPUT))
+        expected_output = '%s/%s' % (TestContract.dirname, self.TEST_SC_OUTPUT)
+
+        self.assertTrue(os.path.exists(expected_output))
 
     def test_compile_2(self):
 
-        sc = Compiler.load('boa_test/example/AddTest1.py')
+        sc = Compiler.load('%s/boa_test/example/AddTest1.py' % TestContract.dirname)
 
         default_module = sc.default
 

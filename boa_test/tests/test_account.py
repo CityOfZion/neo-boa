@@ -8,7 +8,7 @@ class TestContract(BoaFixtureTest):
 
     def test_Account(self):
 
-        output = Compiler.instance().load('boa_test/example/blockchain/AccountTest.py').default
+        output = Compiler.instance().load('%s/boa_test/example/blockchain/AccountTest.py' % TestContract.dirname).default
         out = output.write()
         print(output.to_s())
 

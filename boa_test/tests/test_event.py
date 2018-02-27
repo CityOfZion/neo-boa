@@ -1,4 +1,4 @@
-from tests.boa_test import BoaTest
+from boa_test.tests.boa_test import BoaTest
 from boa.compiler import Compiler
 
 from neo.Prompt.Commands.BuildNRun import TestBuild
@@ -15,7 +15,7 @@ class TestContract(BoaTest):
             dispatched_events.append(evt)
         events.on(SmartContractEvent.RUNTIME_NOTIFY, on_notif)
 
-        output = Compiler.instance().load('boa_test/example/blockchain/EventTest.py').default
+        output = Compiler.instance().load('%s/boa_test/example/blockchain/EventTest.py' % TestContract.dirname).default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '', '07')
