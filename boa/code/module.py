@@ -56,13 +56,9 @@ class Module(object):
             elif instr.opcode == pyop.IMPORT_STAR:
                 mnames = ['*']
 
-        try:
-            pymodule = importlib.import_module(mpath, mpath)
-            filename = pymodule.__file__
-            return Module(filename, mpath, mnames)
-        except Exception as e:
-            print("Could not import: %s " % e)
-        return None
+        pymodule = importlib.import_module(mpath, mpath)
+        filename = pymodule.__file__
+        return Module(filename, mpath, mnames)
 
     @property
     def main(self):
