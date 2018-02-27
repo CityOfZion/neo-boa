@@ -68,11 +68,8 @@ class Header:
 
 def GetIndex(header):
     """
-    Returns the height/index of a header
-    Args:
-        header:
 
-    Returns: int
+    Returns the height/index of a header
 
     """
     pass

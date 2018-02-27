@@ -21,7 +21,7 @@ What does it currently do
 -  Compiles a subset of the Python language to the ``.avm`` format for
    use in the `Neo Virtual
    Machine <https://github.com/neo-project/neo-vm>`__
--  Works for Python 3.4+
+-  Works for Python 3.6+
 
 What will it do
 ^^^^^^^^^^^^^^^
@@ -41,6 +41,8 @@ Get Help or give help
 
 Installation
 ------------
+
+Make sure you are using a Python 3.6 or greater virtual environment
 
 Pip
 ^^^
@@ -83,11 +85,11 @@ Python 3 virtual environment and activate it via:
     python3 -m venv venv
     source venv/bin/activate
 
-or, to install Python 3.5 specifically:
+or, to install Python 3.6 specifically:
 
 ::
 
-    virtualenv -p /usr/local/bin/python3.5 venv
+    virtualenv -p /usr/local/bin/python3.6 venv
     source venv/bin/activate
 
 Then, install the requirements:
@@ -116,7 +118,7 @@ here <http://neo-boa.readthedocs.io/en/latest/>`__.
 Tests
 -----
 
-Tests are important.
+All tests are located in ``boa_test/test``.  Tests can be run with the following command ``python -m unittest discover boa_test``
 
 License
 -------

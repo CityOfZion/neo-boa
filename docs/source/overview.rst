@@ -10,11 +10,12 @@ What it currently does
 
 -  Compiles a subset of the Python language to the ``.avm`` format for
    use in the `Neo Virtual Machine`_.
--  Works for Python 3.4+
+-  Works for Python 3.6+
 
 What will it do
 ^^^^^^^^^^^^^^^
 
+-  Support dictionary objects
 -  Compile a larger subset of the Python language.
 
 
@@ -26,7 +27,7 @@ For details, please see all samples in the ``example`` directory.
 
 - Flow Control:
 
-    - If, Else, Elif, While, Break, Method calls, Lamdbas, for x in y.
+    - If, Else, Elif, While, Break, Method calls, for x in y.
 
 - Arithmetric and equality Operators for integer math:
 
@@ -99,7 +100,7 @@ everything you plan on using in a smart contract using the functionality listed 
          
          'enumerate', 'dict', 'divmod', 'complex', 
          
-         'bytes', 'bytearray', 'bool', 'int', 'vars', 
+         'bytes',  'bool', 'int', 'vars',
           
          'sum', 'sorted', 'round', 'setattr', 'getattr',
           
