@@ -44,6 +44,12 @@ class BoaFixtureTest(WalletFixtureTestCase):
 
     _wallet2 = None
 
+    wallet_3_script_hash = UInt160(data=b'\xa6\xc5\x9d\xeb\xf0\xd7(\xbd\x14\x89\xcd\xb9\xd9{\xd1\x90\xcb\x0b\xdch')
+
+    wallet_3_addr = 'AWygZ1B5c3GDiLL6u5bHSVU45Ya1SVGX9P'
+
+    _wallet3 = None
+
     @classmethod
     def GetWallet1(cls, recreate=False):
         if cls._wallet1 is None or recreate:
@@ -55,3 +61,9 @@ class BoaFixtureTest(WalletFixtureTestCase):
         if cls._wallet2 is None or recreate:
             cls._wallet2 = UserWallet.Open(BoaFixtureTest.wallet_2_dest(), to_aes_key(BoaFixtureTest.wallet_2_pass()))
         return cls._wallet2
+
+    @classmethod
+    def GetWallet3(cls, recreate=False):
+        if cls._wallet3 is None or recreate:
+            cls._wallet3 = UserWallet.Open(BoaFixtureTest.wallet_3_dest(), to_aes_key(BoaFixtureTest.wallet_3_pass()))
+        return cls._wallet3

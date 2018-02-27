@@ -8,14 +8,13 @@ Email: tom@neonexchange.org
 Date: Dec 11 2017
 
 """
-
-from boa.interop.Neo.Runtime import GetTrigger, CheckWitness, Notify
-from boa.interop.Neo.TriggerType import Application, Verification
-from boa.interop.Neo.Storage import *
 from example.demo.nex.txio import get_asset_attachments
 from example.demo.nex.token import *
-from example.demo.nex.crowdsale import can_exchange, exchange, kyc_register, kyc_status
-from example.demo.nex.nep5 import NEP5_METHODS, handle_nep51
+from example.demo.nex.crowdsale import *
+from example.demo.nex.nep5 import *
+from boa.interop.Neo.Runtime import GetTrigger, CheckWitness
+from boa.interop.Neo.TriggerType import Application, Verification
+from boa.interop.Neo.Storage import *
 
 ctx = GetContext()
 
@@ -47,34 +46,37 @@ def Main(operation, args):
         # Otherwise, we need to lookup the assets and determine
         # If attachments of assets is ok
         attachments = get_asset_attachments()
-
-        return can_exchange(attachments, True)
+        return False
+#        return can_exchange(ctx,attachments, True)
 
     elif trigger == Application():
 
         for op in NEP5_METHODS:
             if operation == op:
-                return handle_nep51(operation, args)
+                return handle_nep51(ctx, operation, args)
 
         if operation == 'deploy':
             return deploy()
 
-        if operation == 'circulation':
-            return get_circulation()
+        elif operation == 'circulation':
+            return get_circulation(ctx)
 
         # the following are handled by crowdsale
 
-        if operation == 'mintTokens':
-            return exchange()
+        elif operation == 'mintTokens':
+            return perform_exchange(ctx)
 
-        if operation == 'crowdsale_register':
-            return kyc_register(args)
+        elif operation == 'crowdsale_register':
+            return kyc_register(ctx, args)
 
-        if operation == 'crowdsale_status':
-            return kyc_status(args)
+        elif operation == 'crowdsale_status':
+            return kyc_status(ctx, args)
 
-        if operation == 'crowdsale_available':
-            return crowdsale_available_amount()
+        elif operation == 'crowdsale_available':
+            return crowdsale_available_amount(ctx)
+
+        elif operation == 'get_attachments':
+            return get_asset_attachments()
 
         return 'unknown operation'
 
@@ -96,6 +98,6 @@ def deploy():
         # do deploy logic
         Put(ctx, 'initialized', 1)
         Put(ctx, TOKEN_OWNER, TOKEN_INITIAL_AMOUNT)
-        return add_to_circulation(TOKEN_INITIAL_AMOUNT)
+        return add_to_circulation(ctx, TOKEN_INITIAL_AMOUNT)
 
     return False

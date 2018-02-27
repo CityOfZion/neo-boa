@@ -12,8 +12,6 @@ class appcall():
 
     def __init__(self, block):
 
-        print("blocks %s " % block)
-
         arguments = []
 
         for i, item in enumerate(block):

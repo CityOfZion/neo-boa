@@ -180,11 +180,12 @@ class Module(object):
 
         for m in new_method_blks:
             new_method = BoaMethod(self, m, self.module_name, self._extra_instr)
-            if self.to_import == ['*'] or new_method.name in self.to_import:
-                #                print("IMPORTING NEW METHOD %s to module %s " % (new_method.name, self.module_name))
-                self.methods.append(new_method)
-            else:
-                self._local_methods.append(new_method)
+#            if self.to_import == ['*'] or new_method.name in self.to_import:
+            #                print("IMPORTING NEW METHOD %s to module %s " % (new_method.name, self.module_name))
+
+            self.methods.append(new_method)
+#            else:
+#                self._local_methods.append(new_method)
 
     def write(self):
         """
@@ -225,7 +226,6 @@ class Module(object):
         """
 
         for method in self.methods:
-            #            method.link_return_types()
             method.prepare()
 
         self.all_vm_tokens = OrderedDict()
@@ -235,13 +235,14 @@ class Module(object):
         for method in self.orderered_methods:
 
             if not method.is_interop:
+                #                print("ADDING METHOD %s " % method.full_name)
                 method.address = address
 
                 for key, vmtoken in method.vm_tokens.items():
                     self.all_vm_tokens[address] = vmtoken
                     address += 1
 
-                    if vmtoken.data is not None:
+                    if vmtoken.data is not None and vmtoken.vm_op != VMOp.NOP:
                         address += len(vmtoken.data)
 
                     vmtoken.addr = vmtoken.addr + method.address
@@ -264,8 +265,6 @@ class Module(object):
                     jump_len = target_method.address - vmtoken.addr
                     vmtoken.data = jump_len.to_bytes(2, 'little', signed=True)
                 else:
-                    import pdb
-                    pdb.set_trace()
                     raise Exception("Target method %s not found" % vmtoken.target_method)
 
     def to_s(self):

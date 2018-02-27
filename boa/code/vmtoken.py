@@ -1,5 +1,6 @@
 import pdb
 from collections import OrderedDict
+from bytecode import Instr
 from boa.code import pyop
 from boa.interop import VMOp
 from boa.interop.BigInteger import BigInteger
@@ -78,13 +79,17 @@ class VMTokenizer(object):
         # we just need to inssert the total number of arguments + body variables
         # which is the length of the method `scope` dictionary
         # then create a new array for the vm to store
-        """
 
-        """
+        #        print("METHOD BEGIN: %s " % self.method.full_name)
+        #        print("adding method stack size %s " % self.method.stacksize)
 
-        self.insert_push_integer(self.method.stacksize)
-        self.insert1(VMOp.NEWARRAY)
-        self.insert1(VMOp.TOALTSTACK)
+        from boa.code.pytoken import PyToken
+
+        pt = PyToken(Instr("NOP", lineno=100), None, 0, 0)
+
+        self.convert_push_integer(self.method.stacksize, pt)
+        self.convert1(VMOp.NEWARRAY, pt)
+        self.convert1(VMOp.TOALTSTACK, pt)
 
         for index, arg in enumerate(self.method.args):
             self.convert_load_parameter(arg, index)
@@ -166,7 +171,8 @@ class VMTokenizer(object):
             return self.insert1(out)
 
         bigint = BigInteger(i)
-        outdata = bigint.ToByteArray()
+        outdata = bigint.ToByteArray(signed=False)
+        print("big int %s %s" % (bigint, outdata))
 
         return self.insert_push_data(outdata)
 
@@ -327,10 +333,10 @@ class VMTokenizer(object):
             self.convert1(VMOp.PICKITEM)
 
         else:
-            py_token.func_params = []
-            py_token.func_name = local_name
-
-            self.convert_method_call(py_token)
+            raise Exception("CANNOT LOAD LOCAL!")
+#            py_token.func_params = []
+#            py_token.func_name = local_name#
+#            self.convert_method_call(py_token)
 
     def convert_store_subscr(self, pytoken):
 

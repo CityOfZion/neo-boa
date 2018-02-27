@@ -1,26 +1,18 @@
 from boa.interop.Neo.Blockchain import GetHeight
+from boa.interop.Neo.Runtime import CheckWitness
 from boa.interop.Neo.Action import RegisterAction
-from boa.interop.Neo.Runtime import Notify, CheckWitness
-from boa.interop.Neo.Storage import *
+from boa.interop.Neo.Storage import Get, Put
 from boa.builtins import concat
 from example.demo.nex.token import *
 from example.demo.nex.txio import get_asset_attachments
 
-OnTransfer = RegisterAction('transfer', 'from', 'to', 'amount')
-OnRefund = RegisterAction('refund', 'to', 'amount')
-
-OnInvalidKYCAddress = RegisterAction('invalid_registration', 'address')
+# OnInvalidKYCAddress = RegisterAction('invalid_registration', 'address')
 OnKYCRegister = RegisterAction('kyc_registration', 'address')
+OnTransfer = RegisterAction('transfer', 'addr_from', 'addr_to', 'amount')
+OnRefund = RegisterAction('refund', 'addr_to', 'amount')
 
 
-kyc_key = b'kyc_ok'
-
-limited_round_key = b'r1'
-
-ctx = GetContext()
-
-
-def kyc_register(args):
+def kyc_register(ctx, args):
     """
 
     :param args:list a list of addresses to register
@@ -36,7 +28,7 @@ def kyc_register(args):
 
             if len(address) == 20:
 
-                kyc_storage_key = concat(kyc_key, address)
+                kyc_storage_key = concat(KYC_KEY, address)
                 Put(ctx, kyc_storage_key, True)
 
                 OnKYCRegister(address)
@@ -45,7 +37,7 @@ def kyc_register(args):
     return ok_count
 
 
-def kyc_status(args):
+def kyc_status(ctx, args):
     """
     Gets the KYC Status of an address
 
@@ -57,28 +49,27 @@ def kyc_status(args):
     if len(args) > 0:
         addr = args[0]
 
-        kyc_storage_key = concat(kyc_key, addr)
+        kyc_storage_key = concat(KYC_KEY, addr)
 
         return Get(ctx, kyc_storage_key)
 
     return False
 
 
-def exchange():
+def perform_exchange(ctx):
     """
 
-    :param token:Token The token object with NEP5/sale settings
-    :return:
-        bool: Whether the exchange was successful
-    """
+     :param token:Token The token object with NEP5/sale settings
+     :return:
+         bool: Whether the exchange was successful
+     """
 
     attachments = get_asset_attachments()  # [receiver, sender, neo, gas]
 
     # this looks up whether the exchange can proceed
-    exchange_ok = can_exchange(attachments, False)
+    exchange_ok = can_exchange(ctx, attachments, False)
 
     if not exchange_ok:
-        print("Cannot exchange value")
         # This should only happen in the case that there are a lot of TX on the final
         # block before the total amount is reached.  An amount of TX will get through
         # the verification phase because the total amount cannot be updated during that phase
@@ -104,7 +95,7 @@ def exchange():
     Put(ctx, attachments[1], new_total)
 
     # update the in circulation amount
-    add_to_circulation(exchanged_tokens)
+    result = add_to_circulation(ctx, exchanged_tokens)
 
     # dispatch transfer event
     OnTransfer(attachments[0], attachments[1], exchanged_tokens)
@@ -112,7 +103,7 @@ def exchange():
     return True
 
 
-def can_exchange(attachments, verify_only):
+def can_exchange(ctx, attachments, verify_only):
     """
     Determines if the contract invocation meets all requirements for the ICO exchange
     of neo or gas into NEP5 Tokens.
@@ -141,7 +132,7 @@ def can_exchange(attachments, verify_only):
     # this is not required for operation of the contract
 
 #        status = get_kyc_status(attachments.sender_addr, storage)
-    if not get_kyc_status(attachments[1]):
+    if not get_kyc_status(ctx, attachments[1]):
         return False
 
     # caluclate the amount requested
@@ -150,12 +141,12 @@ def can_exchange(attachments, verify_only):
     # this would work for accepting gas
     # amount_requested = attachments.gas_attached * token.tokens_per_gas / 100000000
 
-    can_exchange = calculate_can_exchange(amount_requested, attachments[1], verify_only)
+    exchange_ok = calculate_can_exchange(ctx, amount_requested, attachments[1], verify_only)
 
-    return can_exchange
+    return exchange_ok
 
 
-def get_kyc_status(address):
+def get_kyc_status(ctx, address):
     """
     Looks up the KYC status of an address
 
@@ -164,12 +155,12 @@ def get_kyc_status(address):
     :return:
         bool: KYC Status of address
     """
-    kyc_storage_key = concat(kyc_key, address)
+    kyc_storage_key = concat(KYC_KEY, address)
 
     return Get(ctx, kyc_storage_key)
 
 
-def calculate_can_exchange(amount, address, verify_only):
+def calculate_can_exchange(ctx, amount, address, verify_only):
     """
     Perform custom token exchange calculations here.
 
@@ -185,26 +176,20 @@ def calculate_can_exchange(amount, address, verify_only):
     new_amount = current_in_circulation + amount
 
     if new_amount > TOKEN_TOTAL_SUPPLY:
-        print("amount greater than total supply")
         return False
 
-    print("trying to calculate height????")
     if height < BLOCK_SALE_START:
-        print("sale not begun yet")
         return False
 
     # if we are in free round, any amount
     if height > LIMITED_ROUND_END:
-        print("Free for all, accept as much as possible")
         return True
 
     # check amount in limited round
-
     if amount <= MAX_EXCHANGE_LIMITED_ROUND:
 
         # check if they have already exchanged in the limited round
-        r1key = concat(address, limited_round_key)
-
+        r1key = concat(address, LIMITED_ROUND_KEY)
         has_exchanged = Get(ctx, r1key)
 
         # if not, then save the exchange for limited round
@@ -217,9 +202,6 @@ def calculate_can_exchange(amount, address, verify_only):
                 Put(ctx, r1key, True)
             return True
 
-        print("already exchanged in limited round")
         return False
-
-    print("too much for limited round")
 
     return False

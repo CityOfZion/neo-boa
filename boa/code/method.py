@@ -2,6 +2,7 @@ from bytecode import Instr, Bytecode, Label
 from boa.code.vmtoken import VMTokenizer
 from boa.code.expression import Expression
 from boa.code import pyop
+from uuid import uuid4
 
 
 class method(object):
@@ -34,6 +35,12 @@ class method(object):
 
     _extra = None
 
+    _id = None
+
+    @property
+    def id(self):
+        return self._id
+
     @property
     def forloop_counter(self):
         self._forloop_counter += 1
@@ -52,7 +59,11 @@ class method(object):
 
     @property
     def is_interop(self):
-        return 'boa.interop.' in self.full_name
+        if 'boa.interop' in self.full_name:
+            return True
+        if 'boa.builtins' in self.full_name and self.full_name != 'boa.builtins.range':
+            return True
+        return False
 
     @property
     def full_name(self):
@@ -70,13 +81,14 @@ class method(object):
 
     @property
     def stacksize(self):
-        return self.bytecode.argcount + 50
+        return self.bytecode.argcount + len(self._blocks) + 2
 
     def __init__(self, module, block, module_name, extra):
         self.module = module
         self.block = block
         self.module_name = module_name
         self._extra = extra
+        self._id = uuid4()
 
         try:
             self.code = self.block[0].arg
