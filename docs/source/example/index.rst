@@ -10,6 +10,8 @@ Addition
 This example show how to add numbers. It is also an example of a smart contract that accepts multiple parameters (4).
 
 .. automodule:: boa_test.example.AddTest1
+    :members:
+    :undoc-members:
 
 Lists
 =====
@@ -17,6 +19,8 @@ Lists
 This example shows how to create and manipulate lists.
 
 .. automodule:: boa_test.example.ArrayTest
+    :members:
+    :undoc-members:
 
 
 Binary Operators
@@ -25,6 +29,8 @@ Binary Operators
 This example shows how to use binary operators.
 
 .. automodule:: boa_test.example.BinopTest
+    :members:
+    :undoc-members:
 
 
 NEP5 Token
@@ -33,3 +39,5 @@ NEP5 Token
 This example shows how to create a NEP5 token.
 
 .. automodule:: boa_test.example.demo.ICO_Template
+    :members:
+    :undoc-members:

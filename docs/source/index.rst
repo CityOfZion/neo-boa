@@ -23,7 +23,6 @@ The compiler supports a subset of the Python language (in the same way that a Bo
     boa/code/pytoken
     boa/code/vmtoken
     example/index
-    boa/interop/vmop
     boa/interop/blockchain
     boa/interop/executionengine
 
