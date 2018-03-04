@@ -12,7 +12,7 @@
 <a href="https://pypi.python.org/pypi/neo-boa" rel="nofollow"><img src="https://img.shields.io/pypi/v/neo-boa.svg"></a>
 <a href="https://travis-ci.org/CityOfZion/neo-boa" rel="nofollow"><img src="https://img.shields.io/travis/CityOfZion/neo-boa.svg"></a>
 <a href="https://neo-boa.readthedocs.io/en/latest/?badge=latest" rel="nofollow"><img src="https://readthedocs.org/projects/neo-boa/badge/?version=latest"></a>
-<a href='https://coveralls.io/github/CityOfZion/neo-boa?branch=wordcode'><img src='https://coveralls.io/repos/github/CityOfZion/neo-boa/badge.svg?branch=wordcode' alt='Coverage Status' /></a>
+<a href='https://coveralls.io/github/CityOfZion/neo-boa?branch=wordcode'><img src='https://coveralls.io/repos/github/CityOfZion/neo-boa/badge.svg?branch=master' alt='Coverage Status' /></a>
 <ul>
 <li>Free software: MIT license</li>
 <li>Documentation: <a href="https://neo-boa.readthedocs.io" rel="nofollow">https://neo-boa.readthedocs.io</a>.</li>
