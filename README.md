@@ -119,7 +119,11 @@ You can [read the docs here](http://neo-boa.readthedocs.io/en/latest/).
 
 ## Tests
 
-Tests are important.
+Install `neo-python` ( or use `requirements_test.txt`) and run the following command
+```
+python -m unittest discover boa_tests
+
+```
 
 
 ## License
