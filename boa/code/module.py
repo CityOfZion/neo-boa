@@ -9,6 +9,8 @@ from boa.interop import VMOp
 import importlib
 from logzero import logger
 from collections import OrderedDict
+import os
+import sys
 
 
 class Module(object):
@@ -43,9 +45,13 @@ class Module(object):
         return self._local_methods
 
     @staticmethod
-    def ImportFromBlock(block: BasicBlock):
+    def ImportFromBlock(block: BasicBlock, current_file_path):
         mpath = None
         mnames = []
+
+        filepath = os.path.dirname(os.path.abspath(current_file_path))
+
+        sys.path.append(filepath)
 
         for index, instr in enumerate(block):
             if instr.opcode == pyop.IMPORT_NAME:
@@ -156,7 +162,7 @@ class Module(object):
             if type == BlockType.MAKE_FUNCTION:
                 new_method_blks.append(blk)
             elif type == BlockType.IMPORT_ITEM:
-                new_module = Module.ImportFromBlock(blk)
+                new_module = Module.ImportFromBlock(blk, self.path)
                 if new_module:
                     for method in new_module.methods:
                         self.methods.append(method)
