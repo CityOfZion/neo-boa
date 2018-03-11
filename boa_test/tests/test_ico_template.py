@@ -352,3 +352,14 @@ class TestContract(BoaFixtureTest):
         tx, results, total_ops, engine = TestBuild(out, ['approve', parse_param([self.wallet_3_script_hash.Data, self.wallet_2_script_hash.Data, -1000])], self.GetWallet3(), '0705', '05')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBoolean(), False)
+
+
+    def test_many_ops(self):
+
+        output = Compiler.instance().load('%s/boa_test/example/demo/ICO_Template.py' % TestContract.dirname).default
+        out = output.write()
+
+        # tranfer_from, approve, allowance
+        tx, results, total_ops, engine = TestBuild(out, ['another_op_5', bytearray()], self.GetWallet2(), '0705', '05')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetBigInteger(), 6)
