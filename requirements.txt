@@ -1,9 +1,10 @@
+aenum==2.1.0
 alabaster==0.7.10
 autopep8==1.3.3
 Babel==2.5.1
 blessings==1.6
 bpython==0.16
-bytecode==0.5
+-e git+https://github.com/localhuman/bytecode.git@3eed8820e8379802c5f56a859bc6b239768a6aeb#egg=bytecode
 certifi==2017.7.27.1
 chardet==3.0.4
 CommonMark==0.5.4

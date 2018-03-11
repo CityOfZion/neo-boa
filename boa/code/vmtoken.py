@@ -330,27 +330,6 @@ class VMTokenizer(object):
         self.convert1(VMOp.ROT)
         self.convert1(VMOp.SETITEM, pytoken)
 
-    def convert_set_element(self, arg, position):
-        """
-
-        :param arg:
-        :param position:
-        """
-        if type(position) is int:
-
-            self.insert_push_integer(position)
-        elif type(position) is str:
-            self.convert_load_local(None, name=position)
-
-        if type(arg.array_item) is str:
-
-            # first we'll look for the local variable with name of the str
-            if arg.array_item in self.method.scope:
-                self.convert_load_local(None, name=arg.array_item)
-            # otherwise we'll do the unknown type thing
-
-        self.convert1(VMOp.SETITEM, arg)
-
     def convert_load_parameter(self, arg, position):
         """
 

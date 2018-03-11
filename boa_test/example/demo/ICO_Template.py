@@ -79,6 +79,21 @@ def Main(operation, args):
         elif operation == 'get_attachments':
             return get_asset_attachments()
 
+        elif operation == 'another_op_1':
+            return 1 + 1
+
+        elif operation == 'another_op_2':
+            return 1 + 2
+
+        elif operation == 'another_op_3':
+            return 1 + 3
+
+        elif operation == 'another_op_4':
+            return 1 + 4
+
+        elif operation == 'another_op_5':
+            return 1 + 5
+
         return 'unknown operation'
 
     return False
