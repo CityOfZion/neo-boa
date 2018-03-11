@@ -94,7 +94,6 @@ def Main(operation, args):
         elif operation == 'another_op_5':
             return 1 + 5
 
-
         return 'unknown operation'
 
     return False

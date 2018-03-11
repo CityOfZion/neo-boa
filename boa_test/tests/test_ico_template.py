@@ -353,7 +353,6 @@ class TestContract(BoaFixtureTest):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBoolean(), False)
 
-
     def test_many_ops(self):
 
         output = Compiler.instance().load('%s/boa_test/example/demo/ICO_Template.py' % TestContract.dirname).default

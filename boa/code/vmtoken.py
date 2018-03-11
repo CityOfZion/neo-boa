@@ -330,7 +330,6 @@ class VMTokenizer(object):
         self.convert1(VMOp.ROT)
         self.convert1(VMOp.SETITEM, pytoken)
 
-
     def convert_load_parameter(self, arg, position):
         """
 

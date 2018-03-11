@@ -2,7 +2,6 @@
 
 def Main(operation):
 
-
     if operation == 1:
         return operation + 1
 

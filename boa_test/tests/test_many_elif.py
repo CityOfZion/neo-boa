@@ -5,10 +5,10 @@ from neo.Prompt.Commands.BuildNRun import TestBuild
 
 from neo.Settings import settings
 
+
 class TestContract(BoaTest):
 
     def test_ManyElif(self):
-
 
         output = Compiler.instance().load('%s/boa_test/example/TestManyElif.py' % TestContract.dirname).default
         out = output.write()
@@ -28,4 +28,3 @@ class TestContract(BoaTest):
         tx, results, total_ops, engine = TestBuild(out, [22], self.GetWallet1(), '02', '02')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBigInteger(), -1)
-
