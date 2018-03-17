@@ -128,6 +128,22 @@ class Expression(object):
             self.updated_blocklist = self.block
             self._checkslice()
 
+    def _check_load_const_tuple(self):
+        index_to_repl = -1
+        new_instructions = []
+        for index, instr in enumerate(self.block):
+            if isinstance(instr, Instr):
+                if instr.opcode == pyop.LOAD_CONST and isinstance(instr.arg, tuple):
+                    if index_to_repl > -1:
+                        raise Exception("Multiple tuples in one block")
+                    index_to_repl = index
+                    tuple_items = list(instr.arg)
+                    new_instructions.append(Instr("BUILD_LIST", arg=len(tuple_items), lineno=instr.lineno))
+                    for item in tuple_items:
+                        new_instructions.append(Instr("LOAD_CONST", arg=item, lineno=instr.lineno))
+                    new_instructions.append(Instr("BUILD_LIST", arg=len(tuple_items), lineno=instr.lineno))
+                    self.updated_blocklist = self.block[0:index] + new_instructions + self.block[index + 1:]
+
     def _checkloops(self):
         if pyop.SETUP_LOOP in self.ops and pyop.GET_ITER in self.ops:
 
@@ -229,6 +245,7 @@ class Expression(object):
     def tokenize(self):
 
         self.updated_blocklist = self.block
+#        self._check_load_const_tuple()
         self._checkslice()
         self._checkbytearray()
         self._checkloops()

@@ -337,7 +337,7 @@ class Module(object):
 
                 # If this is a number, it is likely a custom python opcode, get the name
                 if str(pt.pyop).isnumeric():
-                    opname = pyop.to_name(int(str(pt.pyop))).replace('HAVE_ARGUMENT', 'STORE_NAME')
+                    opname = pyop.to_name(int(str(pt.pyop))).replace('HAVE_ARGUMENT', 'STORE_NAME').replace('YIELD_VALUE', 'REVERSE')
                     if opname is not None:
                         op = "{:<20}".format(opname)
 

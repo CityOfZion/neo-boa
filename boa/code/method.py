@@ -99,8 +99,8 @@ class method(object):
 #        print("**********************")
 #        print("**********************")
 #        print("METHOD %s " % self.name)
-#        import dis
-#        dis.dis(self.code)
+        import dis
+        dis.dis(self.code)
         self.bytecode = Bytecode.from_code(self.code)
         self.setup()
 
