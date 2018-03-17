@@ -3,8 +3,8 @@ from boa.compiler import Compiler
 from neo.Settings import settings
 from neo.Prompt.Commands.BuildNRun import TestBuild
 
-settings.set_log_vm_instruction(True)
-settings.log_smart_contract_events = True
+#settings.set_log_vm_instruction(True)
+#settings.log_smart_contract_events = True
 
 
 class TestContract(BoaTest):
