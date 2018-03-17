@@ -231,6 +231,12 @@ class PyToken():
         elif op == pyop.BINARY_SUBSCR:
             tokenizer.convert1(VMOp.PICKITEM, self)
 
+        # dict
+        elif op == pyop.BUILD_CONST_KEY_MAP:
+            tokenizer.convert1(VMOp.NEWMAP, self)
+        elif op == pyop.BUILD_MAP:
+            tokenizer.convert1(VMOp.NEWMAP, self)
+
         elif op == pyop.BUILD_SLICE:
             tokenizer.convert_build_slice(self)
 
