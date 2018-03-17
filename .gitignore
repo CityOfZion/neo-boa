@@ -7,3 +7,4 @@ build
 neo_boa.egg-info
 *.egg-info
 /build
+vm_instructions.log
