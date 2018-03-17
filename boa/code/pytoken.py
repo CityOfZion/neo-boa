@@ -218,6 +218,9 @@ class PyToken():
                 tokenizer.convert1(VMOp.EQUAL, self)
             elif self.instruction.arg in [Compare.NE, Compare.IS_NOT]:
                 tokenizer.convert1(VMOp.NUMNOTEQUAL, self)
+            elif self.instruction.arg == Compare.IN:
+                tokenizer.convert1(VMOp.SWAP, self)
+                tokenizer.convert1(VMOp.HASKEY, self)
 
         # arrays
         elif op == pyop.BUILD_LIST:

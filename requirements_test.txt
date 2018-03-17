@@ -1,2 +1,3 @@
+astor>=0.6.2
 git+https://github.com/localhuman/bytecode.git@3eed8820e8379802c5f56a859bc6b239768a6aeb#egg=bytecode
 git+https://github.com/CityOfZion/neo-python.git@feature-dict#egg=neo-python

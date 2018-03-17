@@ -2,8 +2,15 @@ from bytecode import Instr, Bytecode, Label
 from boa.code.vmtoken import VMTokenizer
 from boa.code.expression import Expression
 from boa.code import pyop
+from boa.code.ast_preprocess import preprocess_method_body
 from uuid import uuid4
 
+import pdb
+import dis
+
+
+# class UnrollDicts(NodeTransformer):
+#    pass
 
 class method(object):
 
@@ -25,6 +32,8 @@ class method(object):
 
     name = None
     module_name = None
+
+    dictionary_defs = None
 
     _blocks = None
     _expressions = None
@@ -89,19 +98,14 @@ class method(object):
         self.module_name = module_name
         self._extra = extra
         self._id = uuid4()
+        self.name = self.block[1].arg
 
-        try:
-            self.code = self.block[0].arg
-            self.name = self.block[1].arg
-        except Exception as e:
-            print("Colud not get code or name %s " % e)
+        code_object = self.block[0].arg
+#        dis.dis(code_object)
+        self.code, self.dictionary_defs = preprocess_method_body(code_object)
 
-#        print("**********************")
-#        print("**********************")
-#        print("METHOD %s " % self.name)
-#        import dis
-#        dis.dis(self.code)
         self.bytecode = Bytecode.from_code(self.code)
+
         self.setup()
 
     def setup(self):

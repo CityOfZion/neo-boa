@@ -11,11 +11,11 @@ What it currently does
 -  Compiles a subset of the Python language to the ``.avm`` format for
    use in the `Neo Virtual Machine`_.
 -  Works for Python 3.6+
+-  Support dictionary objects
 
 What will it do
 ^^^^^^^^^^^^^^^
 
--  Support dictionary objects
 -  Compile a larger subset of the Python language.
 
 
@@ -125,4 +125,19 @@ everything you plan on using in a smart contract using the functionality listed 
         # this does NOT work
         m = [x for x in range(1,10)]
 
-- Class objects are currently **not** supported.
+- Class objects are currently **not** supported. Use dictionaries instead
+
+
+- Dictionaries are supported
+
+    .. code-block:: python
+
+        d = {
+            'a': 10,
+            'b': 4
+            'j': mymethodCall(),
+            'q': [1,3,5]
+        }
+
+
+        qlist = d['q']
