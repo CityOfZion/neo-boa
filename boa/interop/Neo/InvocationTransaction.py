@@ -2,7 +2,7 @@
 class InvocationTransaction:
 
     @property
-    def GetScript(self):
+    def Script(self):
         """
 
         :return:
@@ -16,4 +16,3 @@ def GetScript(invocation_transaction):
     :param invocation_transaction:
     """
     pass
-
