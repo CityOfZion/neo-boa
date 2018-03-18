@@ -1,6 +1,9 @@
 from bytecode import Instr, Compare, Label
 from boa.code import pyop
 from boa.code.pytoken import PyToken
+from bytecode import Bytecode
+import ast
+import astor
 
 
 class Expression(object):
@@ -56,7 +59,7 @@ class Expression(object):
             self._remove_instructions(to_remove)
 
     def _check_load_attr(self):
-        replaceable_attr_calls = ['append', 'remove', 'reverse', ]
+        replaceable_attr_calls = ['append', 'remove', 'reverse', 'keys', 'values', 'has_key']
         for index, instr in enumerate(self.updated_blocklist):
             if not isinstance(instr, Label) and instr.opcode == pyop.LOAD_ATTR:
                 if instr.arg in replaceable_attr_calls:
@@ -128,21 +131,44 @@ class Expression(object):
             self.updated_blocklist = self.block
             self._checkslice()
 
-    def _check_load_const_tuple(self):
-        index_to_repl = -1
-        new_instructions = []
+    def _ast_to_instr(self, astobj, lineno):
+
+        src = astor.to_source(astobj).replace('"""', "'")
+
+        cp = compile(src, filename='<ast>', mode='eval')
+        bc = Bytecode.from_code(cp)
+        instructions = bc[:-1]
+        for instr in instructions:
+            instr.lineno = lineno
+
+        # if its calling a method, we don't want it to do `LOAD_NAME`
+        if instructions[-1].opcode == pyop.CALL_FUNCTION and instructions[0].opcode == pyop.LOAD_NAME:
+            instructions[0] = Instr("LOAD_GLOBAL", arg=instructions[0].arg, lineno=instructions[0].lineno)
+
+        return instructions
+
+    def _check_dictionary_defs(self):
+        new_instr = []
+        new_instr_ind = -1
+
         for index, instr in enumerate(self.block):
-            if isinstance(instr, Instr):
-                if instr.opcode == pyop.LOAD_CONST and isinstance(instr.arg, tuple):
-                    if index_to_repl > -1:
-                        raise Exception("Multiple tuples in one block")
-                    index_to_repl = index
-                    tuple_items = list(instr.arg)
-                    new_instructions.append(Instr("BUILD_LIST", arg=len(tuple_items), lineno=instr.lineno))
-                    for item in tuple_items:
-                        new_instructions.append(Instr("LOAD_CONST", arg=item, lineno=instr.lineno))
-                    new_instructions.append(Instr("BUILD_LIST", arg=len(tuple_items), lineno=instr.lineno))
-                    self.updated_blocklist = self.block[0:index] + new_instructions + self.block[index + 1:]
+            if isinstance(instr, Instr) and instr.opcode == pyop.STORE_FAST:
+                for dictionary in self.container_method.dictionary_defs:
+                    if dictionary.name == instr.arg:
+                        new_instr_ind = index
+                        for index, item in enumerate(dictionary.keys):
+                            # load the value
+                            new_instr += self._ast_to_instr(dictionary.values[index], instr.lineno)
+                            # load the dict
+                            new_instr.append(Instr("LOAD_FAST", arg=instr.arg, lineno=instr.lineno))
+                            # load the key
+                            new_instr += self._ast_to_instr(dictionary.keys[index], instr.lineno)
+                            new_instr.append(Instr("STORE_SUBSCR", lineno=instr.lineno))
+
+                        self.container_method.dictionary_defs.remove(dictionary)
+
+        if new_instr_ind > -1:
+            self.updated_blocklist = self.updated_blocklist[0:new_instr_ind + 1] + new_instr + self.updated_blocklist[new_instr_ind + 1:]
 
     def _checkloops(self):
         if pyop.SETUP_LOOP in self.ops and pyop.GET_ITER in self.ops:
@@ -156,9 +182,7 @@ class Expression(object):
             iterable_name = self.block[-1].arg
             ln = self.block[0].lineno
 
-#            print("blocks %s " % self.block)
-
-            if iterable == 'range' or self.block[2].opcode == pyop.LOAD_ATTR:
+            if iterable == 'range' or iterable == 'keys' or iterable == 'values' or self.block[2].opcode == pyop.LOAD_ATTR:
 
                 dynamic_iterable_name = 'dynamic_iterable_%s' % counter
 
@@ -245,7 +269,7 @@ class Expression(object):
     def tokenize(self):
 
         self.updated_blocklist = self.block
-#        self._check_load_const_tuple()
+        self._check_dictionary_defs()
         self._checkslice()
         self._checkbytearray()
         self._checkloops()

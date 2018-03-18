@@ -407,7 +407,7 @@ class VMTokenizer(object):
             pass
         elif param_len == 2:
             # if we are using concat or take, we don't want to swap
-            if pytoken.func_name != 'concat' and pytoken.func_name != 'take':
+            if pytoken.func_name != 'concat' and pytoken.func_name != 'take' and pytoken.func_name != 'has_key':
                 self.insert1(VMOp.SWAP)
 
         elif param_len == 3:
@@ -482,7 +482,7 @@ class VMTokenizer(object):
         :return:
         """
         if op in ['len', 'abs', 'min', 'max', 'concat', 'take', 'substr',
-                  'reverse', 'append', 'remove',
+                  'reverse', 'append', 'remove', 'keys', 'values', 'has_key',
                   'sha1', 'sha256', 'hash160', 'hash256',
                   'verify_signature', 'verify_signatures',
                   'Exception', 'throw_if_null', ]:
@@ -510,6 +510,12 @@ class VMTokenizer(object):
             return self.convert1(VMOp.LEFT, pytoken)
         elif op == 'substr':
             return self.convert1(VMOp.SUBSTR, pytoken)
+        elif op == 'keys':
+            return self.convert1(VMOp.KEYS, pytoken)
+        elif op == 'values':
+            return self.convert1(VMOp.VALUES, pytoken)
+        elif op == 'has_key':
+            return self.convert1(VMOp.HASKEY, pytoken)
         elif op == 'sha1':
             return self.convert1(VMOp.SHA1, pytoken)
         elif op == 'sha256':
