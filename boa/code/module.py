@@ -11,6 +11,9 @@ from logzero import logger
 from collections import OrderedDict
 import os
 import sys
+import hashlib
+from boa import __version__
+import json
 
 
 class Module(object):
@@ -46,6 +49,7 @@ class Module(object):
 
     @staticmethod
     def ImportFromBlock(block: BasicBlock, current_file_path):
+
         mpath = None
         mnames = []
 
@@ -346,3 +350,59 @@ class Module(object):
                 print("%s%s%s%s%s%s" % (lno, from_label, addr, op, arg, data))
 
             pstart = False
+
+    def export_debug(self, output_path):
+        """
+        this method is used to generate a debug map for NEO debugger
+        """
+        # Initialize if needed
+        if self.all_vm_tokens is None:
+            self.link_methods()
+
+        lineno = 0
+        pstart = True
+
+        hash = hashlib.md5(open(output_path, 'rb').read()).hexdigest()
+        avm_name = os.path.splitext(os.path.basename(output_path))[0]
+
+        data = {}
+        data['avm'] = {'name': avm_name, 'hash': hash}
+        data['compiler'] = {'name': 'neo-boa', 'version': __version__}
+
+        files = {}
+#        files.append({'id': '1', 'url': file_name})  # TODO support more than one .py file
+        data['files'] = files
+
+        map = []
+        start_ofs = -1
+        last_ofs = 0
+        fileid = 0
+        for i, (key, value) in enumerate(self.all_vm_tokens.items()):
+            if value.pytoken:
+                pt = value.pytoken
+
+                if pt.file:
+                    if pt.file not in files.keys():
+                        fileid = len(files.values()) + 1
+                        files[pt.file] = fileid
+                    else:
+                        fileid = files[pt.file]
+
+                if pt.lineno != lineno:
+                    if start_ofs >= 0:
+                        map.append({'start': start_ofs, 'end': key - 1, 'file': fileid, 'line': lineno})
+                    start_ofs = key
+                    lineno = pt.lineno
+
+                last_ofs = key
+#            pstart = False
+
+        if last_ofs >= 0:
+            map.append({'start': start_ofs, 'end': last_ofs, 'file': fileid, 'line': lineno})
+
+        data['map'] = map
+        data['files'] = [{'id': val, 'url': os.path.abspath(key)} for key, val in files.items()]
+        json_data = json.dumps(data, indent=4)
+        mapfilename = output_path.replace('.avm', '.debug.json')
+        with open(mapfilename, 'w+') as out_file:
+            out_file.write(json_data)
