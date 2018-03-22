@@ -39,6 +39,14 @@ class PyToken():
             self.jump_from = instruction.arg
 
     @property
+    def file(self):
+        try:
+            return self.expression.container_method.module.path
+        except Exception as e:
+            print("Could not get file %s " % e)
+        return None
+
+    @property
     def lineno(self):
         return self.instruction.lineno
 
