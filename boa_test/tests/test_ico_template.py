@@ -12,6 +12,7 @@ from boa_test.example.demo.nex.token import *
 
 import shutil
 import os
+from logzero import logger
 
 settings.USE_DEBUG_STORAGE = True
 settings.DEBUG_STORAGE_PATH = './fixtures/debugstorage'
@@ -25,12 +26,14 @@ class TestContract(BoaFixtureTest):
     @classmethod
     def tearDownClass(cls):
         super(BoaFixtureTest, cls).tearDownClass()
-
         try:
-            if os.path.exists(settings.DEBUG_STORAGE_PATH):
-                shutil.rmtree(settings.DEBUG_STORAGE_PATH)
+            if os.path.exists(settings.debug_storage_leveldb_path):
+
+                shutil.rmtree(settings.debug_storage_leveldb_path)
+            else:
+                logger.error("debug storage path doesn't exist")
         except Exception as e:
-            print("couldn't remove debug storage %s " % e)
+            logger.error("couldn't remove debug storage %s " % e)
 
     @classmethod
     def setUpClass(cls):

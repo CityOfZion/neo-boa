@@ -1,6 +1,7 @@
 astor>=0.6.2
-git+https://github.com/localhuman/bytecode.git@3eed8820e8379802c5f56a859bc6b239768a6aeb#egg=bytecode
-git+https://github.com/CityOfZion/neo-python.git@feature-dict#egg=neo-python
+logzero==1.5.0
+git+https://github.com/localhuman/bytecode.git@0.5.1#egg=bytecode
+git+https://github.com/CityOfZion/neo-python.git@development#egg=neo-python
 Sphinx==1.6.4
 sphinx-rtd-theme==0.2.4
 sphinxcontrib-websupport==1.0.1

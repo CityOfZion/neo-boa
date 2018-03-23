@@ -70,8 +70,13 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['bytecode'],
 
+
+    install_requires=[
+        'bytecode>=0.5.0',
+        'astor'
+    ],
+    dependency_links =['https://github.com/localhuman/bytecode/tarball/master#egg=bytecode-0.5.1'],
 
     python_requires='>=3.6',
 
