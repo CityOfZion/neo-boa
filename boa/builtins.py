@@ -148,3 +148,10 @@ def verify_signatures(signatures, pubkeys):
 
 def throw_if_null(item):
     pass
+
+
+def breakpoint():
+    """
+    Adds a breakpoint to the debug map
+    """
+    pass

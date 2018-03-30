@@ -370,7 +370,7 @@ class Module(object):
         data['compiler'] = {'name': 'neo-boa', 'version': __version__}
 
         files = {}
-#        files.append({'id': '1', 'url': file_name})  # TODO support more than one .py file
+        breakpoints = []
         data['files'] = files
 
         map = []
@@ -390,17 +390,21 @@ class Module(object):
 
                 if pt.lineno != lineno:
                     if start_ofs >= 0:
-                        map.append({'start': start_ofs, 'end': key - 1, 'file': fileid, 'line': lineno})
+                        map.append({'start': start_ofs, 'end': key - 1, 'file': fileid, 'method': pt.method_name,
+                                    'line': lineno, 'file_line_no': pt.method_lineno + lineno})
                     start_ofs = key
                     lineno = pt.lineno
+#                print("PT ARGS %s " % pt.args)
+                if pt.is_breakpoint:
+                    breakpoints.append(start_ofs)
 
                 last_ofs = key
-#            pstart = False
 
         if last_ofs >= 0:
             map.append({'start': start_ofs, 'end': last_ofs, 'file': fileid, 'line': lineno})
 
         data['map'] = map
+        data['breakpoints'] = breakpoints
         data['files'] = [{'id': val, 'url': os.path.abspath(key)} for key, val in files.items()]
         json_data = json.dumps(data, indent=4)
         mapfilename = output_path.replace('.avm', '.debug.json')

@@ -22,6 +22,8 @@ class PyToken():
 
     _methodname = None
 
+    is_breakpoint = False
+
     def __init__(self, instruction, expression, index, fallback_ln):
         self.instruction = instruction
         self.expression = expression
@@ -45,6 +47,14 @@ class PyToken():
         except Exception as e:
             print("Could not get file %s " % e)
         return None
+
+    @property
+    def method_lineno(self):
+        return self.expression.container_method.start_line_no - 1
+
+    @property
+    def method_name(self):
+        return self.expression.container_method.name
 
     @property
     def lineno(self):
@@ -91,8 +101,6 @@ class PyToken():
         :param prev_token:
         :return:
         """
-
-        from boa.compiler import Compiler
 
         op = self.instruction.opcode
 #        print("CONVERTING OP: %s %s " % (self.instruction.name, self.instruction.arg))
