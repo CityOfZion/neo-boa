@@ -2,6 +2,9 @@ language: python
 python:
   - "3.6"
 
+env:
+  - SKIP_DEPS_CHECK=1
+  
 addons:
   apt:
     packages:

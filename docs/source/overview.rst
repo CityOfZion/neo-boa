@@ -12,6 +12,7 @@ What it currently does
    use in the `Neo Virtual Machine`_.
 -  Works for Python 3.6+
 -  Support dictionary objects
+-  Adds debugging map for debugging in neo-python or other NEO debuggers
 
 What will it do
 ^^^^^^^^^^^^^^^

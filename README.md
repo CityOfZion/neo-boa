@@ -40,6 +40,8 @@ The compiler supports a subset of the Python language ( in the same way that a _
 - Compiles a subset of the Python language to the `.avm` format for use in the [Neo Virtual Machine](https://github.com/neo-project/neo-vm)
 - Works for Python 3.6+
 - supports dictionaries
+- Adds debugging map for debugging in neo-python or other NEO debuggers
+
 
 #### What will it do
 

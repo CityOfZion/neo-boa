@@ -1,4 +1,5 @@
 from boa.builtins import breakpoint
+from boa.interop.Neo.Blockchain import GetBlock
 from .demo.AnotherModule import another_module_method
 
 
@@ -29,6 +30,14 @@ def Main(a):
 
     elif a == 6:
         ret = another_module_method(3)
+
+    elif a == 7:
+
+        block = GetBlock(50424)
+
+        breakpoint()
+
+        ret = False
 
     return ret
 

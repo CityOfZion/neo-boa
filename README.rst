@@ -22,6 +22,8 @@ What does it currently do
    use in the `Neo Virtual
    Machine <https://github.com/neo-project/neo-vm>`__
 -  Works for Python 3.6+
+-  Adds debugging map for debugging in neo-python or other NEO debuggers
+
 
 What will it do
 ^^^^^^^^^^^^^^^
