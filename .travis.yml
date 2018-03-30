@@ -4,7 +4,7 @@ python:
 
 env:
   - SKIP_DEPS_CHECK=1
-  
+
 addons:
   apt:
     packages:
