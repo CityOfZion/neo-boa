@@ -76,7 +76,6 @@ setup(
         'bytecode>=0.5.0',
         'astor'
     ],
-    dependency_links =['https://github.com/localhuman/bytecode/tarball/master#egg=bytecode-0.5.1'],
 
     python_requires='>=3.6',
 

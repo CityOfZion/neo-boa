@@ -9,9 +9,6 @@ import pdb
 import dis
 
 
-# class UnrollDicts(NodeTransformer):
-#    pass
-
 class method(object):
 
     code = None
@@ -35,6 +32,8 @@ class method(object):
 
     dictionary_defs = None
 
+    start_line_no = None
+
     _blocks = None
     _expressions = None
 
@@ -45,6 +44,8 @@ class method(object):
     _extra = None
 
     _id = None
+
+    code_object = None
 
     @property
     def id(self):
@@ -99,10 +100,11 @@ class method(object):
         self._extra = extra
         self._id = uuid4()
         self.name = self.block[1].arg
+        self.start_line_no = self.block[0].lineno
+        self.code_object = self.block[0].arg
 
-        code_object = self.block[0].arg
 #        dis.dis(code_object)
-        self.code, self.dictionary_defs = preprocess_method_body(code_object)
+        self.code, self.dictionary_defs = preprocess_method_body(self.code_object)
 
         self.bytecode = Bytecode.from_code(self.code)
 

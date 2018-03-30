@@ -2,7 +2,7 @@ from collections import OrderedDict
 from boa.interop import VMOp
 from boa.interop.BigInteger import BigInteger
 from bytecode import Label
-
+from boa.code.pyop import *
 NEO_SC_FRAMEWORK = 'boa.interop.'
 
 
@@ -483,7 +483,7 @@ class VMTokenizer(object):
         """
         if op in ['len', 'abs', 'min', 'max', 'concat', 'take', 'substr',
                   'reverse', 'append', 'remove', 'keys', 'values', 'has_key',
-                  'sha1', 'sha256', 'hash160', 'hash256',
+                  'sha1', 'sha256', 'hash160', 'hash256', 'breakpoint',
                   'verify_signature', 'verify_signatures',
                   'Exception', 'throw_if_null', ]:
             return True
@@ -538,6 +538,9 @@ class VMTokenizer(object):
             return self.convert1(VMOp.THROW, pytoken)
         elif op == 'throw_if_null':
             return self.convert1(VMOp.THROWIFNOT, pytoken)
+        elif op == 'breakpoint':
+            pytoken.is_breakpoint = True
+            return self.convert1(VMOp.NOP, pytoken)
         return None
 
     @staticmethod
