@@ -9,14 +9,14 @@ from neo.Prompt.Commands.BuildNRun import TestBuild
 class TestContract(BoaTest):
 
     def test_serialization_1(self):
-        output = Compiler.instance().load('%s/boa_test/example/Demo/SerializationTest.py' % TestContract.dirname).default
+        output = Compiler.instance().load('%s/boa_test/example/demo/SerializationTest.py' % TestContract.dirname).default
         out = output.write()
         tx, results, total_ops, engine = TestBuild(out, [1], self.GetWallet1(), '02', '05')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetByteArray(), bytearray(b'\x80\x05\x00\x01a\x02\x01\x03\x80\x03\x00\x01j\x02\x01\x03\x02\x01\x05\x00\x02jk\x00\x07lmnopqr'))
 
     def test_serialization_2(self):
-        output = Compiler.instance().load('%s/boa_test/example/Demo/SerializationTest.py' % TestContract.dirname).default
+        output = Compiler.instance().load('%s/boa_test/example/demo/SerializationTest.py' % TestContract.dirname).default
         out = output.write()
         tx, results, total_ops, engine = TestBuild(out, [2], self.GetWallet1(), '02', '05')
         self.assertEqual(len(results), 1)
@@ -31,7 +31,7 @@ class TestContract(BoaTest):
         self.assertEqual(stack_item.GetArray()[-1].GetString(), 'lmnopqr')
 
     def test_serialization_3(self):
-        output = Compiler.instance().load('%s/boa_test/example/Demo/SerializationTest.py' % TestContract.dirname).default
+        output = Compiler.instance().load('%s/boa_test/example/demo/SerializationTest.py' % TestContract.dirname).default
         out = output.write()
         tx, results, total_ops, engine = TestBuild(out, [3], self.GetWallet1(), '02', '05')
         self.assertEqual(len(results), 1)
@@ -42,7 +42,7 @@ class TestContract(BoaTest):
         self.assertEqual(stack_item[-1].GetString(), 'lmnopqr')
 
     def test_serialization_4(self):
-        output = Compiler.instance().load('%s/boa_test/example/Demo/SerializationTest.py' % TestContract.dirname).default
+        output = Compiler.instance().load('%s/boa_test/example/demo/SerializationTest.py' % TestContract.dirname).default
         out = output.write()
         tx, results, total_ops, engine = TestBuild(out, [4], self.GetWallet1(), '02', '05')
         self.assertEqual(len(results), 1)
