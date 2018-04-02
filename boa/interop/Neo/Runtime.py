@@ -37,3 +37,17 @@ def GetTime():
 
     """
     pass
+
+
+def Serialize(item):
+    """
+    Serializes an item into a bytearray
+    """
+    pass
+
+
+def Deserialize(item):
+    """
+    Deserializes an item from a bytearray
+    """
+    pass

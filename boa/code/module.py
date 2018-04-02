@@ -355,18 +355,26 @@ class Module(object):
         """
         this method is used to generate a debug map for NEO debugger
         """
+
+        file_hash = hashlib.md5(open(output_path, 'rb').read()).hexdigest()
+        avm_name = os.path.splitext(os.path.basename(output_path))[0]
+
+        json_data = self.generate_debug_json(avm_name, file_hash)
+
+        mapfilename = output_path.replace('.avm', '.debug.json')
+        with open(mapfilename, 'w+') as out_file:
+            out_file.write(json_data)
+
+    def generate_debug_json(self, avm_name, file_hash):
+
         # Initialize if needed
         if self.all_vm_tokens is None:
             self.link_methods()
 
         lineno = 0
-        pstart = True
-
-        hash = hashlib.md5(open(output_path, 'rb').read()).hexdigest()
-        avm_name = os.path.splitext(os.path.basename(output_path))[0]
 
         data = {}
-        data['avm'] = {'name': avm_name, 'hash': hash}
+        data['avm'] = {'name': avm_name, 'hash': file_hash}
         data['compiler'] = {'name': 'neo-boa', 'version': __version__}
 
         files = {}
@@ -394,7 +402,7 @@ class Module(object):
                                     'line': lineno, 'file_line_no': pt.method_lineno + lineno})
                     start_ofs = key
                     lineno = pt.lineno
-#                print("PT ARGS %s " % pt.args)
+
                 if pt.is_breakpoint:
                     breakpoints.append(start_ofs)
 
@@ -407,6 +415,4 @@ class Module(object):
         data['breakpoints'] = breakpoints
         data['files'] = [{'id': val, 'url': os.path.abspath(key)} for key, val in files.items()]
         json_data = json.dumps(data, indent=4)
-        mapfilename = output_path.replace('.avm', '.debug.json')
-        with open(mapfilename, 'w+') as out_file:
-            out_file.write(json_data)
+        return json_data
