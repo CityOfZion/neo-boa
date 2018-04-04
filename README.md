@@ -75,7 +75,7 @@ docker build -t neo-boa .
 The neo-boa Docker container takes a directory on the host containing python smart contracts as an input and a directory to compile the .avm files to as an output. It can be executed like this:
 
 ```
-docker run -it -v /absolute/path/input_dir:/python-contracts -v /absolute/path/output_dir:/compiled-contracts neo-boa
+docker run -it --rm -v /absolute/path/input_dir:/python-contracts -v /absolute/path/output_dir:/compiled-contracts neo-boa
 ```
 
 The -v (volume) command maps the directories on the host to the directories within the container.
