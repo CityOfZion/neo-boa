@@ -282,8 +282,14 @@ class Expression(object):
         for index, instr in enumerate(self.updated_blocklist):
             if isinstance(instr, Instr):
                 ln = instr.lineno
-            token = PyToken(instr, self, index, ln)
-            token.to_vm(self.tokenizer, last_token)
+
+            try:
+                token = PyToken(instr, self, index, ln)
+                token.to_vm(self.tokenizer, last_token)
+            except Exception as e:
+                cm = self.container_method
+                print("ERROR: %s:%s in %s() with msg - %s" % (cm.module.path, cm.start_line_no + ln - 1, cm.name, str(e)))
+
             last_token = token
 
     def lookup_method_name(self, index):
