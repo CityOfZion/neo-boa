@@ -93,7 +93,7 @@ class Compiler(object):
             Compiler.load_and_save('path/to/your/file.py')
         """
 
-        compiler = Compiler.load(path)
+        compiler = Compiler.load(os.path.abspath(path))
         data = compiler.write()
         if output_path is None:
             fullpath = os.path.realpath(path)

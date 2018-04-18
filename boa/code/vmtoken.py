@@ -224,6 +224,7 @@ class VMTokenizer(object):
             token = self.convert_push_integer(pytoken.args, pytoken)
         elif isinstance(pytoken.args, type(None)):
             token = self.convert_push_data(bytearray(0))
+        # TODO - process tuple
 #        elif type(pytoken.args) == Code:
 #            pass
         else:
