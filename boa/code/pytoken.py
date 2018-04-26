@@ -275,4 +275,4 @@ class PyToken():
         elif op == pyop.RAISE_VARARGS:
             pass
         else:
-            raise Exception("Op Not Converted %s" % self.instruction.name)
+            raise logger.warn("Op Not Converted %s" % self.instruction.name)
