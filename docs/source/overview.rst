@@ -54,23 +54,6 @@ For details, please see all samples in the ``example`` directory.
         x.reverse()
 
 
-- list manipulation (building slices) is supported.
-
-    .. code-block:: python
-
-        x = [1,2,46,56]
-        y = x[1:3]
-
-        # you must specify the end element of a slice, the following will not work
-        z = x[1:]
-
-        # instead, use this
-        z = x[1:len(x)]
-
-
-        # the -1 index of a list does also not work at the moment
-
-
 - Where possible, some of Python's ``__builtins__`` have been implemented in a custom way for the Neo Virtual Machine.
 
     .. code-block:: python
