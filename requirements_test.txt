@@ -1,4 +1,4 @@
 logzero==1.5.0
 astor>=0.6.2
-git+https://github.com/CityOfZion/neo-python.git@development#egg=neo-python
+neo-python==0.6.8
 coz-bytecode==0.5.1

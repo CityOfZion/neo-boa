@@ -485,7 +485,7 @@ class VMTokenizer(object):
         if op in ['len', 'abs', 'min', 'max', 'concat', 'take', 'substr',
                   'reverse', 'append', 'remove', 'keys', 'values', 'has_key',
                   'sha1', 'sha256', 'hash160', 'hash256', 'breakpoint',
-                  'verify_signature', 'verify_signatures',
+                  'verify_signature',
                   'Exception', 'throw_if_null', ]:
             return True
         return False
@@ -526,9 +526,7 @@ class VMTokenizer(object):
         elif op == 'hash256':
             return self.convert1(VMOp.HASH256, pytoken)
         elif op == 'verify_signature':
-            return self.convert1(VMOp.CHECKSIG, pytoken)
-        elif op == 'verify_signatures':
-            return self.convert1(VMOp.CHECKMULTISIG, pytoken)
+            return self.convert1(VMOp.VERIFY, pytoken)
         elif op == 'reverse':
             return self.convert1(VMOp.REVERSE, pytoken)
         elif op == 'append':

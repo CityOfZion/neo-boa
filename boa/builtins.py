@@ -128,20 +128,11 @@ def hash256(data):
     pass
 
 
-def verify_signature(signature, pubkey):
+def verify_signature(pubkey, signature, message):
     """
-
-    :param signature:
     :param pubkey:
-    """
-    pass
-
-
-def verify_signatures(signatures, pubkeys):
-    """
-
-    :param signatures:
-    :param pubkeys:
+    :param signature:
+    :param message:
     """
     pass
 
