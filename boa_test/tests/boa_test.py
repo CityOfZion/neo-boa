@@ -13,7 +13,7 @@ class BoaTest(WalletFixtureTestCase):
 
     dirname = None
 
-    FIXTURE_REMOTE_LOC = 'https://s3.us-east-2.amazonaws.com/cityofzion/fixtures/fixtures_v5.tar.gz'
+    FIXTURE_REMOTE_LOC = 'https://s3.us-east-2.amazonaws.com/cityofzion/fixtures/fixtures_v7.tar.gz'
     FIXTURE_FILENAME = 'fixtures/empty_fixture.tar.gz'
 
     wallet_1_script_hash = UInt160(data=b'S\xefB\xc8\xdf!^\xbeZ|z\xe8\x01\xcb\xc3\xac/\xacI)')
@@ -40,8 +40,8 @@ class BoaFixtureTest(WalletFixtureTestCase):
 
     dirname = None
 
-    FIXTURE_REMOTE_LOC = 'https://s3.us-east-2.amazonaws.com/cityofzion/fixtures/fixtures_v5.tar.gz'
-    FIXTURE_FILENAME = './fixtures/fixtures_v5.tar.gz'
+    FIXTURE_REMOTE_LOC = 'https://s3.us-east-2.amazonaws.com/cityofzion/fixtures/fixtures_v7.tar.gz'
+    FIXTURE_FILENAME = './fixtures/fixtures_v7.tar.gz'
 
     wallet_1_script_hash = UInt160(data=b'S\xefB\xc8\xdf!^\xbeZ|z\xe8\x01\xcb\xc3\xac/\xacI)')
 
