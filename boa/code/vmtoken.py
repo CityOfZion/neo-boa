@@ -571,6 +571,9 @@ class VMTokenizer(object):
             op = op.replace('GetTXHash', 'GetHash')
         if 'GetInputHash' in op:
             op = op.replace('GetInputHash', 'GetHash')
+        if 'Iterator.Iter' in op:
+            op = op.replace('Iterator.Iter', 'Iterator.')
+
         syscall_name = op.replace(NEO_SC_FRAMEWORK, '').encode('utf-8')
         length = len(syscall_name)
         ba = bytearray([length]) + bytearray(syscall_name)

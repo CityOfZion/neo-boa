@@ -29,6 +29,15 @@ def Put(context, key, value):
     pass
 
 
+def Find(ctx, needle):
+    """
+
+    :param context:
+    :param needle:
+    """
+    pass
+
+
 def Delete(context, key):
     """
 

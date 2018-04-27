@@ -59,7 +59,7 @@ class Expression(object):
             self._remove_instructions(to_remove)
 
     def _check_load_attr(self):
-        replaceable_attr_calls = ['append', 'remove', 'reverse', 'keys', 'values', 'has_key']
+        replaceable_attr_calls = ['append', 'remove', 'reverse', 'keys', 'values', 'has_key', 'IterNext', 'IterKey', 'IterValue', ]
         for index, instr in enumerate(self.updated_blocklist):
             if not isinstance(instr, Label) and instr.opcode == pyop.LOAD_ATTR:
                 if instr.arg in replaceable_attr_calls:
