@@ -11,4 +11,3 @@ All notable changes to this project following the ``v0.4.1`` release are noted i
 - update documentation
 - Print error msg with file/linenumber/method during tokenization error
 
-
