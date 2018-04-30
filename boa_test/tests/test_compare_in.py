@@ -42,3 +42,7 @@ class TestContract(BoaTest):
         tx, results, total_ops, engine = TestBuild(out, [8], self.GetWallet1(), '', '01')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBoolean(), False)
+
+        tx, results, total_ops, engine = TestBuild(out, [9], self.GetWallet1(), '', '01')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetBoolean(), True)

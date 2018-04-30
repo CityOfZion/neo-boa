@@ -3,11 +3,13 @@ def Main(operation):
 
     mylist = [1, 4, 10]
 
+    q = b'\xab'
+
     myDict = {
         'a': 1,
         'b': 34,
-        'c': 'abc'
-
+        'c': 'abc',
+        q: '123'
     }
 
     if operation == 1:
@@ -56,5 +58,9 @@ def Main(operation):
         myDict.remove('a')
 
         return 'a' in myDict
+
+    elif operation == 9:
+
+        return b'\xab' in myDict
 
     return False
