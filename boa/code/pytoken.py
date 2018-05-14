@@ -123,8 +123,13 @@ class PyToken():
         elif op == pyop.POP_JUMP_IF_FALSE:
             tokenizer.convert1(
                 VMOp.JMPIFNOT, self, data=bytearray(2))
+        elif op == pyop.JUMP_IF_FALSE_OR_POP:
+            tokenizer.convert1(
+                VMOp.JMPIFNOT, self, data=bytearray(2))
 
         elif op == pyop.POP_JUMP_IF_TRUE:
+            tokenizer.convert_pop_jmp_if(self)
+        elif op == pyop.JUMP_IF_TRUE_OR_POP:
             tokenizer.convert_pop_jmp_if(self)
         # loops
         elif op == pyop.SETUP_LOOP:
@@ -275,4 +280,4 @@ class PyToken():
         elif op == pyop.RAISE_VARARGS:
             pass
         else:
-            logger.warn("Op Not Converted %s" % self.instruction.name)
+            logger.warning("Op Not Converted %s %s %s %s" % (self.instruction.name, self.method_name, self.lineno, self.method_lineno))
