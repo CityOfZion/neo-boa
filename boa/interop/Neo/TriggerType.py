@@ -6,6 +6,7 @@ def Verification():
     """
     pass
 
+
 def VerificationR():
     """
 
@@ -20,6 +21,7 @@ def Application():
     :return:
     """
     pass
+
 
 def ApplicationR():
     """
