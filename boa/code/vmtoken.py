@@ -561,7 +561,11 @@ class VMTokenizer(object):
         :return:
         """
 
-        if 'TriggerType.Application' in op:
+        if 'TriggerType.ApplicationR' in op:
+            return self.convert_push_data(bytearray(b'\x11'), pytoken)
+        elif 'TriggerType.VerificationR' in op:
+            return self.convert_push_data(bytearray(b'\x01'), pytoken)
+        elif 'TriggerType.Application' in op:
             return self.convert_push_data(bytearray(b'\x10'), pytoken)
         elif 'TriggerType.Verification' in op:
             return self.convert_push_data(bytearray(b'\x00'), pytoken)

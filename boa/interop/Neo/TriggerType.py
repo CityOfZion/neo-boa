@@ -7,7 +7,23 @@ def Verification():
     pass
 
 
+def VerificationR():
+    """
+
+    :return:
+    """
+    pass
+
+
 def Application():
+    """
+
+    :return:
+    """
+    pass
+
+
+def ApplicationR():
     """
 
     :return:
