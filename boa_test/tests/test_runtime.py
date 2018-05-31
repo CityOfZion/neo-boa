@@ -29,10 +29,6 @@ class TestContract(BoaFixtureTest):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetByteArray(), bytearray(b'\x01r\x04Z'))
 
-        tx, results, total_ops, engine = TestBuild(out, ['check_witness', 1234], self.GetWallet1(), '02', '02')
-        self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].GetBoolean(), False)
-
         tx, results, total_ops, engine = TestBuild(out, ['check_witness', bytearray(b'S\xefB\xc8\xdf!^\xbeZ|z\xe8\x01\xcb\xc3\xac/\xacI)')], self.GetWallet1(), '02', '02')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBoolean(), True)
@@ -76,3 +72,11 @@ class TestContract(BoaFixtureTest):
         tx, results, total_ops, engine = TestBuild(out, [0], self.GetWallet1(), '02', '02')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBigInteger(), -1)
+
+        tx, results, total_ops, engine = TestBuild(out, [4], self.GetWallet1(), '02', '02')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetByteArray(), bytearray(b'\x11'))
+
+        tx, results, total_ops, engine = TestBuild(out, [5], self.GetWallet1(), '02', '02')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetByteArray(), bytearray(b'\x01'))

@@ -34,11 +34,26 @@ class PyToken():
         self.jump_found = False
         self.jump_from_addr = None
         self.jump_to_addr = None
+        # self.jump_to_addr_abs = None
+        # self.jump_from_addr_abs = None
+
         if isinstance(instruction, Label):
             self.jump_target = instruction
             self.instruction = Instr("NOP", lineno=fallback_ln)
         elif isinstance(instruction.arg, Label):
             self.jump_from = instruction.arg
+
+    @property
+    def jump_to_addr_abs(self):
+        if self.jump_to_addr and self.expression.container_method:
+            return self.jump_to_addr + self.expression.container_method.address
+        return 0
+
+    @property
+    def jump_from_addr_abs(self):
+        if self.jump_from_addr and self.expression.container_method:
+            return self.jump_from_addr + self.expression.container_method.address
+        return 0
 
     @property
     def file(self):
@@ -65,9 +80,9 @@ class PyToken():
         #        print("INSTRUCTION ARG: %s %s" % (type(self.instruction.arg), self.instruction.arg))
         params = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm']
         if self.jump_target:
-            return 'from %s' % (self.jump_from_addr)
+            return 'from %s' % (self.jump_from_addr_abs)
         elif self.jump_from:
-            return 'to %s' % (self.jump_to_addr)
+            return 'to %s' % (self.jump_to_addr_abs)
         elif self._methodname:
             return '%s(%s)' % (self._methodname, ','.join(params[0:self.instruction.arg]))
         elif isinstance(self.instruction.arg, Compare):
@@ -123,14 +138,17 @@ class PyToken():
         elif op == pyop.POP_JUMP_IF_FALSE:
             tokenizer.convert1(
                 VMOp.JMPIFNOT, self, data=bytearray(2))
-        elif op == pyop.JUMP_IF_FALSE_OR_POP:
-            tokenizer.convert1(
-                VMOp.JMPIFNOT, self, data=bytearray(2))
+        # JUMP_IF_FALSE_OR_POP is not supported by the VM
+        # elif op == pyop.JUMP_IF_FALSE_OR_POP:
+        #     tokenizer.convert_pop_jmp_if(self)
+        #         VMOp.JMPIFNOT, self, data=bytearray(2))
 
         elif op == pyop.POP_JUMP_IF_TRUE:
             tokenizer.convert_pop_jmp_if(self)
-        elif op == pyop.JUMP_IF_TRUE_OR_POP:
-            tokenizer.convert_pop_jmp_if(self)
+
+        # JUMP_IF_TRUE_OR_POP is not supported by the VM
+        # elif op == pyop.JUMP_IF_TRUE_OR_POP:
+        #     tokenizer.convert_pop_jmp_if(self)
         # loops
         elif op == pyop.SETUP_LOOP:
             tokenizer.convert1(VMOp.NOP, self)
@@ -268,16 +286,19 @@ class PyToken():
             tokenizer.convert_method_call(self)
 
         elif op == pyop.POP_TOP:
-            if prev_token:
-                is_action = False
-                for item in tokenizer.method.module.actions:
-                    if item.method_name == prev_token.func_name:
-                        is_action = True
-
-#                if is_action:
-#                    tokenizer.convert1(VMOp.DROP, self)
+            pass
+            # if prev_token:
+            #     is_action = False
+            #     for item in tokenizer.method.module.actions:
+            #         if item.method_name == prev_token.func_name:
+            #             is_action = True
+            #
+            # if is_action:
+            #     tokenizer.convert1(VMOp.DROP, self)
 
         elif op == pyop.RAISE_VARARGS:
             pass
+        elif op == pyop.EXTENDED_ARG:
+            tokenizer.convert1(VMOp.NOP, self)
         else:
             logger.warning("Op Not Converted %s %s %s %s" % (self.instruction.name, self.method_name, self.lineno, self.method_lineno))

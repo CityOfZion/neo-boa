@@ -1,6 +1,6 @@
 # tested
 
-from boa.interop.Neo.TriggerType import Application, Verification
+from boa.interop.Neo.TriggerType import Application, Verification, ApplicationR, VerificationR
 from boa.interop.Neo.Runtime import GetTrigger
 
 
@@ -16,5 +16,11 @@ def Main(arg):
 
         if GetTrigger() == Application():
             return b'\x20'
+
+    elif arg == 4:
+        return ApplicationR()
+
+    elif arg == 5:
+        return VerificationR()
 
     return -1
