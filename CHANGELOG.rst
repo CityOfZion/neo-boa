@@ -3,6 +3,11 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
+[0.4.4] 2018-05-31
+-----------------------
+- remove support for JUMP_IF_TRUE_OR_POP and JUMP_IF_FALSE_OR_POP
+- add support for NEP7 triggers
+
 [0.4.3] 2018-05-14
 -----------------------
 - add support for JUMP_IF_TRUE_OR_POP and JUMP_IF_FALSE_OR_POP
