@@ -1,7 +1,7 @@
 astor>=0.6.2
 logzero==1.5.0
 coz-bytecode==0.5.1
-neo-python==0.6.8
+neo-python==0.7.1
 Sphinx==1.6.4
 sphinx-rtd-theme==0.2.4
 sphinxcontrib-websupport==1.0.1
