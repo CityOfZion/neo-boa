@@ -3,6 +3,10 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
+[0.4.5] 2018-06-18
+-----------------------
+- update tests for changes in neo-python
+
 [0.4.4] 2018-05-31
 -----------------------
 - remove support for JUMP_IF_TRUE_OR_POP and JUMP_IF_FALSE_OR_POP
