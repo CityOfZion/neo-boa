@@ -577,6 +577,8 @@ class VMTokenizer(object):
             op = op.replace('GetInputHash', 'GetHash')
         if 'Iterator.Iter' in op:
             op = op.replace('Iterator.Iter', 'Iterator.')
+        if 'Enumerator.Enumerator' in op:
+            op = op.replace('Enumerator.Enumerator', 'Enumerator.')
 
         syscall_name = op.replace(NEO_SC_FRAMEWORK, '').encode('utf-8')
         length = len(syscall_name)
@@ -638,17 +640,26 @@ class VMTokenizer(object):
         :param pytoken:
         :return:
         """
+        syscall_name = None
         if op == 'print':
             syscall_name = 'Neo.Runtime.Log'.encode('utf-8')
-            length = len(syscall_name)
-            ba = bytearray([length]) + bytearray(syscall_name)
-            vmtoken = self.convert1(VMOp.SYSCALL, pytoken, data=ba)
-            # self.insert1(VMOp.NOP)
-            return vmtoken
+
+        elif op == 'enumerate':
+            syscall_name = b'Neo.Enumerator.Create'
+        elif op == 'iter':
+            syscall_name = b'Neo.Iterator.Create'
+        elif op == 'next':
+            syscall_name = b'Neo.Enumerator.Next'
 
         elif op == 'reversed':
             raise NotImplementedError(
                 "[Compilation error] Built in %s is not implemented. Use array.reverse() instead." % op)
+
+        if syscall_name:
+            length = len(syscall_name)
+            ba = bytearray([length]) + bytearray(syscall_name)
+            vmtoken = self.convert1(VMOp.SYSCALL, pytoken, data=ba)
+            return vmtoken
 
         raise NotImplementedError(
             "[Compilation error] Built in %s is not implemented" % op)
