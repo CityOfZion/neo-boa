@@ -64,6 +64,4 @@ class appcall():
 
         b_array.reverse()
 
-        print("Script hash data %s " % b_array)
-
         return bytes(b_array)

@@ -18,7 +18,7 @@ class TestContract(BoaFixtureTest):
 
         tx, results, total_ops, engine = TestBuild(out, ['get_hash', bad_account], self.GetWallet1(), '07', '05')
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].GetBoolean(), False)
+        self.assertEqual(results[0].GetBoolean(), True)
 
         tx, results, total_ops, engine = TestBuild(out, ['get_hash', account], self.GetWallet1(), '07', '05')
         self.assertEqual(len(results), 1)
