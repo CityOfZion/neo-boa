@@ -59,7 +59,7 @@ class Expression(object):
             self._remove_instructions(to_remove)
 
     def _check_load_attr(self):
-        replaceable_attr_calls = ['append', 'remove', 'reverse', 'keys', 'values', 'has_key', 'IterNext', 'IterKey', 'IterValue', ]
+        replaceable_attr_calls = ['append', 'remove', 'reverse', 'keys', 'values', 'has_key', 'IterKey', 'IterValue', 'IterNext', 'next', ]
         for index, instr in enumerate(self.updated_blocklist):
             if not isinstance(instr, Label) and instr.opcode == pyop.LOAD_ATTR:
                 if instr.arg in replaceable_attr_calls:
@@ -85,11 +85,17 @@ class Expression(object):
                             if attr_name in n.full_name:
                                 matches.append(n)
 
-                                #                    if len(matches) > 1:
-#                        for index,m in enumerate(matches):
-#                            if m.alt_name:
-#                                print("deleting alt name... %s " % (m.alt_name))
-#                                matches.pop(index)
+                    # Special case for enumerators/iterator
+                    if len(matches) == 0:
+                        attr_name = 'Enumerator%s' % instr.arg
+                        for n in module_methods:
+                            if attr_name in n.full_name:
+                                matches.append(n)
+                    if len(matches) == 0:
+                        attr_name = 'Iter%s' % instr.arg
+                        for n in module_methods:
+                            if attr_name == n.full_name.split('.')[-1]:
+                                matches.append(n)
 
                     if len(matches) == 0:
                         raise Exception("Could not load attribute %s " % instr.arg)

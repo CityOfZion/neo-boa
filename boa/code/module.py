@@ -179,12 +179,15 @@ class Module(object):
                 self._extra_instr.append(blk)
             elif type == BlockType.ACTION_REG:
                 self.actions.append(BoaAction(blk))
+            elif type == BlockType.MAKE_CLASS:
+                pass
             elif type == BlockType.APPCALL_REG:
                 self.app_call_registrations.append(BoaAppcall(blk))
 #            else:
 #                logger.info("Block type not used:: %s " % type)
 
         for m in new_method_blks:
+
             new_method = BoaMethod(self, m, self.module_name, self._extra_instr)
 #            if self.to_import == ['*'] or new_method.name in self.to_import:
             #                print("IMPORTING NEW METHOD %s to module %s " % (new_method.name, self.module_name))

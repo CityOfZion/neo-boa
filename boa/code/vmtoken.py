@@ -571,12 +571,16 @@ class VMTokenizer(object):
             return self.convert_push_data(bytearray(b'\x00'), pytoken)
         elif 'TransactionType' in op:
             return self.convert_tx_type(op, pytoken)
-        if 'GetTXHash' in op:
+        elif 'GetTXHash' in op:
             op = op.replace('GetTXHash', 'GetHash')
-        if 'GetInputHash' in op:
+        elif 'GetInputHash' in op:
             op = op.replace('GetInputHash', 'GetHash')
-        if 'Iterator.Iter' in op:
+        elif 'Iterator.Iter' in op:
             op = op.replace('Iterator.Iter', 'Iterator.')
+        elif 'Enumerator.Enumerator' in op:
+            op = op.replace('Enumerator.Enumerator', 'Enumerator.')
+            if op == 'Neo.Enumerator':
+                op = 'Neo.Enumerator.Create'
 
         syscall_name = op.replace(NEO_SC_FRAMEWORK, '').encode('utf-8')
         length = len(syscall_name)
@@ -638,17 +642,26 @@ class VMTokenizer(object):
         :param pytoken:
         :return:
         """
+        syscall_name = None
         if op == 'print':
             syscall_name = 'Neo.Runtime.Log'.encode('utf-8')
-            length = len(syscall_name)
-            ba = bytearray([length]) + bytearray(syscall_name)
-            vmtoken = self.convert1(VMOp.SYSCALL, pytoken, data=ba)
-            # self.insert1(VMOp.NOP)
-            return vmtoken
+
+        elif op == 'enumerate':
+            syscall_name = b'Neo.Enumerator.Create'
+        elif op == 'iter':
+            syscall_name = b'Neo.Iterator.Create'
+        elif op == 'next':
+            syscall_name = b'Neo.Enumerator.Next'
 
         elif op == 'reversed':
             raise NotImplementedError(
                 "[Compilation error] Built in %s is not implemented. Use array.reverse() instead." % op)
+
+        if syscall_name:
+            length = len(syscall_name)
+            ba = bytearray([length]) + bytearray(syscall_name)
+            vmtoken = self.convert1(VMOp.SYSCALL, pytoken, data=ba)
+            return vmtoken
 
         raise NotImplementedError(
             "[Compilation error] Built in %s is not implemented" % op)
