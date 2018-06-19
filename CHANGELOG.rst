@@ -3,6 +3,10 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
+[0.4.6] 2018-06-19
+-----------------------
+- Add support for Enumerator/Iterator interop methods in NEO
+
 [0.4.5] 2018-06-18
 -----------------------
 - update tests for changes in neo-python
