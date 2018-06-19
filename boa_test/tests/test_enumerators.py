@@ -4,7 +4,6 @@ from neo.Settings import settings
 
 settings.USE_DEBUG_STORAGE = True
 settings.DEBUG_STORAGE_PATH = './fixtures/debugstorage'
-settings.log_smart_contract_events = True
 
 from neo.Prompt.Commands.BuildNRun import TestBuild
 
@@ -64,4 +63,13 @@ class TestContract(BoaTest):
         tx, results, total_ops, engine = TestBuild(out, [4], self.GetWallet1(), '02', '01')
         self.assertEqual(len(results), 1)
         res = [i.GetBigInteger() for i in results[0].GetArray()]
-        self.assertEqual(res, [1, 4, 32])
+        self.assertEqual(res, [1, 4, 13])
+
+        tx, results, total_ops, engine = TestBuild(out, [5], self.GetWallet1(), '02', '01')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetBigInteger(), 3)
+
+        tx, results, total_ops, engine = TestBuild(out, [6], self.GetWallet1(), '02', '01')
+        self.assertEqual(len(results), 1)
+        res = [i.GetBigInteger() for i in results[0].GetArray()]
+        self.assertEqual(res, [1, 4, 13])

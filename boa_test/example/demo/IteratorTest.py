@@ -1,4 +1,3 @@
-from boa.interop.Neo.Enumerator import EnumeratorValue
 from boa.interop.Neo.Iterator import *
 
 
@@ -7,7 +6,7 @@ def Main(testNum):
     items = {
         'a': 1,
         'c': 4,
-        'f': 32
+        'f': 13
     }
 
     vals = IterCreate(items)
@@ -32,7 +31,7 @@ def Main(testNum):
         i = iter(items)
         keys = []
         while next(i):
-            keys.append(i.IterKey())
+            keys.append(i.Key)
 
         return keys
 
@@ -40,8 +39,20 @@ def Main(testNum):
         i = iter(items)
         values = []
         while next(i):
-            values.append(i.IterValue())
+            values.append(i.Value)
 
         return values
+
+    if testNum == 5:
+        count = 0
+        while vals.Next():
+            count += 1
+        return count
+
+    if testNum == 6:
+        keys = []
+        while vals.Keys.next():
+            keys.append(vals.Value)
+        return keys
 
     return False

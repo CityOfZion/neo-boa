@@ -21,7 +21,7 @@ def Main(testNum):
 
         ret = []
         while EnumeratorNext(vals):
-            ret.append(EnumeratorValue(vals))
+            ret.append(vals.Value)
 
         return ret
 
@@ -30,7 +30,7 @@ def Main(testNum):
         vals = enumerate(items)
 
         while EnumeratorNext(vals):
-            ret.append(EnumeratorValue(vals))
+            ret.append(vals.Value)
 
         return ret
 
@@ -45,7 +45,7 @@ def Main(testNum):
         ret = []
 
         while EnumeratorNext(doublenumerator):
-            ret.append(EnumeratorValue(doublenumerator))
+            ret.append(doublenumerator.Value)
         return ret
 
     if testNum == 5:
