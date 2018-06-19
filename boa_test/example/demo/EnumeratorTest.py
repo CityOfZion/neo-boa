@@ -55,4 +55,12 @@ def Main(testNum):
             count += 1
         return count
 
+    if testNum == 6:
+
+        myenum = enumerate(items)
+        count = 0
+        while myenum.next():
+            count += 1
+        return count
+
     return False

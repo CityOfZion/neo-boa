@@ -571,14 +571,16 @@ class VMTokenizer(object):
             return self.convert_push_data(bytearray(b'\x00'), pytoken)
         elif 'TransactionType' in op:
             return self.convert_tx_type(op, pytoken)
-        if 'GetTXHash' in op:
+        elif 'GetTXHash' in op:
             op = op.replace('GetTXHash', 'GetHash')
-        if 'GetInputHash' in op:
+        elif 'GetInputHash' in op:
             op = op.replace('GetInputHash', 'GetHash')
-        if 'Iterator.Iter' in op:
+        elif 'Iterator.Iter' in op:
             op = op.replace('Iterator.Iter', 'Iterator.')
-        if 'Enumerator.Enumerator' in op:
+        elif 'Enumerator.Enumerator' in op:
             op = op.replace('Enumerator.Enumerator', 'Enumerator.')
+            if op == 'Neo.Enumerator':
+                op = 'Neo.Enumerator.Create'
 
         syscall_name = op.replace(NEO_SC_FRAMEWORK, '').encode('utf-8')
         length = len(syscall_name)

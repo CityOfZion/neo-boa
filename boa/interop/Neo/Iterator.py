@@ -1,19 +1,19 @@
 
-def IterCreate():
+def IterCreate(items):
     pass
 
 
-def IterNext():
+def IterNext(items):
     pass
 
 
-def IterKey():
+def IterKey(items):
     pass
 
 
-def IterKeys():
+def IterKeys(items):
     pass
 
 
-def IterValue():
+def IterValue(items):
     pass
