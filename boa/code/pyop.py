@@ -1,5 +1,6 @@
 import importlib
 import sys
+import opcode
 # the following are python opcodes taken from the `opcode` module
 # these have been constantized for easier access
 # these are the opcodes used by python
