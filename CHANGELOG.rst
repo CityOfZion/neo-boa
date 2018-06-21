@@ -3,6 +3,10 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
+[0.4.7] 2018-06-21
+-----------------------
+- Add support for python opcodes ``DUP_TOP_TWO``, ``ROT_THREE``, and ``ROT_TWO``
+
 [0.4.6] 2018-06-19
 -----------------------
 - Add support for Enumerator/Iterator interop methods in NEO
