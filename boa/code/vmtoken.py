@@ -203,6 +203,21 @@ class VMTokenizer(object):
 
         self.convert1(VMOp.PACK, py_token)
 
+    def convert_dup_top_two(self, py_token=None):
+        # a, b, c, d
+        # <- SWAP
+        # b, a, c, d
+        # <- DUP
+        # b, b, a, c, d
+        # <- ROT
+        # b, a, b, c, d
+        # <- OVER
+        # a, b, a, b, c, d
+        self.convert1(VMOp.SWAP, py_token)
+        self.convert1(VMOp.DUP, py_token)
+        self.convert1(VMOp.ROT, py_token)
+        self.convert1(VMOp.OVER, py_token)
+
     def convert_pop_jmp_if(self, pytoken):
         #                token = tokenizer.convert1(VMOp.JMPIF, self, data=bytearray(2))
         token = self.convert1(VMOp.JMPIF, pytoken, data=bytearray(2))

@@ -296,6 +296,12 @@ class PyToken():
             # if is_action:
             #     tokenizer.convert1(VMOp.DROP, self)
 
+        elif op == pyop.DUP_TOP_TWO:
+            tokenizer.convert_dup_top_two(self)
+        elif op == pyop.ROT_THREE:
+            tokenizer.convert1(VMOp.ROT, self)
+        elif op == pyop.ROT_TWO:
+            tokenizer.convert1(VMOp.SWAP)
         elif op == pyop.RAISE_VARARGS:
             pass
         elif op == pyop.EXTENDED_ARG:
