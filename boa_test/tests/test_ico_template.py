@@ -190,7 +190,7 @@ class TestContract(BoaFixtureTest):
         # it should dispatch an event
         self.assertEqual(len(TestContract.dispatched_events), 1)
         evt = TestContract.dispatched_events[0]
-        self.assertEqual(evt.event_payload[0], b'kyc_registration')
+        self.assertEqual(evt.event_payload.Value[0].Value, b'kyc_registration')
 
         # register 2 addresses at once
         tx, results, total_ops, engine = TestBuild(out, ['crowdsale_register', parse_param([self.wallet_3_script_hash.Data, self.wallet_2_script_hash.Data])], self.GetWallet1(), '0705', '05')

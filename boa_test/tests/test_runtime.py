@@ -37,13 +37,13 @@ class TestContract(BoaFixtureTest):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBoolean(), True)
         self.assertEqual(len(dispatched_logs), 1)
-        self.assertEqual(dispatched_logs[0].event_payload[0], b'hello')
+        self.assertEqual(dispatched_logs[0].event_payload.Value, 'hello')
 
         tx, results, total_ops, engine = TestBuild(out, ['notify', 1234], self.GetWallet1(), '02', '02')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBoolean(), True)
         self.assertEqual(len(dispatched_events), 1)
-        self.assertEqual(int.from_bytes(dispatched_events[0].event_payload[0], 'little'), 1234)
+        self.assertEqual(int.from_bytes(dispatched_events[0].event_payload.Value, 'little'), 1234)
 
         tx, results, total_ops, engine = TestBuild(out, ['get_trigger', 1234], self.GetWallet1(), '02', '02')
         self.assertEqual(len(results), 1)
