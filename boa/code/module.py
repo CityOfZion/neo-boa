@@ -130,6 +130,12 @@ class Module(object):
 
         return None
 
+    def has_method(self, full_name):
+        for m in self.methods:
+            if m.full_name == full_name:
+                return True
+        return False
+
     def __init__(self, path: str, module_name='', to_import=['*']):
 
         self.path = path
@@ -169,7 +175,8 @@ class Module(object):
                 new_module = Module.ImportFromBlock(blk, self.path)
                 if new_module:
                     for method in new_module.methods:
-                        self.methods.append(method)
+                        if not self.has_method(method.full_name):
+                            self.methods.append(method)
                     for method in new_module.local_methods:
                         self.methods.append(method)
                     self._extra_instr = self._extra_instr + new_module.extra_instructions
@@ -183,18 +190,13 @@ class Module(object):
                 pass
             elif type == BlockType.APPCALL_REG:
                 self.app_call_registrations.append(BoaAppcall(blk))
-#            else:
-#                logger.info("Block type not used:: %s " % type)
 
         for m in new_method_blks:
 
             new_method = BoaMethod(self, m, self.module_name, self._extra_instr)
-#            if self.to_import == ['*'] or new_method.name in self.to_import:
-            #                print("IMPORTING NEW METHOD %s to module %s " % (new_method.name, self.module_name))
 
-            self.methods.append(new_method)
-#            else:
-#                self._local_methods.append(new_method)
+            if not self.has_method(new_method.full_name):
+                self.methods.append(new_method)
 
     def write(self):
         """

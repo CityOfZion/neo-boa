@@ -60,6 +60,8 @@ class Expression(object):
 
     def _check_load_attr(self):
         replaceable_attr_calls = ['append', 'remove', 'reverse', 'keys', 'values', 'has_key', 'IterKey', 'IterValue', 'IterNext', 'next', ]
+        needs_call_func = []
+
         for index, instr in enumerate(self.updated_blocklist):
             if not isinstance(instr, Label) and instr.opcode == pyop.LOAD_ATTR:
                 if instr.arg in replaceable_attr_calls:
@@ -105,7 +107,14 @@ class Expression(object):
                     else:
                         instr.opcode = pyop.LOAD_GLOBAL
                         instr.arg = attr_name
-                        self.updated_blocklist = self.block[:index + 1] + [Instr('CALL_FUNCTION', 1, lineno=instr.lineno)] + self.block[index + 1:]
+                        needs_call_func.append(instr)
+
+        blocklist = []
+        for index, instr in enumerate(self.updated_blocklist):
+            blocklist.append(instr)
+            if instr in needs_call_func:
+                blocklist.append(Instr('CALL_FUNCTION', 1, lineno=instr.lineno))
+        self.updated_blocklist = blocklist
 
     def _check_function_kwargs(self):
         to_remove = []
