@@ -3,6 +3,12 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
+[0.4.8] 2018-07-05
+-----------------------
+- Updated module loading to prevent duplicates of modules.
+- Updated ``LOAD_ATTR`` parsing to fix bug with multiple ``LOAD_ATTR`` in one statement
+- Updated tests for compatibility with ``neo-python`` changes
+
 [0.4.7] 2018-06-21
 -----------------------
 - Add support for python opcodes ``DUP_TOP_TWO``, ``ROT_THREE``, and ``ROT_TWO``
