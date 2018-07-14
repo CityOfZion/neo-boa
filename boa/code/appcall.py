@@ -10,9 +10,12 @@ class appcall():
 
     method_name = None
 
-    def __init__(self, block):
+    safe = False
+
+    def __init__(self, block, safe=False):
 
         arguments = []
+        self.safe = safe
 
         for i, item in enumerate(block):
             if item.opcode == pyop.LOAD_CONST:

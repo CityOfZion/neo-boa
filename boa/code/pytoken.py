@@ -19,6 +19,7 @@ class PyToken():
     jump_to_addr = None
 
     is_dynamic_appcall = False
+    is_unsafe_appcall = False
 
     _methodname = None
 
@@ -34,6 +35,9 @@ class PyToken():
         self.jump_found = False
         self.jump_from_addr = None
         self.jump_to_addr = None
+        self.is_dynamic_appcall = False
+        self.is_unsafe_appcall = False
+
         # self.jump_to_addr_abs = None
         # self.jump_from_addr_abs = None
 

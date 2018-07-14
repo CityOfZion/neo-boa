@@ -188,8 +188,10 @@ class Module(object):
                 self.actions.append(BoaAction(blk))
             elif type == BlockType.MAKE_CLASS:
                 pass
-            elif type == BlockType.APPCALL_REG:
-                self.app_call_registrations.append(BoaAppcall(blk))
+            elif type == BlockType.SAFE_APPCALL_REG:
+                self.app_call_registrations.append(BoaAppcall(blk, safe=True))
+            elif type == BlockType.UNSAFE_APPCALL_REG:
+                self.app_call_registrations.append(BoaAppcall(blk, safe=False))
 
         for m in new_method_blks:
 

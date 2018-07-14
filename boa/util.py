@@ -13,8 +13,9 @@ class BlockType():
     DOC_STRING = 5
     LOAD_CONST = 6
     ACTION_REG = 7
-    APPCALL_REG = 8
-    UNKNOWN = 9
+    SAFE_APPCALL_REG = 8
+    UNSAFE_APPCALL_REG = 9
+    UNKNOWN = 10
 
 
 def get_block_type(block):
@@ -23,7 +24,9 @@ def get_block_type(block):
         if instr.opcode == pyop.LOAD_NAME and instr.arg == 'RegisterAction':
             return BlockType.ACTION_REG
         elif instr.opcode == pyop.LOAD_NAME and instr.arg == 'RegisterAppCall':
-            return BlockType.APPCALL_REG
+            return BlockType.SAFE_APPCALL_REG
+        elif instr.opcode == pyop.LOAD_NAME and instr.arg == 'RegisterAppCallUnsafe':
+            return BlockType.UNSAFE_APPCALL_REG
         elif instr.opcode in [pyop.IMPORT_FROM, pyop.IMPORT_NAME, pyop.IMPORT_STAR]:
             return BlockType.IMPORT_ITEM
         elif instr.opcode == pyop.MAKE_FUNCTION:

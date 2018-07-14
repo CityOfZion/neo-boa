@@ -38,10 +38,10 @@ JMPIF = b'\x63'
 JMPIFNOT = b'\x64'
 CALL = b'\x65'
 RET = b'\x66'
-APPCALL = b'\x67'
+SAFE_APPCALL = b'\x67'
 SYSCALL = b'\x68'
 TAILCALL = b'\x69'
-
+UNSAFE_APPCALL = b'\x70'
 
 #  Stack
 DUPFROMALTSTACK = b'\x6A'

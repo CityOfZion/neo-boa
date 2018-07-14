@@ -736,6 +736,10 @@ class VMTokenizer(object):
         if name == 'DynamicAppCall':
             pytoken.is_dynamic_appcall = True
             return True
+        elif name == 'UnsafeDynamicAppCall':
+            pytoken.is_dynamic_appcall = True
+            pytoken.is_unsafe_appcall = True
+            return True
 
         for appcall in self.method.module.app_call_registrations:
             if appcall.method_name == name:
@@ -752,15 +756,18 @@ class VMTokenizer(object):
         if pytoken.is_dynamic_appcall:
 
             # push the contract hash
-            vmtoken = self.convert1(
-                VMOp.APPCALL, py_token=pytoken, data=bytearray(20))
-
+            if pytoken.is_unsafe_appcall:
+                vmtoken = self.convert1(
+                    VMOp.UNSAFE_APPCALL, py_token=pytoken, data=bytearray(20))
+            else:
+                vmtoken = self.convert1(
+                    VMOp.SAFE_APPCALL, py_token=pytoken, data=bytearray(20))
             # self.insert1(VMOp.NOP)
             return vmtoken
 
         # this is used for app calls that are registered
         # using RegisterAppCall(script_hash, *args)
-        sc_appcall = None
+        sc_appcall = None  # type BoaAppcall
         for appcall in self.method.module.app_call_registrations:
             if appcall.method_name == pytoken.func_name:
                 sc_appcall = appcall
@@ -769,7 +776,11 @@ class VMTokenizer(object):
                             pytoken.func_name)
 
         # push the contract hash
-        vmtoken = self.convert1(
-            VMOp.APPCALL, py_token=pytoken, data=sc_appcall.script_hash_addr)
+        if sc_appcall.safe:
+            vmtoken = self.convert1(
+                VMOp.SAFE_APPCALL, py_token=pytoken, data=sc_appcall.script_hash_addr)
+        else:
+            vmtoken = self.convert1(
+                VMOp.UNSAFE_APPCALL, py_token=pytoken, data=sc_appcall.script_hash_addr)
 
         return vmtoken
