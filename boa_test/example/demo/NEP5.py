@@ -376,10 +376,8 @@ def BalanceOf(account):
     :rtype: int
 
     """
-    
     if len(account) != 20:
         return 0
-    
     context = GetContext()
 
     balance = Get(context, account)
