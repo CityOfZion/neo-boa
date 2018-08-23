@@ -174,6 +174,12 @@ def DoTransfer(t_from, t_to, amount):
     :rtype: bool
 
     """
+    if len(t_from) != 20:
+        return False
+
+    if len(t_to) != 20:
+        return False
+
     if amount <= 0:
         Log("Cannot transfer negative amount")
         return False
@@ -232,6 +238,12 @@ def DoTransferFrom(t_from, t_to, amount):
     if amount <= 0:
         return False
 
+    if len(t_from) != 20:
+        return False
+
+    if len(t_to) != 20:
+        return False    
+
     context = GetContext()
 
     allowance_key = concat(t_from, t_to)
@@ -286,6 +298,12 @@ def DoApprove(t_owner, t_spender, amount):
 
     """
 
+    if len(t_owner) != 20:
+        return False
+
+    if len(t_spender) != 20:
+        return False
+
     owner_is_sender = CheckWitness(t_owner)
 
     if not owner_is_sender:
@@ -332,6 +350,12 @@ def GetAllowance(t_owner, t_spender):
 
     """
 
+    if len(t_owner) != 20:
+        return False
+
+    if len(t_spender) != 20:
+        return False
+
     context = GetContext()
 
     allowance_key = concat(t_owner, t_spender)
@@ -352,6 +376,10 @@ def BalanceOf(account):
     :rtype: int
 
     """
+    
+    if len(account) != 20:
+        return 0
+    
     context = GetContext()
 
     balance = Get(context, account)
