@@ -274,7 +274,10 @@ class Module(object):
                 target_method = self.method_by_name(vmtoken.target_method)
                 if target_method:
                     jump_len = target_method.address - vmtoken.addr
-                    vmtoken.data = jump_len.to_bytes(2, 'little', signed=True)
+                    if jump_len > -32767 and jump_len < 32767:
+                        vmtoken.data = jump_len.to_bytes(2, 'little', signed=True)
+                    else:
+                        vmtoken.data = jump_len.to_bytes(4, 'little', signed=True)
                 else:
                     raise Exception("Target method %s not found" % vmtoken.target_method)
 

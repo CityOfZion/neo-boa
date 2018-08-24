@@ -1,4 +1,4 @@
 logzero==1.5.0
 astor>=0.6.2
-git+https://github.com/CityOfZion/neo-python.git@feature-prompt-iargs#egg=neo-python
+neo-python==0.7.7
 coz-bytecode==0.5.1
