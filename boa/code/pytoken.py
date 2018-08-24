@@ -252,7 +252,7 @@ class PyToken():
             elif self.instruction.arg == Compare.LE:
                 tokenizer.convert1(VMOp.LTE, self)
             elif self.instruction.arg == Compare.EQ:
-                tokenizer.convert1(VMOp.NUMEQUAL, self)
+                tokenizer.convert1(VMOp.EQUAL, self)
             elif self.instruction.arg == Compare.IS:
                 tokenizer.convert1(VMOp.EQUAL, self)
             elif self.instruction.arg in [Compare.NE, Compare.IS_NOT]:
