@@ -3,6 +3,12 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
+
+[0.4.9] 2018-08-24
+-----------------------
+- Updated NEP5 sample
+- Updated equality operator conversion
+
 [0.4.8] 2018-07-05
 -----------------------
 - Updated module loading to prevent duplicates of modules.
