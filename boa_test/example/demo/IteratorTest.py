@@ -45,7 +45,7 @@ def Main(testNum):
 
     if testNum == 5:
         count = 0
-        while vals.Next():
+        while vals.next():
             count += 1
         return count
 
