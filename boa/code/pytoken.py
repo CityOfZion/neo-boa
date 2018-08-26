@@ -282,8 +282,9 @@ class PyToken():
         elif op == pyop.BUILD_SLICE:
             tokenizer.convert_build_slice(self)
 
-        elif op == pyop.CALL_FUNCTION:
+        elif op in [pyop.CALL_FUNCTION, pyop.CALL_METHOD]:
             tokenizer.convert_method_call(self)
+#        elif op == pyop.LOAD_METHOD:
 
         elif op == pyop.POP_TOP:
             pass
@@ -304,7 +305,11 @@ class PyToken():
             tokenizer.convert1(VMOp.SWAP)
         elif op == pyop.RAISE_VARARGS:
             pass
+#        elif op == pyop.CALL_METHOD:
+#            pass
         elif op == pyop.EXTENDED_ARG:
             tokenizer.convert1(VMOp.NOP, self)
         else:
-            logger.warning("Op Not Converted %s %s %s %s" % (self.instruction.name, self.method_name, self.lineno, self.method_lineno))
+            #            import pdb
+            #            pdb.set_trace()
+            logger.warning("Op Not Converted %s %s %s %s %s" % (self.instruction.arg, self.instruction.name, self.method_name, self.lineno, self.method_lineno))

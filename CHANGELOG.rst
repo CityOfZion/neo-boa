@@ -3,6 +3,9 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
+[0.5.0] 2018-08-26
+-----------------------
+- Python 3.7 compatibility
 
 [0.4.9] 2018-08-24
 -----------------------

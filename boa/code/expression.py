@@ -63,7 +63,9 @@ class Expression(object):
         needs_call_func = []
 
         for index, instr in enumerate(self.updated_blocklist):
-            if not isinstance(instr, Label) and instr.opcode == pyop.LOAD_ATTR:
+            if not isinstance(instr, Label) and instr.opcode in [pyop.LOAD_ATTR, pyop.LOAD_METHOD]:
+                #                if instr.opcode == pyop.LOAD_METHOD:
+                #                    self.methodnames.append(instr.arg)
                 if instr.arg in replaceable_attr_calls:
                     instr.opcode = pyop.LOAD_GLOBAL
                 else:
@@ -197,7 +199,7 @@ class Expression(object):
             iterable_name = self.block[-1].arg
             ln = self.block[0].lineno
 
-            if iterable == 'range' or iterable == 'keys' or iterable == 'values' or self.block[2].opcode == pyop.LOAD_ATTR:
+            if iterable in ['range', 'keys', 'values'] or self.block[2].opcode in [pyop.LOAD_ATTR, pyop.LOAD_METHOD]:
 
                 dynamic_iterable_name = 'dynamic_iterable_%s' % counter
 
@@ -227,7 +229,7 @@ class Expression(object):
                     Instr("LOAD_FAST", arg=loopcounter_name, lineno=ln),
                     Instr("LOAD_FAST", arg=looplength_name, lineno=ln),
                     Instr("COMPARE_OP", arg=Compare.LT, lineno=ln),
-                    Instr("POP_JUMP_IF_FALSE", loop_done, lineno=ln),
+                    Instr("POP_JUMP_IF_FALSE", arg=loop_done, lineno=ln),
 
                     Instr("LOAD_FAST", arg=dynamic_iterable_name, lineno=ln),
                     Instr("LOAD_FAST", arg=loopcounter_name, lineno=ln),
@@ -261,7 +263,7 @@ class Expression(object):
                     Instr("LOAD_FAST", arg=loopcounter_name, lineno=ln),
                     Instr("LOAD_FAST", arg=looplength_name, lineno=ln),
                     Instr("COMPARE_OP", arg=Compare.LT, lineno=ln),
-                    Instr("POP_JUMP_IF_FALSE", loop_done, lineno=ln),
+                    Instr("POP_JUMP_IF_FALSE", arg=loop_done, lineno=ln),
 
                     Instr("LOAD_FAST", arg=iterable, lineno=ln),
                     Instr("LOAD_FAST", arg=loopcounter_name, lineno=ln),
@@ -304,7 +306,7 @@ class Expression(object):
             except Exception as e:
                 cm = self.container_method
                 print("ERROR: %s:%s in %s() with msg - %s" % (cm.module.path, cm.start_line_no + ln - 1, cm.name, str(e)))
-
+                raise e
             last_token = token
 
     def lookup_method_name(self, index):
