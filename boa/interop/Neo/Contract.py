@@ -34,6 +34,14 @@ def GetStorageContext(contract):
     pass
 
 
+def IsPayable(contract):
+    """
+    
+    :param contract:
+    """
+    pass
+
+
 def Create(script, parameter_list, return_type, properties, name, version, author, email, description):
     """
 
