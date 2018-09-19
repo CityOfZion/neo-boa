@@ -20,7 +20,7 @@ class Contract:
 	@property
 	def IsPayable(self):
 		"""
-
+		
 		:return:
 		"""
 		return IsPayable(self)
