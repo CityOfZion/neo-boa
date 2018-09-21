@@ -12,7 +12,7 @@ class TestContract(BoaFixtureTest):
         out = output.write()
         print(output.to_s())
 
-        account = bytearray(b'S\xefB\xc8\xdf!^\xbeZ|z\xe8\x01\xcb\xc3\xac/\xacI)')
+        account = self.wallet_1_script_hash.Data
 
         bad_account = bytearray(b'S\xefB\xc8\xdf!^\xbeZ|z\xe8\x01\xcb\xc3\xac/\xacE)')
 
@@ -30,8 +30,8 @@ class TestContract(BoaFixtureTest):
 
         tx, results, total_ops, engine = TestBuild(out, ['get_balance_gas', account], self.GetWallet1(), '07', '05')
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].GetBigInteger(), 10000000000)
+        self.assertEqual(results[0].GetBigInteger(), 1399980000)
 
         tx, results, total_ops, engine = TestBuild(out, ['get_balance_neo', account], self.GetWallet1(), '07', '05')
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].GetBigInteger(), 10000000000)
+        self.assertEqual(results[0].GetBigInteger(), 5000000000)

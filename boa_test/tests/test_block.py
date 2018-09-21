@@ -12,7 +12,7 @@ class TestContract(BoaFixtureTest):
 
         tx, results, total_ops, engine = TestBuild(out, ['get_hash', 1234], self.GetWallet1(), '02', '02')
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].GetByteArray(), bytearray(b'R\xddI\xd3\xb5\x92z\x00C3|\x0fR\x8c\xdb$Q\x1e\x1e\xf0s\x856\xd4Uv/mw\xde\x0f\xa5'))
+        self.assertEqual(results[0].GetByteArray(), bytearray(b'\xd6\xa7Rf\xed\xba\x82?\xb4\xd0\xa5\xfc\xbf\xed\xf8\xb7\xf2\xea\xf5@\xad\xa8\xd8\xa2\xb8\xf5\xd5\xd8\xfe\x8d\xc4\xe1'))
 
         tx, results, total_ops, engine = TestBuild(out, ['get_index', 1234], self.GetWallet1(), '02', '02')
         self.assertEqual(len(results), 1)
@@ -20,7 +20,7 @@ class TestContract(BoaFixtureTest):
 
         tx, results, total_ops, engine = TestBuild(out, ['get_timestamp', 1234], self.GetWallet1(), '02', '02')
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].GetBigInteger(), 1494424275)
+        self.assertEqual(results[0].GetBigInteger(), 1529948750)
 
         tx, results, total_ops, engine = TestBuild(out, ['get_index', 1234], self.GetWallet1(), '02', '02')
         self.assertEqual(len(results), 1)
@@ -28,7 +28,8 @@ class TestContract(BoaFixtureTest):
 
         tx, results, total_ops, engine = TestBuild(out, ['get_prevhash', 1234], self.GetWallet1(), '02', '02')
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].GetByteArray(), bytearray(b'*\xaf\xd3\x12\xb5\x06\xca\xfc\x96\xd9\x1e\x1a",!\xa0\xc7P\x9cC\xab2\x82\xbf\xc3\xa5\xf8\xde\x9bE\x90\xbe'))
+
+        self.assertEqual(results[0].GetByteArray(), bytearray(b'<\xc4\xe9\x1a\xfe3\xabjo\xff\xfc_\xab=\x14\xa6?%\xbc\x0e$G\xa3\xdaVh\xa1\xddT#\xdcF'))
 
         tx, results, total_ops, engine = TestBuild(out, ['get_version', 1234], self.GetWallet1(), '02', '02')
         self.assertEqual(len(results), 1)
@@ -36,15 +37,16 @@ class TestContract(BoaFixtureTest):
 
         tx, results, total_ops, engine = TestBuild(out, ['get_nextconsensus', 1234], self.GetWallet1(), '02', '02')
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].GetByteArray(), bytearray(b'\xf3\x81-\xb9\x82\xf3\xb0\x08\x9a!\xa2x\x98\x8e\xfe\xecj\x02{%'))
+        self.assertEqual(results[0].GetByteArray(), bytearray(b'\xbeH\xd3\xa3\xf5\xd1\x00\x13\xab\x9f\xfe\xe4\x89p`xqO\x1e\xa2'))
 
         tx, results, total_ops, engine = TestBuild(out, ['get_merkleroot', 1234], self.GetWallet1(), '02', '02')
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].GetByteArray(), bytearray(b'\xa2\x99\xbf-\xbb\xf7&<\n+k9\xe1\xa3\xeb\xdb\xad".7nD\xac\x12v,\xfd\x1c$\x02_\xed'))
+
+        self.assertEqual(results[0].GetByteArray(), bytearray(b'\xe4FR\xf2U-\xf9\x12\x9c\x15F\x13n\xb5\xc8\xa4z\xac\xb0\xfbK\x1f\xbc\x16*\x14\xd8\xc1\xb8c\xe7\xab'))
 
         tx, results, total_ops, engine = TestBuild(out, ['get_consensusdata', 1234], self.GetWallet1(), '02', '02')
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].GetByteArray(), bytearray(b'sk\xacH\xec;\x0ev'))
+        self.assertEqual(results[0].GetByteArray(), bytearray(b'$\xbf=\xdb_Qib'))
 
         tx, results, total_ops, engine = TestBuild(out, ['get_transactioncount', 1234], self.GetWallet1(), '02', '02')
         self.assertEqual(len(results), 1)
