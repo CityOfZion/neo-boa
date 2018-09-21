@@ -27,9 +27,9 @@ class TestContract(BoaFixtureTest):
 
         tx, results, total_ops, engine = TestBuild(out, ['get_time', 1], self.GetWallet1(), '0202', '02')
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].GetByteArray(), bytearray(b'\x01r\x04Z'))
+        self.assertEqual(results[0].GetByteArray(), bytearray(b'\xb3Y\xa1['))
 
-        tx, results, total_ops, engine = TestBuild(out, ['check_witness', bytearray(b'S\xefB\xc8\xdf!^\xbeZ|z\xe8\x01\xcb\xc3\xac/\xacI)')], self.GetWallet1(), '02', '02')
+        tx, results, total_ops, engine = TestBuild(out, ['check_witness', self.wallet_1_script_hash.Data], self.GetWallet1(), '02', '02')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBoolean(), True)
 

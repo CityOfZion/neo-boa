@@ -16,7 +16,7 @@ class TestContract(BoaFixtureTest):
         output = Compiler.instance().load('%s/boa_test/example/blockchain/OutputsTest.py' % TestContract.dirname).default
         out = output.write()
 
-        txid = bytearray(b'\xb4A?l#\xdc@7ki<)\x05\xed\xd5\x9a"\xc3I\x10-\x9f#[\xfc\xf6\xb1$N\\\xdb\xce')
+        txid = bytearray(b'&\xb4^\x06\xe6/\xbc\xe6|\x12\xacY![JJ\xeec\x14"\xe7\x8c*\xf3j\x85H_\x10\xc1\xe3\x96')
 
         tx, results, total_ops, engine = TestBuild(out, [txid], self.GetWallet1(), '07', '05')
         self.assertEqual(len(results), 1)
@@ -76,7 +76,7 @@ class TestContract(BoaFixtureTest):
         output = Compiler.instance().load('%s/boa_test/example/blockchain/TransactionTest.py' % TestContract.dirname).default
         out = output.write()
 
-        txid = bytearray(b'\xb4A?l#\xdc@7ki<)\x05\xed\xd5\x9a"\xc3I\x10-\x9f#[\xfc\xf6\xb1$N\\\xdb\xce')
+        txid = bytearray(b'&\xb4^\x06\xe6/\xbc\xe6|\x12\xacY![JJ\xeec\x14"\xe7\x8c*\xf3j\x85H_\x10\xc1\xe3\x96')
 
         bad_tx = bytearray(b'\xb4A?l#\xdc@7ki<)\x05\xed\xd5\x9a"\xc3I\x10-\x9f#[\xfc\xf6\xb1$N\\\xdb\xca')
 
@@ -128,9 +128,9 @@ class TestContract(BoaFixtureTest):
 
         o1 = res[0].GetArray()
         self.assertEqual(len(o1), 3)
-        self.assertEqual(o1[0].GetBigInteger(), 100000000)
-        self.assertEqual(o1[1].GetByteArray(), NEO)
-        self.assertEqual(o1[2].GetByteArray(), bytearray(b"\xe5\x8eY\x99\xbc\xbf]x\xf5.\xad@eA1\xab\xb9\xee\'\t"))
+        self.assertEqual(o1[0].GetBigInteger(), 50000000000)
+        self.assertEqual(o1[1].GetByteArray(), GAS)
+        self.assertEqual(o1[2].GetByteArray(), bytearray(b'\x1c\xc9\xc0\\\xef\xff\xe6\xcd\xd7\xb1\x82\x81j\x91R\xec!\x8d.\xc0'))
 
         tx, results, total_ops, engine = TestBuild(out, ['get_reference_details', txid], self.GetWallet1(), '07', '05')
         self.assertEqual(len(results), 1)
@@ -139,13 +139,13 @@ class TestContract(BoaFixtureTest):
 
         o1 = res[0].GetArray()
         self.assertEqual(len(o1), 3)
-        self.assertEqual(o1[0].GetBigInteger(), 98700000000)
-        self.assertEqual(o1[1].GetByteArray(), NEO)
-        self.assertEqual(o1[2].GetByteArray(), bytearray(b"\xe5:\'\xd3}\x7fZ1\x87\x00<!\xef\xe3rS\x04\xa7A\x06"))
+        self.assertEqual(o1[0].GetBigInteger(), 2399399970000)
+        self.assertEqual(o1[1].GetByteArray(), GAS)
+        self.assertEqual(o1[2].GetByteArray(), bytearray(b'#\xba\'\x03\xc52c\xe8\xd6\xe5"\xdc2 39\xdc\xd8\xee\xe9'))
 
         tx, results, total_ops, engine = TestBuild(out, ['get_input_details', txid], self.GetWallet1(), '07', '05')
         self.assertEqual(len(results), 1)
         res = results[0].GetArray()
         self.assertEqual(len(res), 2)
-        self.assertEqual(res[0].GetByteArray(), bytearray(b'\x02\x06\xcco\x91\x96\x95\xfbU\xc9`\\U\x12q(\xc2\x96\x97\xd7\x91\xaf\x88L&6Ali\xa9D\x88'))
+        self.assertEqual(res[0].GetByteArray(), bytearray(b'\xc4\x1e\xe4\t\x1f\x8d\xc0=\xb6\xd9\x0203M\x07\xbek\xb0\xec\xe3\x99\xfa\xe5{\x7f?;q(\xcafS'))
         self.assertEqual(res[1].GetBigInteger(), 1)
