@@ -3,6 +3,10 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
+[0.5.1] In Progress
+-----------------------
+- Use reduced sized fixtures for quicker tests
+
 [0.5.0] 2018-08-26
 -----------------------
 - Python 3.7 compatibility
