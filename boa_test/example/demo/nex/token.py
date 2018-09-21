@@ -12,7 +12,7 @@ TOKEN_DECIMALS = 8
 
 # This is the script hash of the address for the owner of the token
 # This can be found in ``neo-python`` with the wallet open, use ``wallet`` command
-TOKEN_OWNER = b'S\xefB\xc8\xdf!^\xbeZ|z\xe8\x01\xcb\xc3\xac/\xacI)'
+TOKEN_OWNER = b'\x1c\xc9\xc0\\\xef\xff\xe6\xcd\xd7\xb1\x82\x81j\x91R\xec!\x8d.\xc0'
 
 TOKEN_CIRC_KEY = b'in_circulation'
 
@@ -30,10 +30,10 @@ TOKENS_PER_GAS = 20 * 100000000
 MAX_EXCHANGE_LIMITED_ROUND = 500 * 40 * 100000000
 
 # when to start the crowdsale
-BLOCK_SALE_START = 755000
+BLOCK_SALE_START = 12340
 
 # when to end the initial limited round
-LIMITED_ROUND_END = 755000 + 10000
+LIMITED_ROUND_END = 12340 + 10000
 
 KYC_KEY = b'kyc_ok'
 

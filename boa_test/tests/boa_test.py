@@ -13,7 +13,7 @@ class BoaTest(WalletFixtureTestCase):
 
     dirname = None
 
-    FIXTURE_REMOTE_LOC = 'https://s3.us-east-2.amazonaws.com/cityofzion/fixtures/fixtures_v7.tar.gz'
+    FIXTURE_REMOTE_LOC = 'https://s3.us-east-2.amazonaws.com/cityofzion/fixtures/fixtures_v8.tar.gz'
     FIXTURE_FILENAME = 'fixtures/empty_fixture.tar.gz'
 
     wallet_1_script_hash = UInt160(data=b'S\xefB\xc8\xdf!^\xbeZ|z\xe8\x01\xcb\xc3\xac/\xacI)')
@@ -40,24 +40,24 @@ class BoaFixtureTest(WalletFixtureTestCase):
 
     dirname = None
 
-    FIXTURE_REMOTE_LOC = 'https://s3.us-east-2.amazonaws.com/cityofzion/fixtures/fixtures_v7.tar.gz'
-    FIXTURE_FILENAME = './fixtures/fixtures_v7.tar.gz'
+    FIXTURE_REMOTE_LOC = 'https://s3.us-east-2.amazonaws.com/cityofzion/fixtures/fixtures_v8.tar.gz'
+    FIXTURE_FILENAME = './fixtures/fixtures_v8.tar.gz'
 
-    wallet_1_script_hash = UInt160(data=b'S\xefB\xc8\xdf!^\xbeZ|z\xe8\x01\xcb\xc3\xac/\xacI)')
+    wallet_1_script_hash = UInt160(data=b'\x1c\xc9\xc0\\\xef\xff\xe6\xcd\xd7\xb1\x82\x81j\x91R\xec!\x8d.\xc0')
 
-    wallet_1_addr = 'APRgMZHZubii29UXF9uFa6sohrsYupNAvx'
+    wallet_1_addr = 'AJQ6FoaSXDFzA6wLnyZ1nFN7SGSN2oNTc3'
 
     _wallet1 = None
 
-    wallet_2_script_hash = UInt160(data=b'4\xd0=k\x80TF\x9e\xa8W\x83\xfa\x9eIv\x0b\x9bs\x9d\xb6')
+    wallet_2_script_hash = UInt160(data=b'\x08t/\\P5\xac-\x0b\x1c\xb4\x94tIyBu\x7f1*')
 
-    wallet_2_addr = 'ALb8FEhEmtSqv97fuNVuoLmcmrSKckffRf'
+    wallet_2_addr = 'AGYaEi3W6ndHPUmW7T12FFfsbQ6DWymkEm'
 
     _wallet2 = None
 
-    wallet_3_script_hash = UInt160(data=b'\xa6\xc5\x9d\xeb\xf0\xd7(\xbd\x14\x89\xcd\xb9\xd9{\xd1\x90\xcb\x0b\xdch')
+    wallet_3_script_hash = UInt160(data=b'\xc4\xc1\xb0\xcf\xa8\x7f\xcb\xacE\x98W0\x16d\x11\x03]\xdf\xed#')
 
-    wallet_3_addr = 'AWygZ1B5c3GDiLL6u5bHSVU45Ya1SVGX9P'
+    wallet_3_addr = 'AZiE7xfyJALW7KmADWtCJXGGcnduYhGiCX'
 
     _wallet3 = None
 
