@@ -114,6 +114,15 @@ from boa.compiler import Compiler
 Compiler.load_and_save('path/to/your/file.py')
 ```
 
+For legacy functionality without NEP8 stack isolation compatibility, use the following:
+
+```
+from boa.compiler import Compiler
+
+Compiler.load_and_save('path/to/your/file.py', use_nep8=False)
+```
+
+
 
 ## Docs
 
