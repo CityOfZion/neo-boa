@@ -3,7 +3,7 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
-[0.5.1] In Progress
+[0.5.1] 2018-09-24
 -----------------------
 - Use reduced sized fixtures for quicker tests
 
