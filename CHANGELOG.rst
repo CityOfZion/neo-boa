@@ -3,7 +3,7 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
-[0.5.2] In Progress
+[0.5.2] 2018-09-25
 -----------------------
 - Implement NEP8 call functionality
 
