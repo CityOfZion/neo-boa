@@ -77,8 +77,6 @@ class TestContract(BoaFixtureTest):
         self.assertEqual(len(results), 0)
 #        self.assertEqual(results[0].GetBigInteger(), 0)
 
-
-
     def test_DynamicAppcall_NonNep8(self):
 
         output = Compiler.instance().load('%s/boa_test/example/blockchain/DynamicAppCallTest.py' % TestContract.dirname, use_nep8=False).default
