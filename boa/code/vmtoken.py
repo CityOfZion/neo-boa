@@ -405,17 +405,12 @@ class VMTokenizer(object):
         :return:
         """
 
-#        pdb.set_trace()
-
         if pytoken.func_name == 'list':
             return self.convert_built_in_list(pytoken)
         elif pytoken.func_name == 'bytearray':
             return self.convert_push_data(bytes(pytoken.instruction.arg), pytoken)
         elif pytoken.func_name == 'bytes':
             return self.convert_push_data(pytoken.func_params[0].args, pytoken)
-
-#        for t in pytoken.func_params:
-#            t.to_vm(self)
 
         param_len = pytoken.num_params
 
@@ -470,7 +465,7 @@ class VMTokenizer(object):
 
         # app call ( for calling other contracts on blockchain )
         elif self.is_smart_contract_call(pytoken):
-            vmtoken = self.convert_smart_contract_call(pytoken)
+            vmtoken = self.convert_smart_contract_call(pytoken, param_len)
 
         elif self.is_sys_call(full_name):
             vmtoken = self.convert_sys_call(full_name, pytoken)
@@ -481,13 +476,16 @@ class VMTokenizer(object):
 
         # otherwise we assume the method is defined by the module
         else:
-            vmtoken = self.convert1(
-                VMOp.CALL, py_token=pytoken, data=bytearray(b'\x05\x00'))
+            vmtoken = self.convert_default_call(pytoken, param_len)
 
-            vmtoken.src_method = self.method
-            vmtoken.target_method = pytoken.func_name
-#            pdb.set_trace()
+        return vmtoken
 
+    def convert_default_call(self, pytoken, param_len):
+        vmtoken = self.convert1(
+            VMOp.CALL, py_token=pytoken, data=bytearray(b'\x05\x00'))
+
+        vmtoken.src_method = self.method
+        vmtoken.target_method = pytoken.func_name
         return vmtoken
 
     @staticmethod
@@ -742,7 +740,7 @@ class VMTokenizer(object):
                 return True
         return False
 
-    def convert_smart_contract_call(self, pytoken):
+    def convert_smart_contract_call(self, pytoken, param_len):
         """
 
         :param pytoken:
@@ -771,5 +769,52 @@ class VMTokenizer(object):
         # push the contract hash
         vmtoken = self.convert1(
             VMOp.APPCALL, py_token=pytoken, data=sc_appcall.script_hash_addr)
+
+        return vmtoken
+
+
+class Nep8VMTokenizer(VMTokenizer):
+
+    def convert_default_call(self, pytoken, param_len):
+        # for NEP8 we need to add in the num params and the return count for the method call
+        # return count is always 1
+        method_opts = bytearray([1, param_len, 0, 0])
+        vmtoken = self.convert1(
+            VMOp.CALL_I, py_token=pytoken, data=method_opts)
+
+        vmtoken.src_method = self.method
+        vmtoken.target_method = pytoken.func_name
+        return vmtoken
+
+    def convert_smart_contract_call(self, pytoken, param_len):
+        """
+
+        :param pytoken:
+        :return:
+        """
+
+        if pytoken.is_dynamic_appcall:
+            # in dynamic appcall definition, one of the params is the script hash,
+            # so we need one less than is passed in as `param_len`
+            method_opts = bytearray([1, param_len - 1])
+            # push the call with param count and return count
+            vmtoken = self.convert1(
+                VMOp.CALL_ED, py_token=pytoken, data=method_opts)
+            return vmtoken
+
+        # this is used for app calls that are registered
+        # using RegisterAppCall(script_hash, *args)
+        sc_appcall = None
+        for appcall in self.method.module.app_call_registrations:
+            if appcall.method_name == pytoken.func_name:
+                sc_appcall = appcall
+        if sc_appcall is None:
+            raise Exception("Smart Contract Appcall %s not found " %
+                            pytoken.func_name)
+
+        # push the contract hash + p/r count
+        appcall_data = bytearray([1, param_len]) + sc_appcall.script_hash_addr
+        vmtoken = self.convert1(
+            VMOp.CALL_E, py_token=pytoken, data=appcall_data)
 
         return vmtoken

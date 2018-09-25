@@ -236,6 +236,8 @@ class Module(object):
         Perform linkage of addresses between methods.
         """
 
+        from ..compiler import Compiler
+
         for method in self.methods:
             method.prepare()
 
@@ -258,26 +260,22 @@ class Module(object):
 
                     vmtoken.addr = vmtoken.addr + method.address
 
-        # loop through once to see if there are any local methods to add
-#        local_count = 0
-#        for key, vmtoken in self.all_vm_tokens.items():
-#            if vmtoken.src_method is not None:
-#                target_method, is_local = self.method_by_name(vmtoken.target_method)
-#                if is_local:
-#                    local_count+=1
-#        if local_count > 0:
-#            return self.link_methods()
-
         for key, vmtoken in self.all_vm_tokens.items():
             if vmtoken.src_method is not None:
 
                 target_method = self.method_by_name(vmtoken.target_method)
                 if target_method:
                     jump_len = target_method.address - vmtoken.addr
+
+                    param_ret_counts = bytearray()
+                    if Compiler.instance().nep8:
+                        param_ret_counts = vmtoken.data[0:2]
+                        jump_len -= 2
+
                     if jump_len > -32767 and jump_len < 32767:
-                        vmtoken.data = jump_len.to_bytes(2, 'little', signed=True)
+                        vmtoken.data = param_ret_counts + jump_len.to_bytes(2, 'little', signed=True)
                     else:
-                        vmtoken.data = jump_len.to_bytes(4, 'little', signed=True)
+                        vmtoken.data = param_ret_counts + jump_len.to_bytes(4, 'little', signed=True)
                 else:
                     raise Exception("Target method %s not found" % vmtoken.target_method)
 

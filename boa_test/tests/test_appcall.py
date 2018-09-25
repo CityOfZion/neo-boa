@@ -35,9 +35,51 @@ class TestContract(BoaFixtureTest):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBigInteger(), -1)
 
+    def test_Appcall_NonNep8(self):
+
+        output = Compiler.instance().load('%s/boa_test/example/blockchain/AppCallTest.py' % TestContract.dirname, use_nep8=False).default
+        out = output.write()
+
+        tx, results, total_ops, engine = TestBuild(out, ['add', 3, 5], self.GetWallet1(), '070202', '02')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetBigInteger(), 8)
+
+        tx, results, total_ops, engine = TestBuild(out, ['sub', 3, 5], self.GetWallet1(), '070202', '02')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetBigInteger(), -2)
+
+        tx, results, total_ops, engine = TestBuild(out, ['mul', 3, 5], self.GetWallet1(), '070202', '02')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetBigInteger(), 15)
+
+        tx, results, total_ops, engine = TestBuild(out, ['notfound', 3, 5], self.GetWallet1(), '070202', '02')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetBigInteger(), -1)
+
     def test_DynamicAppcall(self):
 
         output = Compiler.instance().load('%s/boa_test/example/blockchain/DynamicAppCallTest.py' % TestContract.dirname).default
+        out = output.write()
+
+        tx, results, total_ops, engine = TestBuild(out, [bytearray(b'\xc0<0-x\x97\r\x9f68/\x18\x03\x9e\xd2\xc8x\x87\xd5\x86'), 'add', 3, 5], self.GetWallet1(), '05070202', '02', dynamic=True)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetBigInteger(), 8)
+
+        tx, results, total_ops, engine = TestBuild(out, [bytearray(b'\xc0<0-x\x97\r\x9f68/\x18\x03\x9e\xd2\xc8x\x87\xd5\x86'), 'sub', 3, 5], self.GetWallet1(), '05070202', '02', dynamic=True)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetBigInteger(), -2)
+
+        tx, results, total_ops, engine = TestBuild(out, [bytearray(b'\xc0<0-x\x97\r\x9f68/\x18\x03\x9e\xd2\xc8x\x87\xd5\x86'), 'mul', 3, 5], self.GetWallet1(), '05070202', '02', dynamic=True)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetBigInteger(), 15)
+
+        tx, results, total_ops, engine = TestBuild(out, [bytearray(b'W\xa7\x18\x08MZh\xbdu\xb7%\x88\x8e\x19J\x9e\xd4|\xe1\xe3'), 'add', 3, 5], self.GetWallet1(), '05070202', '02', dynamic=True)
+        self.assertEqual(len(results), 0)
+#        self.assertEqual(results[0].GetBigInteger(), 0)
+
+    def test_DynamicAppcall_NonNep8(self):
+
+        output = Compiler.instance().load('%s/boa_test/example/blockchain/DynamicAppCallTest.py' % TestContract.dirname, use_nep8=False).default
         out = output.write()
 
         tx, results, total_ops, engine = TestBuild(out, [bytearray(b'\xc0<0-x\x97\r\x9f68/\x18\x03\x9e\xd2\xc8x\x87\xd5\x86'), 'add', 3, 5], self.GetWallet1(), '05070202', '02', dynamic=True)

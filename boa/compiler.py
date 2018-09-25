@@ -28,6 +28,8 @@ class Compiler(object):
 
     entry_module = None
 
+    nep8 = True
+
     @staticmethod
     def instance():
         """
@@ -71,11 +73,10 @@ class Compiler(object):
         """
 
         out_bytes = bytes(self.entry_module.write())
-#        module.to_s()
         return out_bytes
 
     @staticmethod
-    def load_and_save(path, output_path=None):
+    def load_and_save(path, output_path=None, use_nep8=True):
         """
         Call `load_and_save` to load a Python file to be compiled to the .avm format and save the result.
         By default, the resultant .avm file is saved along side the source file.
@@ -93,7 +94,7 @@ class Compiler(object):
             Compiler.load_and_save('path/to/your/file.py')
         """
 
-        compiler = Compiler.load(os.path.abspath(path))
+        compiler = Compiler.load(os.path.abspath(path), use_nep8=use_nep8)
         data = compiler.write()
         if output_path is None:
             fullpath = os.path.realpath(path)
@@ -107,7 +108,7 @@ class Compiler(object):
         return data
 
     @staticmethod
-    def load(path):
+    def load(path, use_nep8=True):
         """
         Call `load` to load a Python file to be compiled but not to write to .avm
 
@@ -126,7 +127,7 @@ class Compiler(object):
         Compiler.__instance = None
 
         compiler = Compiler.instance()
-
+        compiler.nep8 = use_nep8
         compiler.entry_module = Module(path)
 
         return compiler
