@@ -1,5 +1,5 @@
 from bytecode import Instr, Bytecode, Label
-from boa.code.vmtoken import VMTokenizer
+from boa.code.vmtoken import VMTokenizer, Nep8VMTokenizer
 from boa.code.expression import Expression
 from boa.code import pyop
 from boa.code.ast_preprocess import preprocess_method_body
@@ -157,7 +157,11 @@ class method(object):
 
         self._blocks = blocks
 
-        self.tokenizer = VMTokenizer(self)
+        from ..compiler import Compiler
+        if Compiler.instance().nep8:
+            self.tokenizer = Nep8VMTokenizer(self)
+        else:
+            self.tokenizer = VMTokenizer(self)
 
         self._expressions = []
 

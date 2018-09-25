@@ -139,6 +139,12 @@ VALUES = b'\xCD'
 THROW = b'\xF0'
 THROWIFNOT = b'\xF1'
 
+# Stack isolation instructions, see link for description: https://github.com/neo-project/proposals/blob/c20182cecd92102b9e5a3158a005762eefb8dbdf/nep-8.mediawiki#Specification
+CALL_I = b'\xE0'
+CALL_E = b'\xE1'
+CALL_ED = b'\xE2'
+CALL_ET = b'\xE3'
+CALL_EDT = b'\xE4'
 
 # the following is a convienience method
 # for a human readable version of the ops
