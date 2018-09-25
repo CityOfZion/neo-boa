@@ -3,6 +3,10 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
+[0.5.2] In Progress
+-----------------------
+- Implement NEP8 call functionality
+
 [0.5.1] 2018-09-24
 -----------------------
 - Use reduced sized fixtures for quicker tests

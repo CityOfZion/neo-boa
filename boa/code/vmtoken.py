@@ -465,7 +465,7 @@ class VMTokenizer(object):
 
         # app call ( for calling other contracts on blockchain )
         elif self.is_smart_contract_call(pytoken):
-            vmtoken = self.convert_smart_contract_call(pytoken)
+            vmtoken = self.convert_smart_contract_call(pytoken, param_len)
 
         elif self.is_sys_call(full_name):
             vmtoken = self.convert_sys_call(full_name, pytoken)
@@ -740,7 +740,7 @@ class VMTokenizer(object):
                 return True
         return False
 
-    def convert_smart_contract_call(self, pytoken):
+    def convert_smart_contract_call(self, pytoken, param_len):
         """
 
         :param pytoken:
@@ -786,24 +786,7 @@ class Nep8VMTokenizer(VMTokenizer):
         vmtoken.target_method = pytoken.func_name
         return vmtoken
 
-    def is_smart_contract_call(self, pytoken):
-        """
-
-        :param pytoken:
-        :return:
-        """
-        name = pytoken.func_name
-
-        if name == 'DynamicAppCall':
-            pytoken.is_dynamic_appcall = True
-            return True
-
-        for appcall in self.method.module.app_call_registrations:
-            if appcall.method_name == name:
-                return True
-        return False
-
-    def convert_smart_contract_call(self, pytoken):
+    def convert_smart_contract_call(self, pytoken, param_len):
         """
 
         :param pytoken:
@@ -811,12 +794,12 @@ class Nep8VMTokenizer(VMTokenizer):
         """
 
         if pytoken.is_dynamic_appcall:
-
-            # push the contract hash
+            # in dynamic appcall definition, one of the params is the script hash,
+            # so we need one less than is passed in as `param_len`
+            method_opts = bytearray([1, param_len - 1])
+            # push the call with param count and return count
             vmtoken = self.convert1(
-                VMOp.APPCALL, py_token=pytoken, data=bytearray(20))
-
-            # self.insert1(VMOp.NOP)
+                VMOp.CALL_ED, py_token=pytoken, data=method_opts)
             return vmtoken
 
         # this is used for app calls that are registered
@@ -829,8 +812,9 @@ class Nep8VMTokenizer(VMTokenizer):
             raise Exception("Smart Contract Appcall %s not found " %
                             pytoken.func_name)
 
-        # push the contract hash
+        # push the contract hash + p/r count
+        appcall_data = bytearray([1, param_len]) + sc_appcall.script_hash_addr
         vmtoken = self.convert1(
-            VMOp.APPCALL, py_token=pytoken, data=sc_appcall.script_hash_addr)
+            VMOp.CALL_E, py_token=pytoken, data=appcall_data)
 
         return vmtoken
