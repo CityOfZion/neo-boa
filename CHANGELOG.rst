@@ -3,6 +3,11 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
+[0.5.3] 2018-09-28
+-----------------------
+- ``module.to_s()`` method now returns a string instead of printing it
+- Update to allow ``CALL_FUNCTION`` opcode within a ``GET_ITER`` instruction.
+
 [0.5.2] 2018-09-25
 -----------------------
 - Implement NEP8 call functionality
