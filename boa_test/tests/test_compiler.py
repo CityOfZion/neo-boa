@@ -32,8 +32,6 @@ class TestContract(BoaTest):
 
         default_module = sc.default
 
-        to_s = default_module.to_s()
-
         output = sc.write()
 
         self.assertIsInstance(output, bytes)

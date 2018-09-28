@@ -29,7 +29,8 @@ class TestContract(BoaTest):
 
         output = Compiler.instance().load('%s/boa_test/example/DictTest3.py' % TestContract.dirname).default
         out = output.write()
-        print(output.to_s())
+        string_ouput = output.to_s()
+        self.assertGreater(len(string_ouput), 0)
 
         tx, results, total_ops, engine = TestBuild(out, [], self.GetWallet1(), '', '02')
         self.assertEqual(len(results), 1)

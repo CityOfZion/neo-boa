@@ -10,7 +10,8 @@ class TestContract(BoaFixtureTest):
 
         output = Compiler.instance().load('%s/boa_test/example/blockchain/AccountTest.py' % TestContract.dirname).default
         out = output.write()
-        print(output.to_s())
+        string_ouput = output.to_s()
+        self.assertGreater(len(string_ouput), 0)
 
         account = self.wallet_1_script_hash.Data
 

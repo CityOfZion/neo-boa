@@ -61,7 +61,7 @@ class Expression(object):
     def _check_load_attr(self):
         replaceable_attr_calls = ['append', 'remove', 'reverse',
                                   'keys', 'values', 'has_key', 'IterKey',
-                                  'IterValue', 'IterNext', 'next',]
+                                  'IterValue', 'IterNext', 'next', ]
         needs_call_func = []
 
         for index, instr in enumerate(self.updated_blocklist):
