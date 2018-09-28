@@ -59,7 +59,9 @@ class Expression(object):
             self._remove_instructions(to_remove)
 
     def _check_load_attr(self):
-        replaceable_attr_calls = ['append', 'remove', 'reverse', 'keys', 'values', 'has_key', 'IterKey', 'IterValue', 'IterNext', 'next', ]
+        replaceable_attr_calls = ['append', 'remove', 'reverse',
+                                  'keys', 'values', 'has_key', 'IterKey',
+                                  'IterValue', 'IterNext', 'next',]
         needs_call_func = []
 
         for index, instr in enumerate(self.updated_blocklist):
@@ -198,8 +200,8 @@ class Expression(object):
             iterable = self.block[1].arg
             iterable_name = self.block[-1].arg
             ln = self.block[0].lineno
-
-            if iterable in ['range', 'keys', 'values'] or self.block[2].opcode in [pyop.LOAD_ATTR, pyop.LOAD_METHOD]:
+#            print("block 2 opcode %s " % self.block[2].opcode)
+            if iterable in ['range', 'keys', 'values'] or self.block[2].opcode in [pyop.LOAD_ATTR, pyop.LOAD_METHOD, pyop.CALL_FUNCTION]:
 
                 dynamic_iterable_name = 'dynamic_iterable_%s' % counter
 
