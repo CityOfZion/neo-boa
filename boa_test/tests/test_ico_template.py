@@ -160,7 +160,8 @@ class TestContract(BoaFixtureTest):
 
         output = Compiler.instance().load('%s/boa_test/example/demo/ICO_Template.py' % TestContract.dirname).default
         out = output.write()
-        print(output.to_s())
+        string_ouput = output.to_s()
+        self.assertGreater(len(string_ouput), 0)
         # now transfer tokens to wallet 2
 
         TestContract.dispatched_events = []

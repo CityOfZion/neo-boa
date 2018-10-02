@@ -287,7 +287,7 @@ class Module(object):
         >>> from boa.compiler import Compiler
         >>> module = Compiler.load('./boa/tests/src/LambdaTest.py').default
         >>> module.write()
-        >>> module.to_s()
+        >>> print(module.to_s())
         12            3   LOAD_CONST          9                [data]
                       4   STORE_FAST          j                [data]
         22            11  LOAD_FAST           j                [data]
@@ -353,7 +353,7 @@ class Module(object):
 
                 arg = "{:<50}".format(pt.arg_str)
                 data = "[data] {:<20}".format(ds)
-                print("%s%s%s%s%s%s" % (lno, from_label, addr, op, arg, data))
+                return "%s%s%s%s%s%s" % (lno, from_label, addr, op, arg, data)
 
             pstart = False
 
