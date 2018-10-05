@@ -22,11 +22,11 @@ def handle_nep51(ctx, operation, args):
         return TOKEN_SYMBOL
 
     elif operation == 'totalSupply':
-        return Get(ctx, TOKEN_CIRC_KEY)
+        return TOKEN_TOTAL_SUPPLY
 
     elif operation == 'balanceOf':
         if len(args) == 1:
-            return Get(ctx, args[0])
+            return do_balance_of(ctx, args[0])
 
     elif operation == 'transfer':
         if len(args) == 3:
@@ -47,9 +47,19 @@ def handle_nep51(ctx, operation, args):
     return False
 
 
+def do_balance_of(ctx, account):
+    if len(account) != 20:
+        return 0
+
+    return Get(ctx, account)
+
+
 def do_transfer(ctx, t_from, t_to, amount):
 
     if amount <= 0:
+        return False
+
+    if len(t_from) != 20:
         return False
 
     if len(t_to) != 20:
@@ -94,10 +104,13 @@ def do_transfer_from(ctx, t_from, t_to, amount):
     if amount <= 0:
         return False
 
-    available_key = concat(t_from, t_to)
-
-    if len(available_key) != 40:
+    if len(t_from) != 20:
         return False
+
+    if len(t_to) != 20:
+        return False
+
+    available_key = concat(t_from, t_to)
 
     available_to_to_addr = Get(ctx, available_key)
 
@@ -138,6 +151,12 @@ def do_transfer_from(ctx, t_from, t_to, amount):
 
 def do_approve(ctx, t_owner, t_spender, amount):
 
+    if len(t_owner) != 20:
+        return False
+
+    if len(t_spender) != 20:
+        return False
+
     if not CheckWitness(t_owner):
         return False
 
@@ -163,5 +182,11 @@ def do_approve(ctx, t_owner, t_spender, amount):
 
 
 def do_allowance(ctx, t_owner, t_spender):
+
+    if len(t_owner) != 20:
+        return False
+
+    if len(t_spender) != 20:
+        return False
 
     return Get(ctx, concat(t_owner, t_spender))

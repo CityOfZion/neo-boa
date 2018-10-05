@@ -19,6 +19,8 @@ from boa.interop.Neo.Storage import *
 ctx = GetContext()
 NEP5_METHODS = ['name', 'symbol', 'decimals', 'totalSupply', 'balanceOf', 'transfer', 'transferFrom', 'approve', 'allowance']
 
+OnTransfer = RegisterAction('transfer', 'addr_from', 'addr_to', 'amount')
+
 
 def Main(operation, args):
     """
@@ -114,6 +116,8 @@ def deploy():
         # do deploy logic
         Put(ctx, 'initialized', 1)
         Put(ctx, TOKEN_OWNER, TOKEN_INITIAL_AMOUNT)
+        # dispatch transfer event for minting
+        OnTransfer(None, TOKEN_OWNER, TOKEN_INITIAL_AMOUNT)
         return add_to_circulation(ctx, TOKEN_INITIAL_AMOUNT)
 
     return False
