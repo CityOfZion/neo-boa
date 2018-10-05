@@ -70,7 +70,7 @@ class TestContract(BoaFixtureTest):
 
         tx, results, total_ops, engine = TestBuild(out, ['totalSupply', '[]'], self.GetWallet1(), '0705', '05')
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].GetBigInteger(), 0)
+        self.assertEqual(results[0].GetBigInteger(), TOKEN_TOTAL_SUPPLY)
 
         tx, results, total_ops, engine = TestBuild(out, ['nonexistentmethod', '[]'], self.GetWallet1(), '0705', '05')
         self.assertEqual(len(results), 1)
@@ -273,7 +273,7 @@ class TestContract(BoaFixtureTest):
         self.assertEqual(results[0].GetBigInteger(), 10 * TOKENS_PER_NEO)
 
         # now the total circulation should be bigger
-        tx, results, total_ops, engine = TestBuild(out, ['totalSupply', '[]'], self.GetWallet1(), '0705', '05')
+        tx, results, total_ops, engine = TestBuild(out, ['circulation', '[]'], self.GetWallet1(), '0705', '05')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBigInteger(), (10 * TOKENS_PER_NEO) + TOKEN_INITIAL_AMOUNT)
 
