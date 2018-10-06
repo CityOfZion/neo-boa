@@ -15,6 +15,7 @@ from boa_test.example.demo.nex.nep5 import *
 from boa.interop.Neo.Runtime import GetTrigger, CheckWitness
 from boa.interop.Neo.TriggerType import Application, Verification
 from boa.interop.Neo.Storage import *
+from boa.interop.Neo.Action import RegisterAction
 
 ctx = GetContext()
 NEP5_METHODS = ['name', 'symbol', 'decimals', 'totalSupply', 'balanceOf', 'transfer', 'transferFrom', 'approve', 'allowance']
