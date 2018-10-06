@@ -8,7 +8,8 @@ from neo.Settings import settings
 from neo.Prompt.Utils import parse_param
 from neo.Core.FunctionCode import FunctionCode
 from neocore.Fixed8 import Fixed8
-from boa_test.example.demo.nex.token import *
+from boa_test.example.demo.token.crowdsale import *
+from boa_test.example.demo.token.nep5 import *
 
 import shutil
 import os

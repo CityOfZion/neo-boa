@@ -1,5 +1,5 @@
 """
-NEX ICO Template
+NEP5 Standard
 ===================================
 
 Author: Thomas Saunders
@@ -8,17 +8,16 @@ Email: tom@neonexchange.org
 Date: Dec 11 2017
 
 """
-from boa_test.example.demo.nex.txio import get_asset_attachments
-from boa_test.example.demo.nex.token import *
-from boa_test.example.demo.nex.crowdsale import *
-from boa_test.example.demo.nex.nep5 import *
+from boa_test.example.demo.token.txio import get_asset_attachments
+from boa_test.example.demo.token.crowdsale import get_circulation, perform_exchange, kyc_register, \
+    kyc_status, crowdsale_available_amount, add_to_circulation, TOKEN_INITIAL_AMOUNT, TOKEN_OWNER
+from boa_test.example.demo.token.nep5 import NEP5_METHODS, handle_nep51
 from boa.interop.Neo.Runtime import GetTrigger, CheckWitness
 from boa.interop.Neo.TriggerType import Application, Verification
-from boa.interop.Neo.Storage import *
+from boa.interop.Neo.Storage import GetContext, Get, Put
 from boa.interop.Neo.Action import RegisterAction
 
 ctx = GetContext()
-NEP5_METHODS = ['name', 'symbol', 'decimals', 'totalSupply', 'balanceOf', 'transfer', 'transferFrom', 'approve', 'allowance']
 
 OnTransfer = RegisterAction('transfer', 'addr_from', 'addr_to', 'amount')
 
