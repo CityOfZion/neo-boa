@@ -1,10 +1,21 @@
-from boa.interop.Neo.Runtime import CheckWitness, Notify
+from boa.interop.Neo.Runtime import CheckWitness
 from boa.interop.Neo.Action import RegisterAction
-from boa.interop.Neo.Storage import *
+from boa.interop.Neo.Storage import Get, Put, Delete
 from boa.builtins import concat
 
-from boa_test.example.demo.nex.token import *
+# Name of the Token
+TOKEN_NAME = 'NEP5 Standard'
 
+# Symbol of the Token
+TOKEN_SYMBOL = 'NEP5'
+
+# Number of decimal places
+TOKEN_DECIMALS = 8
+
+# Total Supply of tokens in the system
+TOKEN_TOTAL_SUPPLY = 10000000 * 100000000  # 10m total supply * 10^8 ( decimals)
+
+NEP5_METHODS = ['name', 'symbol', 'decimals', 'totalSupply', 'balanceOf', 'transfer', 'transferFrom', 'approve', 'allowance']
 
 OnTransfer = RegisterAction('transfer', 'addr_from', 'addr_to', 'amount')
 OnApprove = RegisterAction('approve', 'addr_from', 'addr_to', 'amount')
@@ -26,28 +37,59 @@ def handle_nep51(ctx, operation, args):
 
     elif operation == 'balanceOf':
         if len(args) == 1:
-            return do_balance_of(ctx, args[0])
+            account = args[0]
+            return do_balance_of(ctx, account)
 
     elif operation == 'transfer':
         if len(args) == 3:
-            return do_transfer(ctx, args[0], args[1], args[2])
+            t_from = args[0]
+            t_to = args[1]
+            t_amount = args[2]
+            return do_transfer(ctx, t_from, t_to, t_amount)
+        else:
+            return False
 
     elif operation == 'transferFrom':
         if len(args) == 3:
-            return do_transfer_from(ctx, args[0], args[1], args[2])
+            t_from = args[0]
+            t_to = args[1]
+            t_amount = args[2]
+            return do_transfer_from(ctx, t_from, t_to, t_amount)
+        else:
+            return False
 
     elif operation == 'approve':
         if len(args) == 3:
-            return do_approve(ctx, args[0], args[1], args[2])
+            t_owner = args[0]
+            t_spender = args[1]
+            t_amount = args[2]
+            return do_approve(ctx, t_owner, t_spender, t_amount)
+        else:
+            return False
 
     elif operation == 'allowance':
         if len(args) == 2:
-            return do_allowance(ctx, args[0], args[1])
+            t_owner = args[0]
+            t_spender = args[1]
+            return do_allowance(ctx, t_owner, t_spender)
+        else:
+            return False
 
     return False
 
 
 def do_balance_of(ctx, account):
+    """
+    Method to return the current balance of an address
+
+    :param account: the account address to retrieve the balance for
+    :type account: bytearray
+
+    :return: the current balance of an address
+    :rtype: int
+
+    """
+
     if len(account) != 20:
         return 0
 
@@ -55,6 +97,20 @@ def do_balance_of(ctx, account):
 
 
 def do_transfer(ctx, t_from, t_to, amount):
+    """
+    Method to transfer NEP5 tokens of a specified amount from one account to another
+
+    :param t_from: the address to transfer from
+    :type t_from: bytearray
+    :param t_to: the address to transfer to
+    :type t_to: bytearray
+    :param amount: the amount of NEP5 tokens to transfer
+    :type amount: int
+
+    :return: whether the transfer was successful
+    :rtype: bool
+
+    """
 
     if amount <= 0:
         return False
@@ -100,6 +156,20 @@ def do_transfer(ctx, t_from, t_to, amount):
 
 
 def do_transfer_from(ctx, t_from, t_to, amount):
+    """
+    Method to transfer NEP5 tokens of a specified amount from one account to another
+
+    :param t_from: the address to transfer from
+    :type t_from: bytearray
+    :param t_to: the address to transfer to
+    :type t_to: bytearray
+    :param amount: the amount of NEP5 tokens to transfer
+    :type amount: int
+
+    :return: whether the transfer was successful
+    :rtype: bool
+
+    """
 
     if amount <= 0:
         return False
@@ -150,6 +220,22 @@ def do_transfer_from(ctx, t_from, t_to, amount):
 
 
 def do_approve(ctx, t_owner, t_spender, amount):
+    """
+
+    Method by which the owner of an address can approve another address
+    ( the spender ) to spend an amount
+
+    :param t_owner: Owner of tokens
+    :type t_owner: bytearray
+    :param t_spender: Requestor of tokens
+    :type t_spender: bytearray
+    :param amount: Amount requested to be spent by Requestor on behalf of owner
+    :type amount: bytearray
+
+    :return: success of the operation
+    :rtype: bool
+
+    """
 
     if len(t_owner) != 20:
         return False
@@ -182,6 +268,19 @@ def do_approve(ctx, t_owner, t_spender, amount):
 
 
 def do_allowance(ctx, t_owner, t_spender):
+    """
+    Gets the amount of tokens that a spender is allowed to spend
+    from the owners' account.
+
+    :param t_owner: Owner of tokens
+    :type t_owner: bytearray
+    :param t_spender: Requestor of tokens
+    :type t_spender: bytearray
+
+    :return: Amount allowed to be spent by Requestor on behalf of owner
+    :rtype: int
+
+    """
 
     if len(t_owner) != 20:
         return False

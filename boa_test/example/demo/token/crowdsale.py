@@ -3,13 +3,53 @@ from boa.interop.Neo.Runtime import CheckWitness
 from boa.interop.Neo.Action import RegisterAction
 from boa.interop.Neo.Storage import Get, Put
 from boa.builtins import concat
-from boa_test.example.demo.nex.token import *
-from boa_test.example.demo.nex.txio import get_asset_attachments
+from token.constants import TOKEN_CIRC_KEY, KYC_KEY, TOKEN_OWNER, \
+    TOKENS_PER_NEO, BLOCK_SALE_START, LIMITED_ROUND_END, \
+    MAX_EXCHANGE_LIMITED_ROUND, LIMITED_ROUND_KEY
+from token.nep5 import TOKEN_TOTAL_SUPPLY
+from token.txio import get_asset_attachments
 
 # OnInvalidKYCAddress = RegisterAction('invalid_registration', 'address')
 OnKYCRegister = RegisterAction('kyc_registration', 'address')
 OnTransfer = RegisterAction('transfer', 'addr_from', 'addr_to', 'amount')
 OnRefund = RegisterAction('refund', 'addr_to', 'amount')
+
+
+def crowdsale_available_amount(ctx):
+    """
+
+    :return: int The amount of tokens left for sale in the crowdsale
+    """
+
+    in_circ = Get(ctx, TOKEN_CIRC_KEY)
+
+    available = TOKEN_TOTAL_SUPPLY - in_circ
+
+    return available
+
+
+def add_to_circulation(ctx, amount):
+    """
+    Adds an amount of token to circlulation
+
+    :param amount: int the amount to add to circulation
+    """
+
+    current_supply = Get(ctx, TOKEN_CIRC_KEY)
+
+    current_supply += amount
+    Put(ctx, TOKEN_CIRC_KEY, current_supply)
+    return True
+
+
+def get_circulation(ctx):
+    """
+    Get the total amount of tokens in circulation
+
+    :return:
+        int: Total amount in circulation
+    """
+    return Get(ctx, TOKEN_CIRC_KEY)
 
 
 def kyc_register(ctx, args):
