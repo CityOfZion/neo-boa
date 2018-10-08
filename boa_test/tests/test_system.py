@@ -17,7 +17,6 @@ class TestContract(BoaFixtureTest):
 
         tx, results, total_ops, engine = TestBuild(out, ['calling_sh'], self.GetWallet1(), '07', '05')
         self.assertEqual(len(results), 1)
-        print("results: %s " % results[0].GetByteArray())
         self.assertEqual(results[0].GetByteArray(), bytearray(b'\xb6\xa9\xdf\xfe\x85o\xdb<\x04\x7f\xacW\xc6\xc1)\xdb\xc5|\x12\xaa'))
 
         tx, results, total_ops, engine = TestBuild(out, ['entry_sh'], self.GetWallet1(), '07', '05')
