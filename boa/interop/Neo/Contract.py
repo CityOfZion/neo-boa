@@ -18,12 +18,12 @@ class Contract:
         return GetStorageContext(self)
 
     @property
-    def IsPayable(self):
+    def Payable(self):
         """
 
         :return:
         """
-        return GetIsPayable(self)
+        return IsPayable(self)
 
 
 def GetScript(contract):
@@ -42,7 +42,7 @@ def GetStorageContext(contract):
     pass
 
 
-def GetIsPayable(contract):
+def IsPayable(contract):
     """
 
     :param contract:

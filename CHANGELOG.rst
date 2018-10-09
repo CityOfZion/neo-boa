@@ -7,6 +7,7 @@ All notable changes to this project following the ``v0.4.1`` release are noted i
 -----------------------
 - Added a test for checking if a contract is payable
 - Updated documentation
+- Add support for IsPayable interop methods in NEO. Changed how to access the payable property: `self.IsPayable` to `self.Payable`.
 
 [0.5.3] 2018-09-28
 -----------------------

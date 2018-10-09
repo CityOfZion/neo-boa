@@ -21,7 +21,7 @@ def Main(operation, ctr):
         Destroy()
         return True
 
-    elif operation == 'is_payable':
-        return contract.IsPayable
+    elif operation == 'payable':
+        return contract.Payable
 
     return 'unknown operation'
