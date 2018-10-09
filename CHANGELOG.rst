@@ -3,6 +3,11 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
+[0.5.4] In Progress
+-----------------------
+- Added a test for checking if a contract is payable
+- Updated documentation
+
 [0.5.3] 2018-09-28
 -----------------------
 - ``module.to_s()`` method now returns a string instead of printing it
@@ -15,6 +20,7 @@ All notable changes to this project following the ``v0.4.1`` release are noted i
 [0.5.1] 2018-09-24
 -----------------------
 - Use reduced sized fixtures for quicker tests
+- Added IsPayable check for contracts
 
 [0.5.0] 2018-08-26
 -----------------------
