@@ -5,9 +5,9 @@ from boa.interop.Neo.Contract import *
 
 
 def Main(operation, ctr):
-    
+
     contract = GetContract(ctr)
-    
+
     if operation == 'get_contract':
         return contract
 

@@ -103,7 +103,7 @@ class Expression(object):
                         for n in module_methods:
                             if attr_name == n.full_name.split('.')[-1]:
                                 matches.append(n)
-                    
+
                     # Special case for IsPayable
                     if len(matches) == 0:
                         attr_name = f'Is{instr.arg}'
