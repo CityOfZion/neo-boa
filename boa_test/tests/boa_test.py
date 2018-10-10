@@ -61,6 +61,24 @@ class BoaFixtureTest(WalletFixtureTestCase):
 
     _wallet3 = None
 
+
+    @classmethod
+    def wallet_1_dest(cls):
+        return os.path.join(settings.DATA_DIR_PATH, 'wallet1.wallet')
+
+    @classmethod
+    def wallet_2_dest(cls):
+        return os.path.join(settings.DATA_DIR_PATH, 'wallet2.wallet')
+
+    @classmethod
+    def wallet_3_dest(cls):
+        return os.path.join(settings.DATA_DIR_PATH, 'wallet3.wallet')
+
+    @classmethod
+    def new_wallet_dest(cls):
+        return os.path.join(settings.DATA_DIR_PATH, 'newwallet.wallet')
+
+
     @classmethod
     def setUpClass(cls):
         super(BoaFixtureTest, cls).setUpClass()
