@@ -6,7 +6,7 @@ All notable changes to this project following the ``v0.4.1`` release are noted i
 [0.5.4] In Progress
 -------------------
 - Add ``Neo.Transaction.GetWitnesses``, ``Neo.Witness.GetInvocationScript``, ``Neo.Witness.GetVerificationScript``
-
+- Fix ``IsPayable``
 
 [0.5.3] 2018-09-28
 ------------------
