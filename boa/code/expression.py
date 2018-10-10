@@ -200,7 +200,7 @@ class Expression(object):
             iterable = self.block[1].arg
             iterable_name = self.block[-1].arg
             ln = self.block[0].lineno
-#            print("block 2 opcode %s " % self.block[2].opcode)
+
             if iterable in ['range', 'keys', 'values'] or self.block[2].opcode in [pyop.LOAD_ATTR, pyop.LOAD_METHOD, pyop.CALL_FUNCTION]:
 
                 dynamic_iterable_name = 'dynamic_iterable_%s' % counter
@@ -212,8 +212,12 @@ class Expression(object):
                 load_range_ops.append(Instr("STORE_FAST", dynamic_iterable_name, lineno=ln))
 
                 loop_exit = self.block[0].arg
-                loop_done = self.block[get_iter_index + 2].arg
+                loop_done = self.block[get_iter_index + 2]
                 loop_start = self.block[get_iter_index + 1]
+
+                if loop_done.opcode == pyop.EXTENDED_ARG:
+                    loop_done = self.block[get_iter_index + 3]
+                loop_done = loop_done.arg
 
                 instructions = [
                     #                Instr("SETUP_LOOP",loop_exit,lineno=ln),

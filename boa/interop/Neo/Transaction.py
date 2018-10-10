@@ -53,6 +53,10 @@ class Transaction:
     def UnspentCoins(self):
         return GetUnspentCoins(self)
 
+    @property
+    def Witnesses(self):
+        return GetWitnesses(self)
+
 
 def GetTXHash(transaction):
     """
@@ -103,6 +107,18 @@ def GetReferences(transaction):
 
 
 def GetUnspentCoins(transaction):
+    """
+
+    Args:
+        transaction:
+
+    Returns:
+
+    """
+    pass
+
+
+def GetWitnesses(transaction):
     """
 
     Args:

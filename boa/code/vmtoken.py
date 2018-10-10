@@ -594,6 +594,8 @@ class VMTokenizer(object):
             op = op.replace('Enumerator.Enumerator', 'Enumerator.')
             if op == 'Neo.Enumerator':
                 op = 'Neo.Enumerator.Create'
+        elif 'GetIsPayable' in op:
+            op = op.replace('GetIsPayable', 'IsPayable')
 
         syscall_name = op.replace(NEO_SC_FRAMEWORK, '').encode('utf-8')
         length = len(syscall_name)
