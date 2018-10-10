@@ -6,17 +6,22 @@ from boa.interop.Neo.Contract import *
 
 def Main(operation, ctr):
 
+    contract = GetContract(ctr)
+
     if operation == 'get_contract':
-        return GetContract(ctr)
+        return contract
 
     elif operation == 'get_script':
-        return GetContract(ctr).Script
+        return contract.Script
 
     elif operation == 'get_storage_context':
-        return GetContract(ctr).StorageContext
+        return contract.StorageContext
 
     elif operation == 'destroy':
         Destroy()
         return True
+
+    elif operation == 'payable':
+        return contract.Payable
 
     return 'unknown operation'

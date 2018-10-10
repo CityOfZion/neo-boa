@@ -47,3 +47,7 @@ class TestContract(BoaFixtureTest):
         tx, results, total_ops, engine = TestBuild(out, ['destroy', contract_hash], self.GetWallet1(), '070505', '05')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBigInteger(), 1)
+
+        tx, results, total_ops, engine = TestBuild(out, ['payable', contract_hash], self.GetWallet1(), '070505', '05')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetBoolean(), False)

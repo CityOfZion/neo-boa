@@ -61,7 +61,8 @@ class Expression(object):
     def _check_load_attr(self):
         replaceable_attr_calls = ['append', 'remove', 'reverse',
                                   'keys', 'values', 'has_key', 'IterKey',
-                                  'IterValue', 'IterNext', 'next', ]
+                                  'IterValue', 'IterNext', 'next', 'IsPayable', 
+                                  ]
         needs_call_func = []
 
         for index, instr in enumerate(self.updated_blocklist):
@@ -101,6 +102,13 @@ class Expression(object):
                         attr_name = 'Iter%s' % instr.arg
                         for n in module_methods:
                             if attr_name == n.full_name.split('.')[-1]:
+                                matches.append(n)
+
+                    # Special case for IsPayable
+                    if len(matches) == 0:
+                        attr_name = f'Is{instr.arg}'
+                        for n in module_methods:
+                            if attr_name in n.full_name:
                                 matches.append(n)
 
                     if len(matches) == 0:

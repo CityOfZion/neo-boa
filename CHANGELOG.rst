@@ -6,7 +6,9 @@ All notable changes to this project following the ``v0.4.1`` release are noted i
 [0.5.4] In Progress
 -------------------
 - Add ``Neo.Transaction.GetWitnesses``, ``Neo.Witness.GetInvocationScript``, ``Neo.Witness.GetVerificationScript``
-
+- Added a test for checking if a contract is payable
+- Updated documentation
+- Add support for IsPayable interop methods in NEO. Changed how to access the payable property: `self.IsPayable` to `self.Payable`.
 
 [0.5.3] 2018-09-28
 ------------------
@@ -20,6 +22,7 @@ All notable changes to this project following the ``v0.4.1`` release are noted i
 [0.5.1] 2018-09-24
 ------------------
 - Use reduced sized fixtures for quicker tests
+- Added IsPayable check for contracts
 
 [0.5.0] 2018-08-26
 ------------------
