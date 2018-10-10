@@ -3,10 +3,11 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
-[0.5.4] In Progress
--------------------
+[0.5.4] 2018-10-10
+------------------
 - Add ``Neo.Transaction.GetWitnesses``, ``Neo.Witness.GetInvocationScript``, ``Neo.Witness.GetVerificationScript``
 - Fix ``IsPayable``
+- Fix CI test wallet build issue
 
 [0.5.3] 2018-09-28
 ------------------
