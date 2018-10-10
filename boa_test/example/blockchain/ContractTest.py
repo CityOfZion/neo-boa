@@ -15,6 +15,9 @@ def Main(operation, ctr):
     elif operation == 'get_storage_context':
         return GetContract(ctr).StorageContext
 
+    elif operation == 'get_payable':
+        return GetContract(ctr).IsPayable
+
     elif operation == 'destroy':
         Destroy()
         return True
