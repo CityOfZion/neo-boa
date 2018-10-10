@@ -361,8 +361,10 @@ class Module(object):
         """
         this method is used to generate a debug map for NEO debugger
         """
+        # fixes a ResourceWarning error about this file not closing
+        with open(output_path, 'rb') as file:
+            file_hash = hashlib.md5(file.read()).hexdigest()
 
-        file_hash = hashlib.md5(open(output_path, 'rb').read()).hexdigest()
         avm_name = os.path.splitext(os.path.basename(output_path))[0]
 
         json_data = self.generate_debug_json(avm_name, file_hash)
