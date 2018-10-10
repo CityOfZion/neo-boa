@@ -28,7 +28,7 @@ class BoaTest(WalletFixtureTestCase):
 
     @classmethod
     def wallet_1_path(cls):
-        return os.path.join(cls.dirname,'fixtures/neo-test1-w.wallet')
+        return os.path.join(cls.dirname, 'fixtures/neo-test1-w.wallet')
 
     @classmethod
     def setUpClass(cls):
@@ -69,7 +69,6 @@ class BoaFixtureTest(WalletFixtureTestCase):
 
     _wallet3 = None
 
-
     @classmethod
     def wallet_1_dest(cls):
         return os.path.join(settings.DATA_DIR_PATH, 'wallet1.wallet')
@@ -88,16 +87,15 @@ class BoaFixtureTest(WalletFixtureTestCase):
 
     @classmethod
     def wallet_1_path(cls):
-        return os.path.join(cls.dirname,'fixtures/neo-test1-w.wallet')
+        return os.path.join(cls.dirname, 'fixtures/neo-test1-w.wallet')
 
     @classmethod
     def wallet_2_path(cls):
-        return os.path.join(cls.dirname,'fixtures/neo-test2-w.wallet')
+        return os.path.join(cls.dirname, 'fixtures/neo-test2-w.wallet')
 
     @classmethod
     def wallet_3_path(cls):
-        return os.path.join(cls.dirname,'fixtures/neo-test3-w.wallet')
-
+        return os.path.join(cls.dirname, 'fixtures/neo-test3-w.wallet')
 
     @classmethod
     def setUpClass(cls):
