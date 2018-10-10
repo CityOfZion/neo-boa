@@ -4,6 +4,7 @@ from neo.Core.TX.Transaction import Transaction, TransactionOutput, TransactionI
 from neo.Core.TX.TransactionAttribute import TransactionAttribute
 from neo.Core.CoinReference import CoinReference
 from neo.Prompt.Commands.BuildNRun import TestBuild
+from neo.VM.InteropService import Map
 
 NEO = bytearray(b'\x9b|\xff\xda\xa6t\xbe\xae\x0f\x93\x0e\xbe`\x85\xaf\x90\x93\xe5\xfeV\xb3J\\"\x0c\xcd\xcfn\xfc3o\xc5')
 GAS = bytearray(b'\xe7-(iy\xeel\xb1\xb7\xe6]\xfd\xdf\xb2\xe3\x84\x10\x0b\x8d\x14\x8ewX\xdeB\xe4\x16\x8bqy,`')
@@ -149,3 +150,20 @@ class TestContract(BoaFixtureTest):
         self.assertEqual(len(res), 2)
         self.assertEqual(res[0].GetByteArray(), bytearray(b'\xc4\x1e\xe4\t\x1f\x8d\xc0=\xb6\xd9\x0203M\x07\xbek\xb0\xec\xe3\x99\xfa\xe5{\x7f?;q(\xcafS'))
         self.assertEqual(res[1].GetBigInteger(), 1)
+
+    def test_TransactionWitnesses(self):
+
+        output = Compiler.instance().load('%s/boa_test/example/blockchain/TransactionTest.py' % TestContract.dirname).default
+        out = output.write()
+
+        txid = bytearray(b'&\xb4^\x06\xe6/\xbc\xe6|\x12\xacY![JJ\xeec\x14"\xe7\x8c*\xf3j\x85H_\x10\xc1\xe3\x96')
+
+        tx, results, total_ops, engine = TestBuild(out, ['get_witnesses', txid], self.GetWallet1(), '07', '05')
+        self.assertEqual(len(results), 1)
+        self.assertIsInstance(results[0].GetArray()[0], Map)
+
+        tx, results, total_ops, engine = TestBuild(out, ['get_witness_scripthashes', txid], self.GetWallet1(), '07', '05')
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].GetArray()[0].GetByteArray(), self.wallet_1_script_hash.Data)
+#        import pdb
+#        pdb.set_trace()
