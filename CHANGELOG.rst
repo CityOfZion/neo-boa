@@ -3,6 +3,11 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
+[0.5.5] 2018-10-17
+------------------
+- Update shift operation test
+
+
 [0.5.4] 2018-10-10
 ------------------
 - Add ``Neo.Transaction.GetWitnesses``, ``Neo.Witness.GetInvocationScript``, ``Neo.Witness.GetVerificationScript``
