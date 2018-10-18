@@ -28,7 +28,8 @@ class BoaTest(WalletFixtureTestCase):
 
     @classmethod
     def wallet_1_path(cls):
-        return os.path.join(cls.dirname, 'fixtures/neo-test1-w.wallet')
+        return cls.root_folder + '/fixtures/neo-test1-w.wallet'
+        #return os.path.join(cls.dirname, 'fixtures/neo-test1-w.wallet')
 
     @classmethod
     def setUpClass(cls):
