@@ -25,6 +25,7 @@ install:
 
 # command to run tests
 script:
+  - pip freeze
   - coverage run -m unittest discover boa_test
   - pycodestyle boa
   - pycodestyle boa_test
