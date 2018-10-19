@@ -46,10 +46,10 @@ class TestContract(BoaTest):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBigInteger(), 64)
 
-        with self.assertRaises(ValueError) as context:
-            tx, results, total_ops, engine = TestBuild(out, ['<<', 16, -2], self.GetWallet1(), '', '07')
-        self.assertTrue("negative shift count" in str(context.exception))
-
+        #with self.assertRaises(ValueError) as context:
+        tx, results, total_ops, engine = TestBuild(out, ['<<', 16, -2], self.GetWallet1(), '', '07')
+        #self.assertTrue("negative shift count" in str(context.exception))
+        self.assertEqual(len(results),0)
         tx, results, total_ops, engine = TestBuild(out, ['<<', 4, 5], self.GetWallet1(), '', '07')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBigInteger(), 128)
