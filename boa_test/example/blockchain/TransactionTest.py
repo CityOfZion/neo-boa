@@ -70,7 +70,6 @@ def Main(operation, txid):
         witnesses = tx.Witnesses
         for item in witnesses:
             witness = {
-                'invocation': item.InvocationScript,
                 'verification': item.VerificationScript
             }
             res.append(witness)
@@ -86,22 +85,6 @@ def Main(operation, txid):
             res.append(script_hash)
         return res
 
-        # @TODO
-    # For some reason, if theres a bunch of iterations
-    # in a row, then the last one fails?
-#    elif operation == 'get_unspent_details':
-#        res2 = []
-#        uns = tx.UnspentCoins
-#        for item2 in uns:
-#            subres = []
-#            subres.append(item2.Value)
-#            subres.append(item2.AssetId)
-#            subres.append(item2.ScriptHash)
-#            res2.append(subres)
-#
-#        return res2
-
-        # @TODO
     # name clash with Input.GetHash and Transaction.GetHash
     elif operation == 'get_input_details':
         res = []
