@@ -1,41 +1,7 @@
-"""
-NEP5 Token
-===================================
-
-
-.. moduleauthor:: Thomas Saunders <tom@cityofzion.io>
-
-This file, when compiled to .avm format, would comply with the current NEP5 token standard on the NEO blockchain
-
-Token standard is available in proposal form here:
-`NEP5 Token Standard Proposal <https://github.com/neo-project/proposals/blob/master/nep-5.mediawiki>`_
-
-Compilation can be achieved as such
-
->>> from boa.compiler import Compiler
->>> Compiler.load_and_save('./boa/tests/src/NEP5.py')
-
-Or, from within the neo-python shell
-``build path/to/NEP5.py test 0710 05 True name []``
-
-
-Below is the current implementation in Python
-
-
-"""
-
-from boa.interop.Neo.Runtime import GetTrigger, CheckWitness
+from boa.interop.Neo.Runtime import CheckWitness
 from boa.interop.Neo.Action import RegisterAction
-from boa.interop.Neo.TriggerType import Application, Verification
-from boa.interop.Neo.Storage import GetContext, Get, Put, Delete
+from boa.interop.Neo.Storage import Get, Put, Delete
 from boa.builtins import concat
-
-# -------------------------------------------
-# TOKEN SETTINGS
-# -------------------------------------------
-
-OWNER = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-# Script hash of the contract owner
 
 # Name of the Token
 TOKEN_NAME = 'NEP5 Standard'
@@ -49,103 +15,65 @@ TOKEN_DECIMALS = 8
 # Total Supply of tokens in the system
 TOKEN_TOTAL_SUPPLY = 10000000 * 100000000  # 10m total supply * 10^8 ( decimals)
 
-ctx = GetContext()
-
-# -------------------------------------------
-# Events
-# -------------------------------------------
+NEP5_METHODS = ['name', 'symbol', 'decimals', 'totalSupply', 'balanceOf', 'transfer', 'transferFrom', 'approve', 'allowance']
 
 OnTransfer = RegisterAction('transfer', 'addr_from', 'addr_to', 'amount')
 OnApprove = RegisterAction('approve', 'addr_from', 'addr_to', 'amount')
 
 
-def Main(operation, args):
-    """
-    This is the main entry point for the Smart Contract
+def handle_nep51(ctx, operation, args):
 
-    :param operation: the operation to be performed ( eg `balanceOf`, `transfer`, etc)
-    :type operation: str
-    :param args: a list of arguments ( which may be empty, but not absent )
-    :type args: list
-    :return: indicating the successful execution of the smart contract
-    :rtype: bool
-    """
+    if operation == 'name':
+        return TOKEN_NAME
 
-    # The trigger determines whether this smart contract is being
-    # run in 'verification' mode or 'application'
+    elif operation == 'decimals':
+        return TOKEN_DECIMALS
 
-    trigger = GetTrigger()
+    elif operation == 'symbol':
+        return TOKEN_SYMBOL
 
-    # 'Verification' mode is used when trying to spend assets ( eg NEO, Gas)
-    # on behalf of this contract's address
-    if trigger == Verification():
+    elif operation == 'totalSupply':
+        return TOKEN_TOTAL_SUPPLY
 
-        # if the script that sent this is the owner
-        # we allow the spend
-        is_owner = CheckWitness(OWNER)
+    elif operation == 'balanceOf':
+        if len(args) == 1:
+            account = args[0]
+            return do_balance_of(ctx, account)
 
-        if is_owner:
+    elif operation == 'transfer':
+        if len(args) == 3:
+            t_from = args[0]
+            t_to = args[1]
+            t_amount = args[2]
+            return do_transfer(ctx, t_from, t_to, t_amount)
+        else:
+            return False
 
-            return True
+    elif operation == 'transferFrom':
+        if len(args) == 3:
+            t_from = args[0]
+            t_to = args[1]
+            t_amount = args[2]
+            return do_transfer_from(ctx, t_from, t_to, t_amount)
+        else:
+            return False
 
-        return False
+    elif operation == 'approve':
+        if len(args) == 3:
+            t_owner = args[0]
+            t_spender = args[1]
+            t_amount = args[2]
+            return do_approve(ctx, t_owner, t_spender, t_amount)
+        else:
+            return False
 
-    # 'Application' mode is the main body of the smart contract
-    elif trigger == Application():
-
-        if operation == 'name':
-            return TOKEN_NAME
-
-        elif operation == 'decimals':
-            return TOKEN_DECIMALS
-
-        elif operation == 'symbol':
-            return TOKEN_SYMBOL
-
-        elif operation == 'totalSupply':
-            return TOKEN_TOTAL_SUPPLY
-
-        elif operation == 'balanceOf':
-            if len(args) == 1:
-                account = args[0]
-                return do_balance_of(ctx, account)
-
-        elif operation == 'transfer':
-            if len(args) == 3:
-                t_from = args[0]
-                t_to = args[1]
-                t_amount = args[2]
-                return do_transfer(ctx, t_from, t_to, t_amount)
-            else:
-                return False
-
-        elif operation == 'transferFrom':
-            if len(args) == 3:
-                t_from = args[0]
-                t_to = args[1]
-                t_amount = args[2]
-                return do_transfer_from(ctx, t_from, t_to, t_amount)
-            else:
-                return False
-
-        elif operation == 'approve':
-            if len(args) == 3:
-                t_owner = args[0]
-                t_spender = args[1]
-                t_amount = args[2]
-                return do_approve(ctx, t_owner, t_spender, t_amount)
-            else:
-                return False
-
-        elif operation == 'allowance':
-            if len(args) == 2:
-                t_owner = args[0]
-                t_spender = args[1]
-                return do_allowance(ctx, t_owner, t_spender)
-            else:
-                return False
-
-        return 'unknown operation'
+    elif operation == 'allowance':
+        if len(args) == 2:
+            t_owner = args[0]
+            t_spender = args[1]
+            return do_allowance(ctx, t_owner, t_spender)
+        else:
+            return False
 
     return False
 

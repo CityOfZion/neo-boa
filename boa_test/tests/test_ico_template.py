@@ -8,7 +8,8 @@ from neo.Settings import settings
 from neo.Prompt.Utils import parse_param
 from neo.Core.FunctionCode import FunctionCode
 from neocore.Fixed8 import Fixed8
-from boa_test.example.demo.nex.token import *
+from boa_test.example.demo.token.crowdsale import *
+from boa_test.example.demo.token.nep5 import *
 
 import shutil
 import os
@@ -70,7 +71,7 @@ class TestContract(BoaFixtureTest):
 
         tx, results, total_ops, engine = TestBuild(out, ['totalSupply', '[]'], self.GetWallet1(), '0705', '05')
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].GetBigInteger(), 0)
+        self.assertEqual(results[0].GetBigInteger(), TOKEN_TOTAL_SUPPLY)
 
         tx, results, total_ops, engine = TestBuild(out, ['nonexistentmethod', '[]'], self.GetWallet1(), '0705', '05')
         self.assertEqual(len(results), 1)
@@ -90,8 +91,8 @@ class TestContract(BoaFixtureTest):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBoolean(), False)
 
-        # now total supply should be equal to the initial owner amount
-        tx, results, total_ops, engine = TestBuild(out, ['totalSupply', '[]'], self.GetWallet1(), '0705', '05')
+        # now circulation should be equal to the initial owner amount
+        tx, results, total_ops, engine = TestBuild(out, ['circulation', '[]'], self.GetWallet1(), '0705', '05')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBigInteger(), TOKEN_INITIAL_AMOUNT)
 
@@ -273,7 +274,7 @@ class TestContract(BoaFixtureTest):
         self.assertEqual(results[0].GetBigInteger(), 10 * TOKENS_PER_NEO)
 
         # now the total circulation should be bigger
-        tx, results, total_ops, engine = TestBuild(out, ['totalSupply', '[]'], self.GetWallet1(), '0705', '05')
+        tx, results, total_ops, engine = TestBuild(out, ['circulation', '[]'], self.GetWallet1(), '0705', '05')
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBigInteger(), (10 * TOKENS_PER_NEO) + TOKEN_INITIAL_AMOUNT)
 
