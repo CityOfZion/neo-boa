@@ -314,6 +314,7 @@ class Module(object):
             self.link_methods()
 
         lineno = 0
+        output = []
         pstart = True
 
         for i, (key, value) in enumerate(self.all_vm_tokens.items()):
@@ -324,7 +325,7 @@ class Module(object):
                 from_label = '    '
 
                 if pt.lineno != lineno:
-                    print("\n")
+                    output.append("\n")
                     lineno = pt.lineno
                     do_print_line_no = True
 
@@ -353,9 +354,11 @@ class Module(object):
 
                 arg = "{:<50}".format(pt.arg_str)
                 data = "[data] {:<20}".format(ds)
-                return "%s%s%s%s%s%s" % (lno, from_label, addr, op, arg, data)
+                output.append("%s%s%s%s%s%s" % (lno, from_label, addr, op, arg, data))
 
             pstart = False
+
+        return "\n".join(output)
 
     def export_debug(self, output_path):
         """
