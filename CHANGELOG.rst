@@ -3,6 +3,14 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
+
+[0.5.6] 2018-10-30
+------------------
+- Fix issues with crowdsale demo test
+- Fix issue with ``module.to_s`` method
+- Remove ``Neo.Witness.GetInvocationScript``
+
+
 [0.5.5] 2018-10-17
 ------------------
 - Update shift operation test
