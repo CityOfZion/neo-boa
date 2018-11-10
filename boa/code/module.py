@@ -364,8 +364,10 @@ class Module(object):
         """
         this method is used to generate a debug map for NEO debugger
         """
+        file = open(output_path, 'rb')
+        file_hash = hashlib.md5(file.read()).hexdigest()
+        file.close()
 
-        file_hash = hashlib.md5(open(output_path, 'rb').read()).hexdigest()
         avm_name = os.path.splitext(os.path.basename(output_path))[0]
 
         json_data = self.generate_debug_json(avm_name, file_hash)

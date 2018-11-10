@@ -3,6 +3,10 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
+[0.5.7] In Progress
+-------------------
+- Fix unclosed resource warning
+
 
 [0.5.6] 2018-10-30
 ------------------
