@@ -210,7 +210,7 @@ class TestContract(BoaFixtureTest):
         out = output.write()
 
         # test mint tokens without being kyc verified
-        tx, results, total_ops, engine = TestBuild(out, ['get_attachments', '[]', '--attach-neo=10'], self.GetWallet3(), '0705', '05')
+        tx, results, total_ops, engine = TestBuild(out, ['get_attachments', '[]', '--attach-neo=10'], self.GetWallet3(), '0705', '05', arguments=['--from-addr=AZiE7xfyJALW7KmADWtCJXGGcnduYhGiCX'])
         self.assertEqual(len(results), 1)
         attachments = results[0].GetArray()
         self.assertEqual(len(attachments), 4)
@@ -252,7 +252,7 @@ class TestContract(BoaFixtureTest):
         TestContract.dispatched_events = []
 
         # test mint tokens, this should return true
-        tx, results, total_ops, engine = TestBuild(out, ['mintTokens', '[]', '--attach-neo=10'], self.GetWallet3(), '0705', '05')
+        tx, results, total_ops, engine = TestBuild(out, ['mintTokens', '[]', '--attach-neo=10'], self.GetWallet3(), '0705', '05', arguments=['--from-addr=AZiE7xfyJALW7KmADWtCJXGGcnduYhGiCX'])
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].GetBoolean(), True)
 
