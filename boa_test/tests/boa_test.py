@@ -1,6 +1,6 @@
 from neo.Implementations.Wallets.peewee.UserWallet import UserWallet
 from neo.Settings import settings
-from neocore.UInt160 import UInt160
+from neo.Core.UInt160 import UInt160
 from neo.Wallets.utils import to_aes_key
 import os
 from neo.Utils.WalletFixtureTestCase import WalletFixtureTestCase
