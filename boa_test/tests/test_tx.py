@@ -91,7 +91,7 @@ class TestContract(BoaFixtureTest):
 
         tx, results, total_ops, engine = TestBuild(out, ['get_type', txid], self.GetWallet1(), '07', '05')
         self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].GetByteArray(), bytearray(b'\x80'))
+        self.assertEqual(results[0].GetByteArray(), bytearray(b'\x80\x00'))
 
         tx, results, total_ops, engine = TestBuild(out, ['get_attrs', txid], self.GetWallet1(), '07', '05')
         self.assertEqual(len(results), 1)
