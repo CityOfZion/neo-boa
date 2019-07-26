@@ -205,7 +205,7 @@ def CheckWitnessOrCaller(scripthash, caller):
                           # tokens of a user even with the user signature
                           # (this will break ability of some DEX to list the token)
 
-    return CheckWitness(caller)
+    return CheckWitness(scripthash)
 
 def AssertionError(msg):
     """
