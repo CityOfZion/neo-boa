@@ -3,6 +3,9 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
+[0.6.1-dev] In progress
+-----------------------
+
 [0.6.0] 2019-08-21 
 ------------------
 - Fix unclosed resource warning
