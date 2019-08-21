@@ -181,6 +181,7 @@ def do_transfer(ctx, t_from, t_to, amount, caller):
 
     return True
 
+
 def CheckWitnessOrCaller(scripthash, caller):
     """ 
     Method to check if the transaction is signed by a private key
@@ -201,11 +202,13 @@ def CheckWitnessOrCaller(scripthash, caller):
         if scripthash == caller: 
             return True  # a contract can spend its own funds
         else:
-            return False  # deny third-party contracts from transferring
-                          # tokens of a user even with the user signature
-                          # (this will break ability of some DEX to list the token)
+            # deny third-party contracts from transferring
+            # tokens of a user even with the user signature
+            # (this will break ability of some DEX to list the token)
+            return False
 
     return CheckWitness(scripthash)
+
 
 def AssertionError(msg):
     """
@@ -220,4 +223,3 @@ def AssertionError(msg):
 
     OnError(msg)
     raise Exception(msg)
-
