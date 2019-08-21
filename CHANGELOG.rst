@@ -3,10 +3,10 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
-[0.5.7] In Progress
+[0.6.0] 
 -------------------
 - Fix unclosed resource warning
-
+- Various fixes to work with neo-python >0.9
 
 [0.5.6] 2018-10-30
 ------------------
