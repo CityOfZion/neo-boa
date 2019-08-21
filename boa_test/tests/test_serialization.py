@@ -1,7 +1,7 @@
 from boa_test.tests.boa_test import BoaTest
 from boa.compiler import Compiler
 from neo.VM.InteropService import StackItem, Array, ByteArray
-from neocore.IO.BinaryReader import BinaryReader
+from neo.Core.IO.BinaryReader import BinaryReader
 from neo.IO.MemoryStream import StreamManager
 from neo.Prompt.Commands.BuildNRun import TestBuild
 
