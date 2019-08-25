@@ -1,4 +1,5 @@
 import os
+import tempfile
 from boa.code.module import Module
 
 
@@ -75,6 +76,18 @@ class Compiler(object):
         out_bytes = bytes(self.entry_module.write())
         return out_bytes
 
+    def write_contract(self):
+        """
+        Write the default module to avm bytecode.
+
+        :return: the compiled Python program as a byte string
+        :rtype: string
+        """
+
+        avm = self.entry_module.write()
+        return avm.hex()
+
+
     @staticmethod
     def load_and_save(path, output_path=None, use_nep8=True):
         """
@@ -130,4 +143,25 @@ class Compiler(object):
         compiler.nep8 = use_nep8
         compiler.entry_module = Module(path)
 
+        return compiler
+
+    @staticmethod
+    def load_contract(contract, use_nep8=True):
+        """
+        Call `load_contract` to load a contract as a variable to be compiled to .avm
+
+        :param contract: the raw python code
+        :return: The instance of the compiler
+
+        .. code-block:: python
+
+            from boa.compiler import Compiler
+
+            compiler = Compiler.load_contract("def Main(): ...")
+        """
+
+        temp = tempfile.NamedTemporaryFile()
+        temp.write(str.encode(contract))
+        temp.flush()
+        compiler = Compiler.load(temp.name, use_nep8)
         return compiler
