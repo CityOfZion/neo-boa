@@ -87,7 +87,6 @@ class Compiler(object):
         avm = self.entry_module.write()
         return avm.hex()
 
-
     @staticmethod
     def load_and_save(path, output_path=None, use_nep8=True):
         """
