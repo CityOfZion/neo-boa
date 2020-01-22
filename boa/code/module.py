@@ -371,10 +371,41 @@ class Module(object):
         avm_name = os.path.splitext(os.path.basename(output_path))[0]
 
         json_data = self.generate_debug_json(avm_name, file_hash)
-
         mapfilename = output_path.replace('.avm', '.debug.json')
         with open(mapfilename, 'w+') as out_file:
             out_file.write(json_data)
+
+        json_data = self.generate_avmdbgnfo(avm_name, file_hash)
+        mapfilename = output_path.replace('.avm', '.avmdbgnfo.json')
+        with open(mapfilename, 'w+') as out_file:
+            out_file.write(json_data)
+
+    def generate_avmdbgnfo(self, avm_name, file_hash):
+
+        if self.all_vm_tokens is None:
+            self.link_methods()
+
+        data = {}
+        files = []
+        methods = []
+        events = []
+
+        for m in self.methods:
+            if m.is_interop:
+                continue
+            method = {}
+            method['id'] = m.id.urn
+            method['name'] = "{0},{1}".format(m.module.module_name,m.name)
+
+            methods.append(method)
+
+
+        data['entrypoint'] = self.main.id.urn
+        data['documents'] = files
+        data['methods'] = methods
+        data['events'] = events
+        json_data = json.dumps(data, indent=4)
+        return json_data
 
     def generate_debug_json(self, avm_name, file_hash):
 
