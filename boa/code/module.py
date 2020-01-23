@@ -399,7 +399,7 @@ class Module(object):
             (_, start) = next(x for x in m.vm_tokens.items())
             (_, end) = next(x for x in reversed(m.vm_tokens.items()))
             method['range'] = '{}-{}'.format(start.addr, end.addr)
-            method['params'] = m.args
+            method['params'] = ["{},".format(a) for a in m.args]
             method['return'] = ""
             method['variables'] =[]
 
@@ -417,7 +417,7 @@ class Module(object):
                     lineno = pt.method_lineno + pt.lineno
 
                     if last_lineno != lineno:                    
-                        tokens.append("{}[{}]{}".format(value.addr, fileIndex, lineno))
+                        tokens.append("{}[{}]{}:0-{}:0".format(value.addr, fileIndex, lineno, lineno))
                         last_lineno = lineno
 
             methods.append(method)
