@@ -370,13 +370,13 @@ class Module(object):
 
         avm_name = os.path.splitext(os.path.basename(output_path))[0]
 
-        json_data = self.generate_debug_json(avm_name, file_hash)
-        mapfilename = output_path.replace('.avm', '.debug.json')
-        with open(mapfilename, 'w+') as out_file:
-            out_file.write(json_data)
+        # json_data = self.generate_debug_json(avm_name, file_hash)
+        # mapfilename = output_path.replace('.avm', '.debug.json')
+        # with open(mapfilename, 'w+') as out_file:
+        #     out_file.write(json_data)
 
         json_data = self.generate_avmdbgnfo(avm_name, file_hash)
-        mapfilename = output_path.replace('.avm', '.avmdbgnfo.json')
+        mapfilename = output_path.replace('.avm', '.debug.json')
         with open(mapfilename, 'w+') as out_file:
             out_file.write(json_data)
 
@@ -395,10 +395,32 @@ class Module(object):
                 continue
             method = {}
             method['id'] = m.id.urn
-            method['name'] = "{0},{1}".format(m.module.module_name,m.name)
+            method['name'] = "{0},{1}".format(m.module.module_name, m.name)
+            (_, start) = next(x for x in m.vm_tokens.items())
+            (_, end) = next(x for x in reversed(m.vm_tokens.items()))
+            method['range'] = '{}-{}'.format(start.addr, end.addr)
+            method['params'] = m.args
+            method['return'] = ""
+            method['variables'] =[]
+
+            tokens = []
+            last_lineno = None
+            method['sequence-points'] = tokens
+            for _, (_, value) in enumerate(m.vm_tokens.items()):
+                if value.pytoken:
+                    pt = value.pytoken
+
+                    if pt.file not in files:
+                        files.append(pt.file)
+
+                    fileIndex = files.index(pt.file)
+                    lineno = pt.method_lineno + pt.lineno
+
+                    if last_lineno != lineno:                    
+                        tokens.append("{}[{}]{}".format(value.addr, fileIndex, lineno))
+                        last_lineno = lineno
 
             methods.append(method)
-
 
         data['entrypoint'] = self.main.id.urn
         data['documents'] = files
