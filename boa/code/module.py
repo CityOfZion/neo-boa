@@ -393,6 +393,7 @@ class Module(object):
         for m in self.methods:
             if m.is_interop:
                 continue
+
             method = {}
             method['id'] = m.id.urn
             method['name'] = "{0},{1}".format(m.module.module_name, m.name)
@@ -401,7 +402,8 @@ class Module(object):
             method['range'] = '{}-{}'.format(start.addr, end.addr)
             method['params'] = ["{},".format(a) for a in m.args]
             method['return'] = ""
-            method['variables'] =[]
+            argCount = len(m.args)
+            method['variables'] = ["{},".format(a[0]) for a in m.scope.items() if a[1] >= argCount]
 
             tokens = []
             last_lineno = None
