@@ -18,5 +18,6 @@ def main():
     Compiler.load_and_save(args.input)
     print(f"Wrote {args.input.replace('.py', '.avm')} to {os.path.abspath(os.curdir)}/")
 
+
 if __name__ == "__main__":
     main()
