@@ -371,18 +371,12 @@ class Module(object):
 
         avm_name = os.path.splitext(os.path.basename(output_path))[0]
 
-        # json_data = self.generate_debug_json(avm_name, file_hash)
-        # mapfilename = output_path.replace('.avm', '.debug.json')
-        # with open(mapfilename, 'w+') as out_file:
-        #     out_file.write(json_data)
-
         debug_info = self.generate_avmdbgnfo(avm_name, file_hash)
         debug_json_filename = os.path.basename(output_path.replace('.avm', '.debug.json'))
         avmdbgnfo_filename = output_path.replace('.avm', '.avmdbgnfo')
 
         with zipfile.ZipFile(avmdbgnfo_filename, 'w', zipfile.ZIP_DEFLATED) as avmdbgnfo:
             avmdbgnfo.writestr(debug_json_filename, debug_info)
-
 
     def generate_avmdbgnfo(self, avm_name, file_hash):
 
