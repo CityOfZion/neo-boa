@@ -12,6 +12,7 @@ from collections import OrderedDict
 import os
 import sys
 import hashlib
+import zipfile 
 from boa import __version__
 import json
 
@@ -370,11 +371,63 @@ class Module(object):
 
         avm_name = os.path.splitext(os.path.basename(output_path))[0]
 
-        json_data = self.generate_debug_json(avm_name, file_hash)
+        debug_info = self.generate_avmdbgnfo(avm_name, file_hash)
+        debug_json_filename = os.path.basename(output_path.replace('.avm', '.debug.json'))
+        avmdbgnfo_filename = output_path.replace('.avm', '.avmdbgnfo')
 
-        mapfilename = output_path.replace('.avm', '.debug.json')
-        with open(mapfilename, 'w+') as out_file:
-            out_file.write(json_data)
+        with zipfile.ZipFile(avmdbgnfo_filename, 'w', zipfile.ZIP_DEFLATED) as avmdbgnfo:
+            avmdbgnfo.writestr(debug_json_filename, debug_info)
+
+    def generate_avmdbgnfo(self, avm_name, file_hash):
+
+        if self.all_vm_tokens is None:
+            self.link_methods()
+
+        data = {}
+        files = []
+        methods = []
+        events = []
+
+        for m in self.methods:
+            if m.is_interop:
+                continue
+
+            method = {}
+            method['id'] = m.id.urn
+            method['name'] = "{0},{1}".format(m.module.module_name, m.name)
+            (_, start) = next(x for x in m.vm_tokens.items())
+            (_, end) = next(x for x in reversed(m.vm_tokens.items()))
+            method['range'] = '{}-{}'.format(start.addr, end.addr)
+            method['params'] = ["{},".format(a) for a in m.args]
+            method['return'] = ""
+            argCount = len(m.args)
+            method['variables'] = ["{},".format(a[0]) for a in m.scope.items() if a[1] >= argCount]
+
+            tokens = []
+            last_lineno = None
+            method['sequence-points'] = tokens
+            for _, (_, value) in enumerate(m.vm_tokens.items()):
+                if value.pytoken:
+                    pt = value.pytoken
+
+                    if pt.file not in files:
+                        files.append(pt.file)
+
+                    fileIndex = files.index(pt.file)
+                    lineno = pt.method_lineno + pt.lineno
+
+                    if last_lineno != lineno:                    
+                        tokens.append("{}[{}]{}:0-{}:0".format(value.addr, fileIndex, lineno, lineno))
+                        last_lineno = lineno
+
+            methods.append(method)
+
+        data['entrypoint'] = self.main.id.urn
+        data['documents'] = files
+        data['methods'] = methods
+        data['events'] = events
+        json_data = json.dumps(data, indent=4)
+        return json_data
 
     def generate_debug_json(self, avm_name, file_hash):
 

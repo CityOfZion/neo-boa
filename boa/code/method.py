@@ -3,7 +3,7 @@ from boa.code.vmtoken import VMTokenizer, Nep8VMTokenizer
 from boa.code.expression import Expression
 from boa.code import pyop
 from boa.code.ast_preprocess import preprocess_method_body
-from uuid import uuid4
+from uuid import UUID, uuid3
 
 import pdb
 import dis
@@ -98,8 +98,8 @@ class method(object):
         self.block = block
         self.module_name = module_name
         self._extra = extra
-        self._id = uuid4()
         self.name = self.block[1].arg
+        self._id = uuid3(UUID('{baa187e0-2c51-4ef6-aa42-b3421c22d5e1}'), self.full_name)
         self.start_line_no = self.block[0].lineno
         self.code_object = self.block[0].arg
 
