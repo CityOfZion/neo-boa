@@ -53,4 +53,11 @@ def preprocess_method_body(source_code_obj):
     RewriteDicts.updated_dicts = []
     RewriteDicts.last_store_name = None
 
-    return bc[0].arg, dlist
+    block_code = get_code_block(bc)
+    return block_code.arg, dlist
+
+
+def get_code_block(blocks):
+    for block in blocks:
+        if inspect.iscode(block.arg):
+            return block

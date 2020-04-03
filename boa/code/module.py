@@ -13,7 +13,7 @@ import os
 import sys
 import hashlib
 import zipfile 
-from boa import __version__
+from boa import __version__, abi
 import json
 
 
@@ -39,6 +39,9 @@ class Module(object):
     _extra_instr = None
 
     _local_methods = None
+
+    abi_methods = {}
+    abi_entry_point = None
 
     @property
     def extra_instructions(self):
@@ -248,7 +251,7 @@ class Module(object):
 
         for method in self.orderered_methods:
 
-            if not method.is_interop:
+            if not method.is_interop and not method.is_abi_decorator:
                 #                print("ADDING METHOD %s " % method.full_name)
                 method.address = address
 
@@ -361,6 +364,30 @@ class Module(object):
 
         return "\n".join(output)
 
+    def include_abi_method(self, method, types):
+        num_methods = len(method.args)
+        num_types = len(types)
+
+        args_types = {}
+        # return is Void
+        if num_types == num_methods:
+            for index, arg in enumerate(method.args):
+                args_types[arg] = types[index]
+            args_types['return'] = abi.Void
+        # return type is specified
+        elif num_types == num_methods + 1:
+            for index, arg in enumerate(method.args):
+                args_types[arg] = types[index]
+            args_types['return'] = types[num_types - 1]
+        else:
+            raise Exception("Number of arguments for the abi is incompatible with the function '%s'" % method.full_name)
+
+        self.abi_methods[method.full_name] = args_types
+
+    def set_abi_entry_point(self, method, types):
+        self.include_abi_method(method, types)
+        self.abi_entry_point = method.full_name
+
     def export_debug(self, output_path):
         """
         this method is used to generate a debug map for NEO debugger
@@ -426,6 +453,67 @@ class Module(object):
         data['documents'] = files
         data['methods'] = methods
         data['events'] = events
+        json_data = json.dumps(data, indent=4)
+        return json_data
+
+    def export_abi_json(self, output_path):
+        """
+        this method is used to generate a debug map for NEO debugger
+        """
+        file = open(output_path, 'rb')
+        file_hash = hashlib.md5(file.read()).hexdigest()
+        file.close()
+
+        avm_name = os.path.splitext(os.path.basename(output_path))[0]
+
+        abi_info = self.generate_abi_json(avm_name, file_hash)
+        abi_json_filename = os.path.basename(output_path.replace('.avm', '.abi.json'))
+
+        with open(abi_json_filename, 'w+') as out_file:
+            out_file.write(abi_info)
+            out_file.close()
+
+    def generate_abi_json(self, avm_name, file_hash):
+        # Initialize if needed
+        if self.all_vm_tokens is None:
+            self.link_methods()
+
+        data = {}
+
+        functions = []
+        events = []
+        if self.abi_entry_point is not None:
+            entrypoint = self.abi_entry_point
+        elif 'main' in self.abi_methods:
+            entrypoint = 'main'
+        elif 'Main' in self.abi_methods:
+            entrypoint = 'Main'
+        else:
+            entrypoint = self.abi_methods.get(0)
+
+        data['hash'] = file_hash
+        if entrypoint is not None:
+            data['entrypoint'] = entrypoint
+
+        data['functions'] = functions
+        data['events'] = events
+
+        for method in self.abi_methods:
+            types = self.abi_methods[method]
+            params = []
+            for t in types:
+                if t != 'return':
+                    params.append({'name': t, 'type': types[t]})
+
+            function = {
+                'name': method,
+                'parameters': params,
+                'returnType': types['return']
+            }
+
+            functions.append(function)
+            print()
+
         json_data = json.dumps(data, indent=4)
         return json_data
 

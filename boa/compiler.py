@@ -104,6 +104,7 @@ class Compiler(object):
 
         Compiler.write_file(data, output_path)
         compiler.entry_module.export_debug(output_path)
+        compiler.entry_module.export_abi_json(output_path)
 
         return data
 
