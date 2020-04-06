@@ -110,6 +110,9 @@ class method(object):
         self._extra = extra
 
         method_block_index = self.get_code_block_index(self.block)
+        if method_block_index is None:
+            raise Exception('Block of code of a method from %s module was not found', self.module_name)
+
         self.name = self.block[method_block_index + 1].arg
         self._id = uuid3(UUID('{baa187e0-2c51-4ef6-aa42-b3421c22d5e1}'), self.full_name)
         self.start_line_no = self.block[method_block_index].lineno
