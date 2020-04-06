@@ -113,7 +113,7 @@ class method(object):
         self.start_line_no = self.block[method_block_index].lineno
         self.code_object = self.block[method_block_index].arg
 
-        #        dis.dis(code_object)
+#        dis.dis(code_object)
         self.code, self.dictionary_defs = preprocess_method_body(self.code_object)
 
         self.bytecode = Bytecode.from_code(self.code)

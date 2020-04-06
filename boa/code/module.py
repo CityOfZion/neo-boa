@@ -282,6 +282,10 @@ class Module(object):
                         vmtoken.data = param_ret_counts + jump_len.to_bytes(4, 'little', signed=True)
                 else:
                     raise Exception("Target method %s not found" % vmtoken.target_method)
+        
+        # abi methods decorator is used, but there is no abi entry point decorator
+        if len(self.abi_methods) > 0 and self.abi_entry_point is None:
+            raise Exception("ABI entry point not found")
 
     def to_s(self):
         """
@@ -385,8 +389,11 @@ class Module(object):
         self.abi_methods[method.full_name] = args_types
 
     def set_abi_entry_point(self, method, types):
-        self.include_abi_method(method, types)
-        self.abi_entry_point = method.full_name
+        if self.abi_entry_point is None:
+            self.include_abi_method(method, types)
+            self.abi_entry_point = method.full_name
+        else:
+            raise Exception("Only one method should be entry point")
 
     def export_debug(self, output_path):
         """
