@@ -13,7 +13,7 @@ import os
 import sys
 import hashlib
 import zipfile 
-from boa import __version__, abi
+from boa import __version__
 import json
 
 
@@ -146,6 +146,8 @@ class Module(object):
         self.to_import = to_import
         self.module_name = module_name
         self._local_methods = []
+        self.abi_methods = {}
+        self.abi_entry_point = None
         source = open(path, 'rb')
 
         compiled_source = compile(source.read(), path, 'exec')
@@ -373,13 +375,8 @@ class Module(object):
         num_types = len(types)
 
         args_types = {}
-        # return is Void
-        if num_types == num_methods:
-            for index, arg in enumerate(method.args):
-                args_types[arg] = types[index]
-            args_types['return'] = abi.Void
-        # return type is specified
-        elif num_types == num_methods + 1:
+        # params and return types
+        if num_types == num_methods + 1:
             for index, arg in enumerate(method.args):
                 args_types[arg] = types[index]
             args_types['return'] = types[num_types - 1]
@@ -489,18 +486,16 @@ class Module(object):
 
         functions = []
         events = []
-        if self.abi_entry_point is not None:
-            entrypoint = self.abi_entry_point
-        elif 'main' in self.abi_methods:
-            entrypoint = 'main'
-        elif 'Main' in self.abi_methods:
-            entrypoint = 'Main'
-        else:
-            entrypoint = self.abi_methods.get(0)
 
         data['hash'] = file_hash
-        if entrypoint is not None:
-            data['entrypoint'] = entrypoint
+        if self.abi_entry_point is not None:
+            data['entrypoint'] = self.abi_entry_point
+        elif 'main' in self.abi_methods:
+            data['entrypoint'] = 'main'
+        elif 'Main' in self.abi_methods:
+            data['entrypoint'] = 'Main'
+        elif len(self.abi_methods) > 0:
+            data['entrypoint'] = self.abi_methods.get(0)
 
         data['functions'] = functions
         data['events'] = events

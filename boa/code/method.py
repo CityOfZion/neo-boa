@@ -1,6 +1,8 @@
 import inspect
 
 from bytecode import Instr, Bytecode, Label
+
+from boa import abi
 from boa.code.vmtoken import VMTokenizer, Nep8VMTokenizer
 from boa.code.expression import Expression
 from boa.code import pyop
@@ -180,39 +182,42 @@ class method(object):
         block_index = 0
         args_types = []
         while block_index < index:
-            if self.block[block_index].opcode == pyop.LOAD_NAME:
-                if self.block[block_index].arg == 'abi':
-                    block_index = self.include_abi_info(block_index)
-                else:
-                    block_index = block_index + 1
+            if self.block[block_index].opcode == pyop.LOAD_NAME and 'abi' in self.block[block_index].arg:
+                block_index = self.include_abi_info(block_index)
             else:
                 block_index = block_index + 1
 
     def include_abi_info(self, start_index):
-        next_index = start_index + 1
-        load_method_instr = self.block[next_index]
+        index = start_index
+        load_method_instr = self.block[index]
 
-        if load_method_instr.opcode != pyop.LOAD_METHOD:
-            return next_index
+        while load_method_instr.opcode != pyop.LOAD_METHOD and load_method_instr.opcode != pyop.LOAD_NAME:
+            index = index + 1
+            load_method_instr = self.block[index]
 
-        index = next_index + 1
         args_types = []
-        if load_method_instr.arg == 'method' or load_method_instr.arg == 'entry_point':
+        if load_method_instr.arg == 'abi_method' or load_method_instr.arg == 'abi_entry_point':
+            index = index + 1
             arg_instr = self.block[index]
-            while arg_instr.opcode == pyop.LOAD_NAME:
-                args_types.append(arg_instr.arg)
+            while arg_instr.opcode == pyop.LOAD_NAME or arg_instr.opcode == pyop.LOAD_ATTR:
+                if abi.is_abi_type(arg_instr.arg):
+                    args_types.append(arg_instr.arg)
                 index = index + 1
                 arg_instr = self.block[index]
 
-            if arg_instr.opcode == pyop.CALL_METHOD:
-                next_index = index + 1
+            # return type not specified
+            if len(args_types) == len(self.args):
+                args_types.append(abi.Void)
 
-            if load_method_instr.arg == 'entry_point':
+            if arg_instr.opcode == pyop.CALL_METHOD:
+                index = index + 1
+
+            if load_method_instr.arg == 'abi_entry_point':
                 self.module.set_abi_entry_point(self, args_types)
             else:
                 self.module.include_abi_method(self, args_types)
 
-        return next_index
+        return index
 
     def get_code_block_index(self, blocks):
         for index, block in enumerate(blocks):
