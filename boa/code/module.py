@@ -284,7 +284,7 @@ class Module(object):
                         vmtoken.data = param_ret_counts + jump_len.to_bytes(4, 'little', signed=True)
                 else:
                     raise Exception("Target method %s not found" % vmtoken.target_method)
-        
+
         # abi methods decorator is used, but there is no abi entry point decorator
         if len(self.abi_methods) > 0 and self.abi_entry_point is None:
             raise Exception("ABI entry point not found")
