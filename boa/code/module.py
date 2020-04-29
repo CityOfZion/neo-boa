@@ -471,7 +471,7 @@ class Module(object):
         avm_name = os.path.splitext(os.path.basename(output_path))[0]
 
         abi_info = self.generate_abi_json(avm_name, file_hash)
-        abi_json_filename = os.path.basename(output_path.replace('.avm', '.abi.json'))
+        abi_json_filename = output_path.replace('.avm', '.abi.json')
 
         with open(abi_json_filename, 'w+') as out_file:
             out_file.write(abi_info)
