@@ -70,6 +70,10 @@ class Module(object):
             elif instr.opcode == pyop.IMPORT_STAR:
                 mnames = ['*']
 
+        # Don't load the abi module when imported
+        if 'boa.abi' in mpath:
+            return
+
         pymodule = importlib.import_module(mpath, mpath)
         filename = pymodule.__file__
         return Module(filename, mpath, mnames)
