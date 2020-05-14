@@ -1,4 +1,8 @@
+import inspect
+
 from bytecode import Instr, Bytecode, Label
+
+from boa import abi
 from boa.code.vmtoken import VMTokenizer, Nep8VMTokenizer
 from boa.code.expression import Expression
 from boa.code import pyop
@@ -76,6 +80,12 @@ class method(object):
         return False
 
     @property
+    def is_abi_decorator(self):
+        if 'boa.abi' in self.full_name:
+            return True
+        return False
+
+    @property
     def full_name(self):
         if len(self.module_name):
             return '%s.%s' % (self.module_name, self.name)
@@ -98,16 +108,22 @@ class method(object):
         self.block = block
         self.module_name = module_name
         self._extra = extra
-        self.name = self.block[1].arg
+
+        method_block_index = self.get_code_block_index(self.block)
+        if method_block_index is None:
+            raise Exception('Block of code of a method from %s module was not found', self.module_name)
+
+        self.name = self.block[method_block_index + 1].arg
         self._id = uuid3(UUID('{baa187e0-2c51-4ef6-aa42-b3421c22d5e1}'), self.full_name)
-        self.start_line_no = self.block[0].lineno
-        self.code_object = self.block[0].arg
+        self.start_line_no = self.block[method_block_index].lineno
+        self.code_object = self.block[method_block_index].arg
 
 #        dis.dis(code_object)
         self.code, self.dictionary_defs = preprocess_method_body(self.code_object)
 
         self.bytecode = Bytecode.from_code(self.code)
 
+        self.evaluate_annotations(method_block_index)
         self.setup()
 
     def setup(self):
@@ -164,6 +180,52 @@ class method(object):
             self.tokenizer = VMTokenizer(self)
 
         self._expressions = []
+
+    def evaluate_annotations(self, index):
+        block_index = 0
+        args_types = []
+        while block_index < index:
+            if self.block[block_index].opcode == pyop.LOAD_NAME and 'abi' in self.block[block_index].arg:
+                block_index = self.include_abi_info(block_index)
+            else:
+                block_index = block_index + 1
+
+    def include_abi_info(self, start_index):
+        index = start_index
+        load_method_instr = self.block[index]
+
+        while load_method_instr.opcode != pyop.LOAD_METHOD and load_method_instr.opcode != pyop.LOAD_NAME:
+            index = index + 1
+            load_method_instr = self.block[index]
+
+        args_types = []
+        if load_method_instr.arg == 'abi_method' or load_method_instr.arg == 'abi_entry_point':
+            index = index + 1
+            arg_instr = self.block[index]
+            while arg_instr.opcode == pyop.LOAD_NAME or arg_instr.opcode == pyop.LOAD_ATTR:
+                if abi.is_abi_type(arg_instr.arg):
+                    args_types.append(arg_instr.arg)
+                index = index + 1
+                arg_instr = self.block[index]
+
+            # return type not specified
+            if len(args_types) == len(self.args):
+                args_types.append(abi.Void)
+
+            if arg_instr.opcode == pyop.CALL_METHOD:
+                index = index + 1
+
+            if load_method_instr.arg == 'abi_entry_point':
+                self.module.set_abi_entry_point(self, args_types)
+            else:
+                self.module.include_abi_method(self, args_types)
+
+        return index
+
+    def get_code_block_index(self, blocks):
+        for index, block in enumerate(blocks):
+            if inspect.iscode(block.arg):
+                return index
 
     def add_to_scope(self, argname):
         if argname not in self.scope.keys():
