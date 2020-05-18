@@ -74,7 +74,8 @@ setup(
 
     install_requires=[
         'bytecode==0.10.0',
-        'astor'
+        'astor',
+        'logzero==1.5.0'
     ],
 
     python_requires='>=3.6',
