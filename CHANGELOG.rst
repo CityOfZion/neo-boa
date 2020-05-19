@@ -3,12 +3,13 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
-[0.6.1-dev] In progress
+[0.7.0] 2020-05-19
 -----------------------
-- Add 'neo-boa' as command line utility
-- Change bytecode package to usage upstream
+- adds integration hooks for neo-debugger-toolkit
+- formalizes abi generation
 
-[0.6.0] 2019-08-21 
+
+[0.6.0] 2019-08-21
 ------------------
 - Fix unclosed resource warning
 - Various fixes to work with neo-python >= 0.9
