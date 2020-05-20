@@ -12,6 +12,7 @@ from collections import OrderedDict
 import os
 import sys
 import hashlib
+import zipfile 
 from boa import __version__
 import json
 
@@ -39,6 +40,9 @@ class Module(object):
 
     _local_methods = None
 
+    abi_methods = {}
+    abi_entry_point = None
+
     @property
     def extra_instructions(self):
         return self._extra_instr
@@ -65,6 +69,10 @@ class Module(object):
                     mnames.append(instr.arg)
             elif instr.opcode == pyop.IMPORT_STAR:
                 mnames = ['*']
+
+        # Don't load the abi module when imported
+        if 'boa.abi' in mpath:
+            return
 
         pymodule = importlib.import_module(mpath, mpath)
         filename = pymodule.__file__
@@ -142,6 +150,8 @@ class Module(object):
         self.to_import = to_import
         self.module_name = module_name
         self._local_methods = []
+        self.abi_methods = {}
+        self.abi_entry_point = None
         source = open(path, 'rb')
 
         compiled_source = compile(source.read(), path, 'exec')
@@ -247,7 +257,7 @@ class Module(object):
 
         for method in self.orderered_methods:
 
-            if not method.is_interop:
+            if not method.is_interop and not method.is_abi_decorator:
                 #                print("ADDING METHOD %s " % method.full_name)
                 method.address = address
 
@@ -278,6 +288,10 @@ class Module(object):
                         vmtoken.data = param_ret_counts + jump_len.to_bytes(4, 'little', signed=True)
                 else:
                     raise Exception("Target method %s not found" % vmtoken.target_method)
+
+        # abi methods decorator is used, but there is no abi entry point decorator
+        if len(self.abi_methods) > 0 and self.abi_entry_point is None:
+            raise Exception("ABI entry point not found")
 
     def to_s(self):
         """
@@ -360,6 +374,28 @@ class Module(object):
 
         return "\n".join(output)
 
+    def include_abi_method(self, method, types):
+        num_methods = len(method.args)
+        num_types = len(types)
+
+        args_types = {}
+        # params and return types
+        if num_types == num_methods + 1:
+            for index, arg in enumerate(method.args):
+                args_types[arg] = types[index]
+            args_types['return'] = types[num_types - 1]
+        else:
+            raise Exception("Number of arguments for the abi is incompatible with the function '%s'" % method.full_name)
+
+        self.abi_methods[method.full_name] = args_types
+
+    def set_abi_entry_point(self, method, types):
+        if self.abi_entry_point is None:
+            self.include_abi_method(method, types)
+            self.abi_entry_point = method.full_name
+        else:
+            raise Exception("Only one method should be entry point")
+
     def export_debug(self, output_path):
         """
         this method is used to generate a debug map for NEO debugger
@@ -370,11 +406,122 @@ class Module(object):
 
         avm_name = os.path.splitext(os.path.basename(output_path))[0]
 
-        json_data = self.generate_debug_json(avm_name, file_hash)
+        debug_info = self.generate_avmdbgnfo(avm_name, file_hash)
+        debug_json_filename = os.path.basename(output_path.replace('.avm', '.debug.json'))
+        avmdbgnfo_filename = output_path.replace('.avm', '.avmdbgnfo')
 
-        mapfilename = output_path.replace('.avm', '.debug.json')
-        with open(mapfilename, 'w+') as out_file:
-            out_file.write(json_data)
+        with zipfile.ZipFile(avmdbgnfo_filename, 'w', zipfile.ZIP_DEFLATED) as avmdbgnfo:
+            avmdbgnfo.writestr(debug_json_filename, debug_info)
+
+    def generate_avmdbgnfo(self, avm_name, file_hash):
+
+        if self.all_vm_tokens is None:
+            self.link_methods()
+
+        data = {}
+        files = []
+        methods = []
+        events = []
+
+        for m in self.methods:
+            if m.is_interop:
+                continue
+
+            method = {}
+            method['id'] = m.id.urn
+            method['name'] = "{0},{1}".format(m.module.module_name, m.name)
+            (_, start) = next(x for x in m.vm_tokens.items())
+            (_, end) = next(x for x in reversed(m.vm_tokens.items()))
+            method['range'] = '{}-{}'.format(start.addr, end.addr)
+            method['params'] = ["{},".format(a) for a in m.args]
+            method['return'] = ""
+            argCount = len(m.args)
+            method['variables'] = ["{},".format(a[0]) for a in m.scope.items() if a[1] >= argCount]
+
+            tokens = []
+            last_lineno = None
+            method['sequence-points'] = tokens
+            for _, (_, value) in enumerate(m.vm_tokens.items()):
+                if value.pytoken:
+                    pt = value.pytoken
+
+                    if pt.file not in files:
+                        files.append(pt.file)
+
+                    fileIndex = files.index(pt.file)
+                    lineno = pt.method_lineno + pt.lineno
+
+                    if last_lineno != lineno:                    
+                        tokens.append("{}[{}]{}:0-{}:0".format(value.addr, fileIndex, lineno, lineno))
+                        last_lineno = lineno
+
+            methods.append(method)
+
+        data['entrypoint'] = self.main.id.urn
+        data['documents'] = files
+        data['methods'] = methods
+        data['events'] = events
+        json_data = json.dumps(data, indent=4)
+        return json_data
+
+    def export_abi_json(self, output_path):
+        """
+        this method is used to generate a debug map for NEO debugger
+        """
+        file = open(output_path, 'rb')
+        file_hash = hashlib.md5(file.read()).hexdigest()
+        file.close()
+
+        avm_name = os.path.splitext(os.path.basename(output_path))[0]
+
+        abi_info = self.generate_abi_json(avm_name, file_hash)
+        abi_json_filename = output_path.replace('.avm', '.abi.json')
+
+        with open(abi_json_filename, 'w+') as out_file:
+            out_file.write(abi_info)
+            out_file.close()
+
+    def generate_abi_json(self, avm_name, file_hash):
+        # Initialize if needed
+        if self.all_vm_tokens is None:
+            self.link_methods()
+
+        data = {}
+
+        functions = []
+        events = []
+
+        data['hash'] = file_hash
+        if self.abi_entry_point is not None:
+            data['entrypoint'] = self.abi_entry_point
+        elif 'main' in self.abi_methods:
+            data['entrypoint'] = 'main'
+        elif 'Main' in self.abi_methods:
+            data['entrypoint'] = 'Main'
+        elif len(self.abi_methods) > 0:
+            data['entrypoint'] = self.abi_methods.get(0)
+
+        data['functions'] = functions
+        data['events'] = events
+
+        for method in self.abi_methods:
+            types = self.abi_methods[method]
+            params = []
+            for t in types:
+                if t != 'return':
+                    params.append({'name': t, 'type': types[t]})
+
+            function = {
+                'name': method,
+                'parameters': params,
+                'returnType': types['return']
+            }
+
+            functions.append(function)
+            print()
+
+        json_data = json.dumps(data, indent=4)
+        return json_data
 
     def generate_debug_json(self, avm_name, file_hash):
 

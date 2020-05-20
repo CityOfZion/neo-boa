@@ -19,7 +19,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.6.1-dev',
+    version='0.7.0',
 
     description='A Python compiler for the Neo Virtual Machine',
     long_description=long_description,
@@ -73,8 +73,9 @@ setup(
 
 
     install_requires=[
-        'coz-bytecode==0.5.1',
-        'astor'
+        'bytecode==0.10.0',
+        'astor',
+        'logzero==1.5.0'
     ],
 
     python_requires='>=3.6',
@@ -104,9 +105,9 @@ setup(
     # To provide executable scripts, use entry points in preference to the
     # "scripts" keyword. Entry points provide cross-platform support and allow
     # pip to create the appropriate form of executable for the target platform.
-    #entry_points={
-    #    'console_scripts': [
-    #        'sample=sample:main',
-    #    ],
-    #},
+    entry_points={
+       'console_scripts': [
+           'neo-boa=boa.cli:main',
+       ],
+    },
 )
