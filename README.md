@@ -114,6 +114,12 @@ from boa.compiler import Compiler
 Compiler.load_and_save('path/to/your/file.py')
 ```
 
+Or navigate into `boa` directory and use the command:
+
+```
+cli.py path/to/your/file.py
+```
+
 For legacy functionality without NEP8 stack isolation compatibility, use the following:
 
 ```
