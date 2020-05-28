@@ -39,8 +39,7 @@ class TestContract(BoaTest):
     def test_abi_script_hash_fail(self):
         path = '%s/boa_test/example/AbiMethods1.py' % TestContract.dirname
         abi_path = path.replace('.py', '.abi.json')
-        output = Compiler.load(path).default
-        output.export_abi_json(path.replace('.py', '.avm'))
+        Compiler.load_and_save(path)
 
         self.assertTrue(os.path.exists(abi_path))
         with open(abi_path, 'r') as abi_file:
@@ -53,8 +52,7 @@ class TestContract(BoaTest):
     def test_abi_script_hash_success(self):
         path = '%s/boa_test/example/AbiMethods1.py' % TestContract.dirname
         abi_path = path.replace('.py', '.abi.json')
-        output = Compiler.load(path).default
-        output.export_abi_json(path.replace('.py', '.avm'))
+        Compiler.load_and_save(path)
 
         self.assertTrue(os.path.exists(abi_path))
         with open(abi_path, 'r') as abi_file:
