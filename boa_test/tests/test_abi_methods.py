@@ -120,3 +120,13 @@ class TestContract(BoaTest):
         self.assertEqual(main_params[0]['type'], 'String')
         self.assertEqual(main_params[1]['name'], 'args')
         self.assertEqual(main_params[1]['type'], 'Array')
+
+    def test_abi_method_without_decorator(self):
+        path = '%s/boa_test/example/AbiMethods8.py' % TestContract.dirname
+        output = Compiler.load(path).default
+        json_file = json.loads(output.generate_abi_json('AbiMethods8.avm', 'test'))
+
+        entry_point = json_file['entrypoint']
+        self.assertEqual(entry_point, 'method')
+        functions = json_file['functions']
+        self.assertEqual(len(functions), 0)

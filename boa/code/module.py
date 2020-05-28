@@ -499,6 +499,8 @@ class Module(object):
             data['entrypoint'] = 'Main'
         elif len(self.abi_methods) > 0:
             data['entrypoint'] = self.abi_methods.get(0)
+        else:
+            data['entrypoint'] = self.main.name
 
         data['functions'] = functions
         data['events'] = events
