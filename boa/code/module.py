@@ -5,7 +5,7 @@ from boa.code.appcall import appcall as BoaAppcall
 
 from boa.util import BlockType, get_block_type
 from bytecode import UNSET, Bytecode, BasicBlock, ControlFlowGraph, dump_bytecode, Label
-from boa.interop import VMOp
+from boa.interop import VMOp, Neo
 import importlib
 from logzero import logger
 from collections import OrderedDict
@@ -468,9 +468,9 @@ class Module(object):
         """
         this method is used to generate a debug map for NEO debugger
         """
-        file = open(output_path, 'rb')
-        file_hash = hashlib.md5(file.read()).hexdigest()
-        file.close()
+        with open(output_path, 'rb') as file:
+            script = Neo.to_script_hash(file.read())
+            file_hash = Neo.to_hex_str(script)
 
         avm_name = os.path.splitext(os.path.basename(output_path))[0]
 
@@ -479,7 +479,6 @@ class Module(object):
 
         with open(abi_json_filename, 'w+') as out_file:
             out_file.write(abi_info)
-            out_file.close()
 
     def generate_abi_json(self, avm_name, file_hash):
         # Initialize if needed
@@ -500,6 +499,8 @@ class Module(object):
             data['entrypoint'] = 'Main'
         elif len(self.abi_methods) > 0:
             data['entrypoint'] = self.abi_methods.get(0)
+        else:
+            data['entrypoint'] = self.main.name
 
         data['functions'] = functions
         data['events'] = events
