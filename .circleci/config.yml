@@ -26,6 +26,11 @@ jobs:
             echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
 
       - run:
+          name: Verify Package Name
+          command: |
+            [[ $PYPI_REPO = testpypi ]] && sed -i "s/name='neo-boa'/name='neo-boa-test'/g" setup.py
+
+      - run:
           name: Build Package
           command: |
             python3 setup.py sdist bdist_wheel
