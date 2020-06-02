@@ -3,6 +3,11 @@ Changelog
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
 
+[0.7.1] 2020-06-02
+-----------------------
+- fixes script hash in abi file
+- adds continuous deployment support
+
 [0.7.0] 2020-05-19
 -----------------------
 - adds integration hooks for neo-debugger-toolkit
