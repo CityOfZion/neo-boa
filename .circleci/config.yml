@@ -22,7 +22,7 @@ jobs:
           name: Build .pypirc
           command: |
             echo -e "[pypi]" >> ~/.pypirc
-            echo -e "username = $PYPI_USERNAME >> ~/.pypirc
+            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
             echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
 
       - run:
