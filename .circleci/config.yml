@@ -45,7 +45,7 @@ workflows:
   build_deploy:
     jobs:
       - build_deploy_test:
-         context: pypy_test
+         context: pypi_test
          filters:
            tags:
              only: /^v.*/
