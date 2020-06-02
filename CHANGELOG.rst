@@ -2,6 +2,9 @@ Changelog
 =========
 
 All notable changes to this project following the ``v0.4.1`` release are noted in this file
+[0.7.2] 2020-06-02
+-----------------------
+- production deployment support
 
 [0.7.1] 2020-06-02
 -----------------------
