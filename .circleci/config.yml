@@ -57,11 +57,12 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
-      - deploy:
-         requires:
-           - approve-release
-         filters:
-           tags:
-             only: /^v.*/
-           branches:
-             ignore: /.*/
+      - build_deploy:
+          job: build_deploy
+          context: pypi_prod
+          requires: approve-release
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
