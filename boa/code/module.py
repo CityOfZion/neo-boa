@@ -515,7 +515,7 @@ class Module(object):
             function = {
                 'name': method,
                 'parameters': params,
-                'returnType': types['return']
+                'returntype': types['return']
             }
 
             functions.append(function)
