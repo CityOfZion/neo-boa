@@ -182,31 +182,40 @@ class method(object):
         self._expressions = []
 
     def evaluate_annotations(self, index):
-        block_index = 0
-        args_types = []
-        while block_index < index:
-            if self.block[block_index].opcode == pyop.LOAD_NAME and 'abi' in self.block[block_index].arg:
-                block_index = self.include_abi_info(block_index)
-            else:
-                block_index = block_index + 1
+        import sys
+        # decorators were included in the same block as the function until python 3.7
+        if sys.version_info < (3, 8):
+            self.iterate_block(self.block, index)
+        else:
+            # in python 3.8, they're in different blocks
+            for block in self._extra:
+                self.iterate_block(block, len(block))
 
-    def include_abi_info(self, start_index):
+    def iterate_block(self, block, index):
+        block_index = 0
+        while block_index < index:
+            if block[block_index].opcode == pyop.LOAD_NAME and 'abi' in block[block_index].arg:
+                block_index = self.include_abi_info(block, block_index)
+            else:
+                block_index += 1
+
+    def include_abi_info(self, block, start_index):
         index = start_index
-        load_method_instr = self.block[index]
+        load_method_instr = block[index]
 
         while load_method_instr.opcode != pyop.LOAD_METHOD and load_method_instr.opcode != pyop.LOAD_NAME:
             index = index + 1
-            load_method_instr = self.block[index]
+            load_method_instr = block[index]
 
         args_types = []
         if load_method_instr.arg == 'abi_method' or load_method_instr.arg == 'abi_entry_point':
             index = index + 1
-            arg_instr = self.block[index]
+            arg_instr = block[index]
             while arg_instr.opcode == pyop.LOAD_NAME or arg_instr.opcode == pyop.LOAD_ATTR:
                 if abi.is_abi_type(arg_instr.arg):
                     args_types.append(arg_instr.arg)
                 index = index + 1
-                arg_instr = self.block[index]
+                arg_instr = block[index]
 
             # return type not specified
             if len(args_types) == len(self.args):
