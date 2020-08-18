@@ -1,4 +1,5 @@
 import inspect
+import sys
 
 from bytecode import Instr, Bytecode, Label
 
@@ -182,7 +183,6 @@ class method(object):
         self._expressions = []
 
     def evaluate_annotations(self, index):
-        import sys
         # decorators were included in the same block as the function until python 3.7
         if sys.version_info < (3, 8):
             self.iterate_block(self.block, index)
