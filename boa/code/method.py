@@ -1,5 +1,4 @@
 import inspect
-import sys
 
 from bytecode import Instr, Bytecode, Label
 
@@ -104,11 +103,12 @@ class method(object):
     def stacksize(self):
         return self.bytecode.argcount + len(self._blocks) + 2
 
-    def __init__(self, module, block, module_name, extra):
+    def __init__(self, module, block, module_name, extra, related_blocks=None):
         self.module = module
         self.block = block
         self.module_name = module_name
         self._extra = extra
+        self._related_blocks = related_blocks
 
         method_block_index = self.get_code_block_index(self.block)
         if method_block_index is None:
@@ -183,21 +183,21 @@ class method(object):
         self._expressions = []
 
     def evaluate_annotations(self, index):
-        # decorators were included in the same block as the function until python 3.7
-        if sys.version_info < (3, 8):
-            self.iterate_block(self.block, index)
+        if self._related_blocks:
+            blocks = []
+            for block in self._related_blocks:
+                blocks.extend(block)
+            index = len(blocks)
         else:
-            # in python 3.8, they're in different blocks
-            for block in self._extra:
-                self.iterate_block(block, len(block))
+            blocks = self.block
 
-    def iterate_block(self, block, index):
         block_index = 0
+        args_types = []
         while block_index < index:
-            if block[block_index].opcode == pyop.LOAD_NAME and 'abi' in block[block_index].arg:
-                block_index = self.include_abi_info(block, block_index)
+            if blocks[block_index].opcode == pyop.LOAD_NAME and 'abi' in blocks[block_index].arg:
+                block_index = self.include_abi_info(blocks, block_index)
             else:
-                block_index += 1
+                block_index = block_index + 1
 
     def include_abi_info(self, block, start_index):
         index = start_index
@@ -221,7 +221,7 @@ class method(object):
             if len(args_types) == len(self.args):
                 args_types.append(abi.Void)
 
-            if arg_instr.opcode == pyop.CALL_METHOD:
+            if arg_instr.opcode in [pyop.CALL_METHOD, pyop.CALL_FUNCTION]:
                 index = index + 1
 
             if load_method_instr.arg == 'abi_entry_point':

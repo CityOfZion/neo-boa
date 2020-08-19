@@ -203,18 +203,17 @@ class Module(object):
 
         last_m = None
         for m in new_method_blks:
-            new_method = BoaMethod(self, m, self.module_name, self._method_extra_instr(m, last_m))
+
+            new_method = BoaMethod(self, m, self.module_name, self._extra_instr, self._method_related_blocks(m, last_m))
 
             if not self.has_method(new_method.full_name):
                 self.methods.append(new_method)
             last_m = m
 
-    def _method_extra_instr(self, method_block, last_method_block):
+    def _method_related_blocks(self, method_block, last_method_block):
         # decorators were included in the same block as the method until python 3.7
         # in python 3.8, they're in different blocks, that are in the `_extra_instr`
-        if sys.version_info < (3, 8):
-            return self._extra_instr
-        else:
+        if sys.version_info >= (3, 8):
             block = method_block
             if last_method_block:
                 block = last_method_block.next_block
