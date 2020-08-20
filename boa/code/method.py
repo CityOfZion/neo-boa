@@ -103,11 +103,12 @@ class method(object):
     def stacksize(self):
         return self.bytecode.argcount + len(self._blocks) + 2
 
-    def __init__(self, module, block, module_name, extra):
+    def __init__(self, module, block, module_name, extra, related_blocks=None):
         self.module = module
         self.block = block
         self.module_name = module_name
         self._extra = extra
+        self._related_blocks = related_blocks
 
         method_block_index = self.get_code_block_index(self.block)
         if method_block_index is None:
@@ -182,37 +183,45 @@ class method(object):
         self._expressions = []
 
     def evaluate_annotations(self, index):
+        if self._related_blocks:
+            blocks = []
+            for block in self._related_blocks:
+                blocks.extend(block)
+            index = len(blocks)
+        else:
+            blocks = self.block
+
         block_index = 0
         args_types = []
         while block_index < index:
-            if self.block[block_index].opcode == pyop.LOAD_NAME and 'abi' in self.block[block_index].arg:
-                block_index = self.include_abi_info(block_index)
+            if blocks[block_index].opcode == pyop.LOAD_NAME and 'abi' in blocks[block_index].arg:
+                block_index = self.include_abi_info(blocks, block_index)
             else:
                 block_index = block_index + 1
 
-    def include_abi_info(self, start_index):
+    def include_abi_info(self, block, start_index):
         index = start_index
-        load_method_instr = self.block[index]
+        load_method_instr = block[index]
 
         while load_method_instr.opcode != pyop.LOAD_METHOD and load_method_instr.opcode != pyop.LOAD_NAME:
             index = index + 1
-            load_method_instr = self.block[index]
+            load_method_instr = block[index]
 
         args_types = []
         if load_method_instr.arg == 'abi_method' or load_method_instr.arg == 'abi_entry_point':
             index = index + 1
-            arg_instr = self.block[index]
+            arg_instr = block[index]
             while arg_instr.opcode == pyop.LOAD_NAME or arg_instr.opcode == pyop.LOAD_ATTR:
                 if abi.is_abi_type(arg_instr.arg):
                     args_types.append(arg_instr.arg)
                 index = index + 1
-                arg_instr = self.block[index]
+                arg_instr = block[index]
 
             # return type not specified
             if len(args_types) == len(self.args):
                 args_types.append(abi.Void)
 
-            if arg_instr.opcode == pyop.CALL_METHOD:
+            if arg_instr.opcode in [pyop.CALL_METHOD, pyop.CALL_FUNCTION]:
                 index = index + 1
 
             if load_method_instr.arg == 'abi_entry_point':

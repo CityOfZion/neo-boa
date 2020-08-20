@@ -201,12 +201,30 @@ class Module(object):
             elif type == BlockType.APPCALL_REG:
                 self.app_call_registrations.append(BoaAppcall(blk))
 
+        last_m = None
         for m in new_method_blks:
 
-            new_method = BoaMethod(self, m, self.module_name, self._extra_instr)
+            new_method = BoaMethod(self, m, self.module_name, self._extra_instr, self._method_related_blocks(m, last_m))
 
             if not self.has_method(new_method.full_name):
                 self.methods.append(new_method)
+            last_m = m
+
+    def _method_related_blocks(self, method_block, last_method_block):
+        # decorators were included in the same block as the method until python 3.7
+        # in python 3.8, they're in different blocks, that are in the `_extra_instr`
+        if sys.version_info >= (3, 8):
+            block = method_block
+            if last_method_block:
+                block = last_method_block.next_block
+            elif len(self._extra_instr) > 0:
+                block = self._extra_instr[0]
+
+            extra_instr = []
+            while block is not None and block is not method_block:
+                extra_instr.append(block)
+                block = block.next_block
+            return extra_instr
 
     def write(self):
         """
@@ -375,19 +393,20 @@ class Module(object):
         return "\n".join(output)
 
     def include_abi_method(self, method, types):
-        num_methods = len(method.args)
-        num_types = len(types)
+        if method.full_name not in self.abi_methods:
+            num_methods = len(method.args)
+            num_types = len(types)
 
-        args_types = {}
-        # params and return types
-        if num_types == num_methods + 1:
-            for index, arg in enumerate(method.args):
-                args_types[arg] = types[index]
-            args_types['return'] = types[num_types - 1]
-        else:
-            raise Exception("Number of arguments for the abi is incompatible with the function '%s'" % method.full_name)
+            args_types = {}
+            # params and return types
+            if num_types == num_methods + 1:
+                for index, arg in enumerate(method.args):
+                    args_types[arg] = types[index]
+                args_types['return'] = types[num_types - 1]
+            else:
+                raise Exception("Number of arguments for the abi is incompatible with the function '%s'" % method.full_name)
 
-        self.abi_methods[method.full_name] = args_types
+            self.abi_methods[method.full_name] = args_types
 
     def set_abi_entry_point(self, method, types):
         if self.abi_entry_point is None:
