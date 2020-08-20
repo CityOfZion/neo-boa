@@ -19,7 +19,7 @@ class TestContract(BoaTest):
         main_function = functions[0]
         main_params = main_function['parameters']
         self.assertEqual(main_function['name'], 'main')
-        self.assertEqual(main_function['returnType'], 'Any')
+        self.assertEqual(main_function['returntype'], 'Any')
         self.assertEqual(len(main_params), 2)
         self.assertEqual(main_params[0]['name'], 'operation')
         self.assertEqual(main_params[0]['type'], 'String')
@@ -29,7 +29,7 @@ class TestContract(BoaTest):
         add_function = functions[1]
         add_params = add_function['parameters']
         self.assertEqual(add_function['name'], 'add')
-        self.assertEqual(add_function['returnType'], 'Integer')
+        self.assertEqual(add_function['returntype'], 'Integer')
         self.assertEqual(len(add_params), 2)
         self.assertEqual(add_params[0]['name'], 'a')
         self.assertEqual(add_params[0]['type'], 'Integer')
@@ -75,7 +75,7 @@ class TestContract(BoaTest):
         main_function = functions[0]
         main_params = main_function['parameters']
         self.assertEqual(main_function['name'], 'main')
-        self.assertEqual(main_function['returnType'], 'Any')
+        self.assertEqual(main_function['returntype'], 'Any')
         self.assertEqual(len(main_params), 2)
         self.assertEqual(main_params[0]['name'], 'operation')
         self.assertEqual(main_params[0]['type'], 'String')
@@ -114,7 +114,7 @@ class TestContract(BoaTest):
         main_function = functions[0]
         main_params = main_function['parameters']
         self.assertEqual(main_function['name'], 'main')
-        self.assertEqual(main_function['returnType'], 'Void')
+        self.assertEqual(main_function['returntype'], 'Void')
         self.assertEqual(len(main_params), 2)
         self.assertEqual(main_params[0]['name'], 'operation')
         self.assertEqual(main_params[0]['type'], 'String')
