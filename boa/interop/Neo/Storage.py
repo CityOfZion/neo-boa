@@ -29,7 +29,7 @@ def Put(context, key, value):
     pass
 
 
-def Find(ctx, needle):
+def Find(context, needle):
     """
 
     :param context:
