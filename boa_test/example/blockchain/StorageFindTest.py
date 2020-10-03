@@ -18,10 +18,10 @@ def Main(query):
     items = []
     keys = []
     count = 0
-    while result_iter.IterNext():
-        val = result_iter.IterValue()
+    while IterNext(result_iter):
+        val = IterValue(result_iter)
         items.append(val)
-        keys.append(result_iter.IterKey())
+        keys.append(IterKey(result_iter))
         if query == 'pre' and count == 1:
             break
 
