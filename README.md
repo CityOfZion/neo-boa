@@ -9,6 +9,12 @@
   Python compiler for the Neo Virtual Machine
 </p>
 
+# :warning: **This repository is now a public archive**
+
+If you want to write smart contracts on Neo using Python check out the new N3 version: [neo3-boa](https://github.com/CityOfZion/neo3-boa).
+
+---
+
 <a href="https://pypi.python.org/pypi/neo-boa" rel="nofollow"><img src="https://img.shields.io/pypi/v/neo-boa.svg"></a>
 <a href="https://travis-ci.org/CityOfZion/neo-boa" rel="nofollow"><img src="https://img.shields.io/travis/CityOfZion/neo-boa.svg"></a>
 <a href="https://neo-boa.readthedocs.io/en/latest/?badge=latest" rel="nofollow"><img src="https://readthedocs.org/projects/neo-boa/badge/?version=latest"></a>
